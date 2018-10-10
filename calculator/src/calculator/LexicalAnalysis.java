@@ -1,9 +1,12 @@
 package calculator;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.Stack;
+
+/*
+标识符  letter(letter | digit)*            1
+常数    (digit)+                           2
+运算符  {'+', '-', '*', '/', '(', ')'}     3
+ */
 
 public class LexicalAnalysis {
 
@@ -14,8 +17,12 @@ public class LexicalAnalysis {
         return letter >= 'a' && letter <= 'z' || letter >= 'A' && letter <= 'Z';
     }
 
-    private boolean isnumber(char num) {
+    private boolean isNumber(char num) {
         return num >= '0' && num <= '9';
+    }
+
+    private boolean isDot(char dot) {
+        return dot=='.';
     }
 
     private boolean isOperater(char op) {
@@ -26,41 +33,66 @@ public class LexicalAnalysis {
         tokens = new ArrayList<>();
     }
 
-    void Lex(String input) {
+    ArrayList<Token> Lex(String input) {
         int mark = 0, state = 0;
+        boolean isFloat=false;
         for (int curr = 0; curr < input.length(); curr++) {
             if (isOperater(input.charAt(curr))) {
                 if (state == 1) {
                     System.out.println(input.substring(mark, curr) + "\t是标识符\t\t类型码:1");
                     tokens.add(new Token("1", input.substring(mark, curr)));
                 } else if (state == 2) {
-                    System.out.println(input.substring(mark, curr) + "\t是数字\t\t类型码:2");
+                    if (input.charAt(curr - 1) == '.') {
+                        System.out.println("词法分析检测到错误，数字串不能以\'.\'结尾");
+                        return null;
+                    }
+                    System.out.println(input.substring(mark, curr) + "\t是常数\t\t类型码:2");
                     tokens.add(new Token("2", input.substring(mark, curr)));
                 }
                 mark = curr + 1;
                 state = 3;
                 System.out.println(input.substring(curr, curr + 1) + "\t是运算符\t\t类型码:3");
                 tokens.add(new Token("3", input.substring(curr, curr + 1)));
-            } else if (isnumber(input.charAt(curr))) {
-                if (mark == curr)
+            } else if (isNumber(input.charAt(curr))) {
+                if (mark == curr) {
                     state = 2;
+                    isFloat = false;
+                }
             } else if (isLetter(input.charAt(curr))) {
                 if (state == 2) {
                     System.out.println("词法分析检测到错误，数字串中不能出现字母");
-                    return;
+                    return null;
                 }
                 if (mark == curr)
                     state = 1;
+            } else if (isDot(input.charAt(curr))) {
+                if (isFloat) {
+                    System.out.println("词法分析检测到错误，常数中不能出现多个\".\"");
+                    return null;
+                }
+                if (state == 1) {
+                    System.out.println("词法分析检测到错误，标识符中不能出现\".\"");
+                    return null;
+                }
+                if (state == 3) {
+                    System.out.println("词法分析检测到错误，常数不能以\".\"开头");
+                    return null;
+                }
+                isFloat = true;
             } else {
                 System.out.println("词法分析检测到非法字符");
-                return;
+                return null;
             }
         }
         if (state == 1) {
             System.out.println(input.substring(mark) + "\t是标识符\t\t类型码:1");
             tokens.add(new Token("1", input.substring(mark)));
         } else if (state == 2) {
-            System.out.println(input.substring(mark) + "\t是数字\t\t类型码:2");
+            if (input.charAt(input.length()-1) == '.') {
+                System.out.println("词法分析检测到错误，数字串不能以\'.\'结尾");
+                return null;
+            }
+            System.out.println(input.substring(mark) + "\t是常数\t\t类型码:2");
             tokens.add(new Token("2", input.substring(mark)));
         }
 
@@ -69,5 +101,6 @@ public class LexicalAnalysis {
             output.append("\'").append(t.getContent()).append("\'\t ");
         }
         System.out.println("字符栈: " + output + "\n词法正确");
+        return tokens;
     }
 }

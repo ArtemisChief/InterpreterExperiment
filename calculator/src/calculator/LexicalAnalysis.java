@@ -43,7 +43,7 @@ public class LexicalAnalysis {
                     tokens.add(new Token("1", input.substring(mark, curr)));
                 } else if (state == 2) {
                     if (input.charAt(curr - 1) == '.') {
-                        System.out.println("词法分析检测到错误，数字串不能以\'.\'结尾");
+                        System.out.println("词法分析检测到错误，常数不能以\'.\'结尾");
                         return null;
                     }
                     if (isFloat) {
@@ -65,7 +65,7 @@ public class LexicalAnalysis {
                 }
             } else if (isLetter(input.charAt(curr))) {
                 if (state == 2) {
-                    System.out.println("词法分析检测到错误，数字串中不能出现字母");
+                    System.out.println("词法分析检测到错误，常数中不能出现字母");
                     return null;
                 }
                 if (mark == curr)

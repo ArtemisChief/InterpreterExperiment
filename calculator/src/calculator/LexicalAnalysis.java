@@ -79,7 +79,7 @@ public class LexicalAnalysis {
                     System.out.println("词法分析检测到错误，标识符中不能出现\".\"");
                     return null;
                 }
-                if (state == 3) {
+                if (state == 3||curr==0) {
                     System.out.println("词法分析检测到错误，常数不能以\".\"开头");
                     return null;
                 }

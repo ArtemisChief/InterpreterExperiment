@@ -14,10 +14,15 @@ public class Mini {
             FileInputStream fileInputStream = new FileInputStream(file);
             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuffer sb = new StringBuffer();
             String lineTxt = null;
             while((lineTxt = bufferedReader.readLine()) != null){
-                lexicalAnalysis.Lex(lineTxt);
+                lineTxt+="\n";
+                sb.append(lineTxt);
+
             }
+            String input=sb.toString();
+            lexicalAnalysis.Lex(input);
 
         }
         catch (Exception e) {

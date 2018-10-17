@@ -184,6 +184,8 @@ public class LexicalAnalysis {
                 syn=4;
                 tokens.add(new Token(syn,inputWord));
             }
+            else if(inputWord.equals("\n"))
+                return;
             else{
                 for (int i=0;i<inputWord.length();i++) {
                     if (!isNote(inputWord.charAt(i))&&inputWord.charAt(i)!='b'&&inputWord.charAt(i)!='#') {
@@ -232,23 +234,29 @@ public class LexicalAnalysis {
             if(input.charAt(i)==' '&&start==i){
                 i++;
                 start=i;
+                continue;
             }
             if(input.charAt(i)==' '){
                 String temp=input.substring(start,i);
                 Scanner(temp);
                 start=i+1;
+                continue;
+            }
+            if(input.charAt(i)=='\n') {
+                String temp=input.substring(start,i);
+                if(!temp.equals(""))
+                    Scanner(temp);
+                tokens.add(new Token(97, "\\n"));
+                start=i+1;
+                continue;
             }
             if(i==input.length()-1){
                 String temp=input.substring(start,i+1);
                 Scanner(temp);
                 start=i;
+                continue;
             }
-            if(input.charAt(i)=='\n') {
-                String temp=input.substring(start,i);
-                Scanner(temp);
-                tokens.add(new Token(97, "\\n"));
-                start=i+1;
-            }
+
         }
         if(error) {
             System.out.println("词法分析检测到错误，停止程序");

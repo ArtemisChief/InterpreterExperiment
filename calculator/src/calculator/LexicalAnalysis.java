@@ -98,10 +98,10 @@ public class LexicalAnalysis {
                 return null;
             }
             if (isFloat) {
-                System.out.println(input.charAt(input.length() - 1) + "\t是浮点数\t\t类型码:3");
+                System.out.println(input.substring(mark) + "\t是浮点数\t\t类型码:3");
                 tokens.add(new Token("3", input.substring(mark)));
             } else {
-                System.out.println(input.charAt(input.length() - 1) + "\t是整形数\t\t类型码:2");
+                System.out.println(input.substring(mark) + "\t是整形数\t\t类型码:2");
                 tokens.add(new Token("2", input.substring(mark)));
             }
         }

@@ -339,6 +339,11 @@ public class LexicalAnalysis {
 
     public void Lex(String input){
         input=filterResource(input);
+        if(input==null){
+            System.out.println("词法分析检测到错误，停止程序");
+            tokens.add(new Token(-1,"error"));
+            return;
+        }
         int start=0;
         for(int i=0;i<input.length()&&!error;i++){
             if(input.charAt(i)==' '&&start==i){
@@ -372,7 +377,6 @@ public class LexicalAnalysis {
             System.out.println("词法分析检测到错误，停止程序");
             tokens.add(new Token(-1,"error"));
         }
-
 
 
     }

@@ -10,7 +10,7 @@ public class Calculator {
             LexicalAnalysis lexicalAnalysis = new LexicalAnalysis();
             Scanner in = new Scanner(System.in);
             String input = in.next();
-//            String input = "23+a *42";
+//            String input = "-25 * 2";
             lexicalAnalysis.Lex(input);
         }
     }

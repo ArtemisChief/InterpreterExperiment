@@ -125,18 +125,7 @@ public class LexicalAnalysis {
                     }
                 }
             }
-            if(i+1<temp.length()&&temp.charAt(i)=='('){
-                output+=String.valueOf(temp.charAt(i));
-                i++;
-                while (i+1<temp.length()&&temp.charAt(i)!=')'){
-                    if(temp.charAt(i)==' ')
-                        i++;
-                    else{
-                        output+=String.valueOf(temp.charAt(i));
-                        i++;
-                    }
-                }
-            }
+
             if(i<temp.length())
                 output+=String.valueOf(temp.charAt(i));
         }

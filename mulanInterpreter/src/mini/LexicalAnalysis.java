@@ -157,9 +157,9 @@ public class LexicalAnalysis {
             }
 
             //播放
-            if(inputWord.length()>=6){
+            if(inputWord.length()>=5){
                 if(inputWord.substring(0,5).equals("play(")){
-                    if(!inputWord.endsWith(")")||inputWord.length()==6){
+                    if(!inputWord.endsWith(")")||inputWord.length()==5){
                         error = true;
                         System.out.println(inputWord+" : 播放语句格式有误");
                         return;
@@ -193,8 +193,13 @@ public class LexicalAnalysis {
             }
 
             //速度
-            if(inputWord.length()>=7){
+            if(inputWord.length()>=6){
                 if(inputWord.substring(0,6).equals("speed=")){
+                    if(inputWord.length()==6){
+                        error=true;
+                        System.out.println(inputWord+" : \"speed=\"后缺少对应速度");
+                        return;
+                    }
                     for (int i=6;i<inputWord.length();i++) {
                         if (!isNumber(inputWord.charAt(i))) {
                             error = true;
@@ -217,11 +222,6 @@ public class LexicalAnalysis {
                 }
             }
             syn=searchReserve(inputWord);
-            if(syn==3){
-                error=true;
-                System.out.println(inputWord+" : \"speed=\"后缺少对应速度");
-                return;
-            }
             if(syn==6){
                 error=true;
                 System.out.println(inputWord+" : play播放操作格式不正确");

@@ -15,11 +15,23 @@ public class LexicalAnalysis {
     <1=?,4> 调性
     <end,5>
     <play,6> 播放操作
+    <(,7>
+    <),8>
+    <[,9>
+    <],10>
+    <{,11>
+    <},12>
+    <<,13>
+    <>,14>
+    <*,15>
+    <,,16>
+    <&,17>
     <\n,97>换行
     <音符，98>
-    <时值  ,99>
+    <时值,99>
     <标识符100 ，标识符指针>
     */
+
 
 
     private  int searchReserve(String s){
@@ -36,6 +48,14 @@ public class LexicalAnalysis {
                 return 5;
             case "play":
                 return 6;
+            case "C":
+            case "D":
+            case "E":
+            case "F":
+            case "G":
+            case "A":
+            case "B":
+                return 95;
             default:
                 return -1;
         }
@@ -54,7 +74,7 @@ public class LexicalAnalysis {
     }
 
     private boolean isTime(char ch) {
-        return ch == '1' || ch == '2'|| ch == '4'|| ch == '8'|| ch == 'g'|| ch == '`';
+        return ch == '1' || ch == '2'|| ch == '4'|| ch == '8'|| ch == 'g'|| ch == '*';
     }
 
 
@@ -90,10 +110,29 @@ public class LexicalAnalysis {
     }
 
 
-    public void Scanner(String inputWord){
+    public void Scanner(String input){
         int syn;
+        boolean isIdentifier = false;
+        String inputWord;
         //标识符 保留字 速度
+        if(input.charAt(0)=='!') {
+            isIdentifier = true;
+            inputWord = input.substring(1);
+        }
+        else
+            inputWord=input;
         if(isLetter(inputWord.charAt(0))){
+            if(inputWord.length()==1&&isTonality(inputWord.charAt(0))){
+                tokens.add(new Token(95,inputWord));
+                return;
+            }
+            if(!isIdentifier&&inputWord.charAt(0)=='b'){
+                    tokens.add(new Token(19,"b"));
+                    if(inputWord.length()>1)
+                        Scanner(inputWord.substring(1));
+                    return;
+            }
+
             //播放
             if(inputWord.length()>=6){
                 if(inputWord.substring(0,5).equals("play(")){
@@ -102,21 +141,30 @@ public class LexicalAnalysis {
                         System.out.println(inputWord+" : 播放语句格式有误");
                         return;
                     }
+                    syn=6;
+                    tokens.add(new Token(syn,"play"));
+                    tokens.add(new Token(7,"("));
                     int start=5;
                     for(int i=5;i<inputWord.length()-1;i++){
-                        if(inputWord.charAt(i)==','||inputWord.charAt(i)=='&'){
-                            String temp=inputWord.substring(start,i);
+                        if(inputWord.charAt(i)==','){
+                            String temp="!"+inputWord.substring(start,i);
                             Scanner(temp);
                             start=i+1;
+                            tokens.add(new Token(16,","));
+                        }
+                        else if(inputWord.charAt(i)=='&'){
+                            String temp="!"+inputWord.substring(start,i);
+                            Scanner(temp);
+                            start=i+1;
+                            tokens.add(new Token(17,"&"));
                         }
                         if(i==inputWord.length()-2){
-                            String temp=inputWord.substring(start,i+1);
+                            String temp="!"+inputWord.substring(start,i+1);
                             Scanner(temp);
                             start=i;
                         }
                     }
-                    syn=6;
-                    tokens.add(new Token(syn,inputWord));
+                    tokens.add(new Token(8,")"));
                     return;
                 }
             }
@@ -132,7 +180,8 @@ public class LexicalAnalysis {
                         }
                     }
                     syn=3;
-                    tokens.add(new Token(syn,inputWord));
+                    tokens.add(new Token(syn,"speed="));
+                    tokens.add(new Token(96,inputWord.substring(6)));
                     return;
                 }
             }
@@ -160,43 +209,59 @@ public class LexicalAnalysis {
             tokens.add(new Token(syn,inputWord));
         }
         //调性 旋律
-        else if(isNumber(inputWord.charAt(0))||inputWord.charAt(0)=='['||inputWord.charAt(0)=='('||inputWord.charAt(0)=='{'){
-            if(inputWord.length()==3&&inputWord.charAt(0)=='1'&&inputWord.charAt(1)=='='){
-                if(!isTonality(inputWord.charAt(2))){
-                    error=true;
-                    System.out.println(inputWord+" : 调性中出现非法字符："+inputWord.charAt(2));
-                    return;
-                }
+        else if(isNumber(inputWord.charAt(0))){
+            if(inputWord.length()>=2&&inputWord.charAt(0)=='1'&&inputWord.charAt(1)=='='){
                 syn=4;
-                tokens.add(new Token(syn,inputWord));
+                tokens.add(new Token(syn,"1="));
+                Scanner(inputWord.substring(2));
             }
-            else if(inputWord.length()==4&&inputWord.charAt(0)=='1'&&inputWord.charAt(1)=='='){
-                if(inputWord.charAt(2)!='#'&&inputWord.charAt(2)!='b'){
-                    error=true;
-                    System.out.println(inputWord+" : 调性中出现非法字符："+inputWord.charAt(2));
-                    return;
-                }
-                if(!isTonality(inputWord.charAt(3))){
-                    error=true;
-                    System.out.println(inputWord+" : 调性中出现非法字符："+inputWord.charAt(3));
-                    return;
-                }
-                syn=4;
-                tokens.add(new Token(syn,inputWord));
-            }
-            else if(inputWord.equals("\n"))
-                return;
             else{
-                for (int i=0;i<inputWord.length();i++) {
-                    if (!isNote(inputWord.charAt(i))&&inputWord.charAt(i)!='b'&&inputWord.charAt(i)!='#') {
+                    if (!isNote(inputWord.charAt(0))) {
                         error = true;
-                        System.out.println(inputWord+" : 旋律中出现非法字符：" + inputWord.charAt(i));
+                        System.out.println(inputWord+" : 旋律中出现非法字符：" + inputWord.charAt(0));
                         return;
                     }
-                }
                 syn=98;
-                tokens.add(new Token(syn,inputWord));
+                tokens.add(new Token(syn,String.valueOf(inputWord.charAt(0))));
+                if(inputWord.length()>1)
+                    Scanner(inputWord.substring(1));
             }
+        }
+        else if(inputWord.charAt(0)=='('){
+            syn=7;
+            tokens.add(new Token(syn,String.valueOf(inputWord.charAt(0))));
+            if(inputWord.length()>1)
+                Scanner(inputWord.substring(1));
+        }
+        else if(inputWord.charAt(0)==')'){
+            syn=8;
+            tokens.add(new Token(syn,String.valueOf(inputWord.charAt(0))));
+            if(inputWord.length()>1)
+                Scanner(inputWord.substring(1));
+        }
+        else if(inputWord.charAt(0)=='['){
+            syn=9;
+            tokens.add(new Token(syn,String.valueOf(inputWord.charAt(0))));
+            if(inputWord.length()>1)
+                Scanner(inputWord.substring(1));
+        }
+        else if(inputWord.charAt(0)==']'){
+            syn=10;
+            tokens.add(new Token(syn,String.valueOf(inputWord.charAt(0))));
+            if(inputWord.length()>1)
+                Scanner(inputWord.substring(1));
+        }
+        else if(inputWord.charAt(0)=='{'){
+            syn=11;
+            tokens.add(new Token(syn,String.valueOf(inputWord.charAt(0))));
+            if(inputWord.length()>1)
+                Scanner(inputWord.substring(1));
+        }
+        else if(inputWord.charAt(0)=='}'){
+            syn=12;
+            tokens.add(new Token(syn,String.valueOf(inputWord.charAt(0))));
+            if(inputWord.length()>1)
+                Scanner(inputWord.substring(1));
         }
         //时长
         else if(inputWord.charAt(0)=='<'&&inputWord.charAt(inputWord.length()-1)=='>'){
@@ -205,21 +270,32 @@ public class LexicalAnalysis {
                 System.out.println(inputWord+" : <>间缺少时长" );
                 return;
             }
-            if(inputWord.charAt(1)=='`'){
+            if(inputWord.charAt(1)=='*'){
                 error = true;
-                System.out.println(inputWord+" : 附点`必须跟在其他音符时长之后" );
+                System.out.println(inputWord+" : 附点*必须跟在其他音符时长之后" );
                 return;
             }
+            tokens.add(new Token(13,"<"));
             for (int i=1;i<inputWord.length()-1;i++) {
                 if (!isTime(inputWord.charAt(i))) {
+                    if(inputWord.charAt(i)==' ')
+                        continue;
                     error = true;
                     System.out.println(inputWord+" : 时长中出现非法字符：" + inputWord.charAt(i));
                     return;
                 }
+                tokens.add(new Token(99,String.valueOf(inputWord.charAt(i))));
             }
-            syn=99;
-            tokens.add(new Token(syn,inputWord));
+            tokens.add(new Token(14,">"));
         }
+        else if(inputWord.charAt(0)=='#'){
+            syn=18;
+            tokens.add(new Token(syn,String.valueOf(inputWord.charAt(0))));
+            if(inputWord.length()>1)
+                Scanner(inputWord.substring(1));
+        }
+        else if(inputWord.equals("\n"))
+            return;
         else{
             error = true;
             System.out.println(inputWord+" : 出现非法字符：" + inputWord.charAt(0));

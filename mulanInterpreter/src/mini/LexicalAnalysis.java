@@ -79,7 +79,7 @@ public class LexicalAnalysis {
 
 
     public String filterResource(String input){
-        String output="";
+        String temp="";
         for(int i=0;i<input.length();i++){
             if(i+1<input.length()){
                 if (input.charAt(i) == '/' && input.charAt(i + 1) == '/') {//若为单行注释“//”,则去除注释后面的东西，直至遇到回车换行
@@ -101,10 +101,32 @@ public class LexicalAnalysis {
                 if(input.charAt(i) == '\n' && input.charAt(i + 1) == '\n')
                     i++;
             }
-            if (input.charAt(i) != '\t'&&input.charAt(i) != '\r')
-            {//若出现无用字符，则过滤；否则加载
-                output+=String.valueOf(input.charAt(i));
+            if (input.charAt(i) != '\t'&&input.charAt(i) != '\r'){//若出现无用字符，则过滤；否则加载
+                temp+=String.valueOf(input.charAt(i));
             }
+        }
+        String output="";
+        for(int i=0;i<temp.length();i++){
+            if(temp.charAt(i)=='='){
+                output+=String.valueOf(temp.charAt(i));
+                i++;
+                while(i+1<temp.length()&&temp.charAt(i)==' ')
+                    i++;
+            }
+            if(i+1<temp.length()&&temp.charAt(i)=='<'){
+                output+=String.valueOf(temp.charAt(i));
+                i++;
+                while (i+1<temp.length()&&temp.charAt(i)!='>'){
+                    if(temp.charAt(i)==' ')
+                        i++;
+                    else{
+                        output+=String.valueOf(temp.charAt(i));
+                        i++;
+                    }
+                }
+            }
+            if(i<temp.length())
+                output+=String.valueOf(temp.charAt(i));
         }
         return output;
     }

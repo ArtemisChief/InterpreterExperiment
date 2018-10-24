@@ -96,7 +96,7 @@ public class Token {
                 type="标识符";
                 break;
         }
-        return String.format("< %s : %s >",type,content);
+        return String.format("%-20s  %s(%s)",content,type,syn);
     }
 
     public int getSyn(){

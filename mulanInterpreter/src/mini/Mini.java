@@ -8,7 +8,7 @@ public class Mini {
     public static void main(String[] args) {
 
         LexicalAnalysis lexicalAnalysis = new LexicalAnalysis();
-        String pathname ="D:\\test.txt";
+        String pathname ="F:\\Works\\InterpreterExperiment\\mulanInterpreter\\src\\test.txt";
         try{
             File file = new File(pathname);
             FileInputStream fileInputStream = new FileInputStream(file);

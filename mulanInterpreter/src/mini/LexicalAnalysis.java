@@ -133,17 +133,9 @@ public class LexicalAnalysis {
     }
 
 
-    public void Scanner(String input){
+    public void Scanner(String inputWord,boolean isIdentifier){
         int syn;
-        boolean isIdentifier = false;
-        String inputWord;
         //标识符 保留字 速度
-        if(input.charAt(0)=='!') {
-            isIdentifier = true;
-            inputWord = input.substring(1);
-        }
-        else
-            inputWord=input;
         if(isLetter(inputWord.charAt(0))){
             if(inputWord.length()==1&&isTonality(inputWord.charAt(0))){
                 tokens.add(new Token(95,inputWord));
@@ -152,7 +144,7 @@ public class LexicalAnalysis {
             if(!isIdentifier&&inputWord.charAt(0)=='b'){
                     tokens.add(new Token(19,"b"));
                     if(inputWord.length()>1)
-                        Scanner(inputWord.substring(1));
+                        Scanner(inputWord.substring(1),false);
                     return;
             }
 
@@ -170,20 +162,20 @@ public class LexicalAnalysis {
                     int start=5;
                     for(int i=5;i<inputWord.length()-1;i++){
                         if(inputWord.charAt(i)==','){
-                            String temp="!"+inputWord.substring(start,i);
-                            Scanner(temp);
+                            String temp=inputWord.substring(start,i);
+                            Scanner(temp,true);
                             start=i+1;
                             tokens.add(new Token(16,","));
                         }
                         else if(inputWord.charAt(i)=='&'){
-                            String temp="!"+inputWord.substring(start,i);
-                            Scanner(temp);
+                            String temp=inputWord.substring(start,i);
+                            Scanner(temp,true);
                             start=i+1;
                             tokens.add(new Token(17,"&"));
                         }
                         if(i==inputWord.length()-2){
-                            String temp="!"+inputWord.substring(start,i+1);
-                            Scanner(temp);
+                            String temp=inputWord.substring(start,i+1);
+                            Scanner(temp,true);
                             start=i;
                         }
                     }
@@ -236,7 +228,7 @@ public class LexicalAnalysis {
             if(inputWord.length()>=2&&inputWord.charAt(0)=='1'&&inputWord.charAt(1)=='='){
                 syn=4;
                 tokens.add(new Token(syn,"1="));
-                Scanner(inputWord.substring(2));
+                Scanner(inputWord.substring(2),false);
             }
             else{
                     if (!isNote(inputWord.charAt(0))) {
@@ -247,44 +239,44 @@ public class LexicalAnalysis {
                 syn=98;
                 tokens.add(new Token(syn,String.valueOf(inputWord.charAt(0))));
                 if(inputWord.length()>1)
-                    Scanner(inputWord.substring(1));
+                    Scanner(inputWord.substring(1),false);
             }
         }
         else if(inputWord.charAt(0)=='('){
             syn=7;
             tokens.add(new Token(syn,String.valueOf(inputWord.charAt(0))));
             if(inputWord.length()>1)
-                Scanner(inputWord.substring(1));
+                Scanner(inputWord.substring(1),false);
         }
         else if(inputWord.charAt(0)==')'){
             syn=8;
             tokens.add(new Token(syn,String.valueOf(inputWord.charAt(0))));
             if(inputWord.length()>1)
-                Scanner(inputWord.substring(1));
+                Scanner(inputWord.substring(1),false);
         }
         else if(inputWord.charAt(0)=='['){
             syn=9;
             tokens.add(new Token(syn,String.valueOf(inputWord.charAt(0))));
             if(inputWord.length()>1)
-                Scanner(inputWord.substring(1));
+                Scanner(inputWord.substring(1),false);
         }
         else if(inputWord.charAt(0)==']'){
             syn=10;
             tokens.add(new Token(syn,String.valueOf(inputWord.charAt(0))));
             if(inputWord.length()>1)
-                Scanner(inputWord.substring(1));
+                Scanner(inputWord.substring(1),false);
         }
         else if(inputWord.charAt(0)=='{'){
             syn=11;
             tokens.add(new Token(syn,String.valueOf(inputWord.charAt(0))));
             if(inputWord.length()>1)
-                Scanner(inputWord.substring(1));
+                Scanner(inputWord.substring(1),false);
         }
         else if(inputWord.charAt(0)=='}'){
             syn=12;
             tokens.add(new Token(syn,String.valueOf(inputWord.charAt(0))));
             if(inputWord.length()>1)
-                Scanner(inputWord.substring(1));
+                Scanner(inputWord.substring(1),false);
         }
         //时长
         else if(inputWord.charAt(0)=='<'&&inputWord.charAt(inputWord.length()-1)=='>'){
@@ -315,7 +307,7 @@ public class LexicalAnalysis {
             syn=18;
             tokens.add(new Token(syn,String.valueOf(inputWord.charAt(0))));
             if(inputWord.length()>1)
-                Scanner(inputWord.substring(1));
+                Scanner(inputWord.substring(1),false);
         }
         else if(inputWord.equals("\n"))
             return;
@@ -328,6 +320,7 @@ public class LexicalAnalysis {
 
     public void Lex(String input){
         input=filterResource(input);
+        boolean isIdentifier=false;
         if(input==null){
             System.out.println("词法分析检测到错误，停止程序");
             tokens.add(new Token(-1,"error"));
@@ -342,21 +335,26 @@ public class LexicalAnalysis {
             }
             if(input.charAt(i)==' '){
                 String temp=input.substring(start,i);
-                Scanner(temp);
+                Scanner(temp,isIdentifier);
+                if(temp.equals("paragraph")||temp.equals("score"))
+                    isIdentifier=true;
+                else
+                    isIdentifier=false;
                 start=i+1;
                 continue;
             }
             if(input.charAt(i)=='\n') {
                 String temp=input.substring(start,i);
                 if(!temp.equals(""))
-                    Scanner(temp);
+                    Scanner(temp,isIdentifier);
+                isIdentifier=false;
                 tokens.add(new Token(97, "\\n"));
                 start=i+1;
                 continue;
             }
             if(i==input.length()-1){
                 String temp=input.substring(start,i+1);
-                Scanner(temp);
+                Scanner(temp,isIdentifier);
                 start=i;
                 continue;
             }

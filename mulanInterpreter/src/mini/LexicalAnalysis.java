@@ -232,6 +232,17 @@ public class LexicalAnalysis {
                 Scanner(inputWord.substring(2),false);
             }
             else{
+                for(int i=0;i<inputWord.length();i++){
+                    if(!isNote(inputWord.charAt(i))&&inputWord.charAt(i)!='('&&inputWord.charAt(i)!=')'&&inputWord.charAt(i)!='{'&&inputWord.charAt(i)!='}'
+                    &&inputWord.charAt(i)!='b'&&inputWord.charAt(i)!='#'){
+                        for(int j=0;j<i;j++){
+                            Scanner(String.valueOf(inputWord.charAt(j)),false);
+                        }
+                        error = true;
+                        tokens.add(new Token(-1,"旋律中出现非法字符：" + inputWord.charAt(i)));
+                        return;
+                    }
+                }
                     if (!isNote(inputWord.charAt(0))) {
                         error = true;
                         tokens.add(new Token(-1,"旋律中出现非法字符：" + inputWord.charAt(0)));
@@ -280,29 +291,39 @@ public class LexicalAnalysis {
                 Scanner(inputWord.substring(1),false);
         }
         //时长
-        else if(inputWord.charAt(0)=='<'&&inputWord.charAt(inputWord.length()-1)=='>'){
-            if(inputWord.length()==2){
-                error = true;
-                tokens.add(new Token(-1,"<>间缺少时长"));
-                return;
-            }
-            if(inputWord.charAt(1)=='*'){
-                error = true;
-                tokens.add(new Token(-1,"附点*必须跟在其他音符时长之后"));
-                return;
-            }
-            tokens.add(new Token(13,"<"));
-            for (int i=1;i<inputWord.length()-1;i++) {
-                if (!isTime(inputWord.charAt(i))) {
-                    if(inputWord.charAt(i)==' ')
-                        continue;
+        else if(inputWord.charAt(0)=='<') {
+            for(int i=0;i<inputWord.length();i++){
+                if(inputWord.charAt(i)!='<'&&inputWord.charAt(i)!='>'&&!isTime(inputWord.charAt(i))) {
                     error = true;
-                    tokens.add(new Token(-1,"时长中出现非法字符：" + inputWord.charAt(i)));
+                    tokens.add(new Token(-1, "出现非法字符：" + inputWord.charAt(i)));
                     return;
                 }
-                tokens.add(new Token(99,String.valueOf(inputWord.charAt(i))));
             }
-            tokens.add(new Token(14,">"));
+
+        if (inputWord.charAt(0) == '<' && inputWord.charAt(inputWord.length() - 1) == '>') {
+                if (inputWord.length() == 2) {
+                    error = true;
+                    tokens.add(new Token(-1, "<>间缺少时长"));
+                    return;
+                }
+                if (inputWord.charAt(1) == '*') {
+                    error = true;
+                    tokens.add(new Token(-1, "附点*必须跟在其他音符时长之后"));
+                    return;
+                }
+                tokens.add(new Token(13, "<"));
+                for (int i = 1; i < inputWord.length() - 1; i++) {
+                    if (!isTime(inputWord.charAt(i))) {
+                        if (inputWord.charAt(i) == ' ')
+                            continue;
+                        error = true;
+                        tokens.add(new Token(-1, "时长中出现非法字符：" + inputWord.charAt(i)));
+                        return;
+                    }
+                    tokens.add(new Token(99, String.valueOf(inputWord.charAt(i))));
+                }
+                tokens.add(new Token(14, ">"));
+            }
         }
         else if(inputWord.charAt(0)=='#'){
             syn=18;

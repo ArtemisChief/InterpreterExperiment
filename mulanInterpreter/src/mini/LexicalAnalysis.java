@@ -92,7 +92,8 @@ public class LexicalAnalysis {
                     while (input.charAt(i) != '*' || input.charAt(i + 1) != '/') {
                         i++;//继续扫描
                         if (i == input.length()) {
-                            System.out.println("注释出错，没有找到 */，程序结束！！！\n");
+                            tokens.add(new Token(-1,"注释出错，没有找到 */"));
+                            error = true;
                             return null;
                         }
                     }
@@ -153,7 +154,7 @@ public class LexicalAnalysis {
                 if(inputWord.substring(0,5).equals("play(")){
                     if(!inputWord.endsWith(")")||inputWord.length()==5){
                         error = true;
-                        System.out.println(inputWord+" : 播放语句格式有误");
+                        tokens.add(new Token(-1,"播放语句格式有误"));
                         return;
                     }
                     syn=6;
@@ -189,13 +190,13 @@ public class LexicalAnalysis {
                 if(inputWord.substring(0,6).equals("speed=")){
                     if(inputWord.length()==6){
                         error=true;
-                        System.out.println(inputWord+" : \"speed=\"后缺少对应速度");
+                        tokens.add(new Token(-1,"\"speed=\"后缺少对应速度"));
                         return;
                     }
                     for (int i=6;i<inputWord.length();i++) {
                         if (!isNumber(inputWord.charAt(i))) {
                             error = true;
-                            System.out.println(inputWord+" : 速度中出现非法字符：" + inputWord.charAt(i));
+                            tokens.add(new Token(-1,"速度中出现非法字符："+ inputWord.charAt(i)));
                             return;
                         }
                     }
@@ -209,14 +210,14 @@ public class LexicalAnalysis {
             for(int i=1;i<inputWord.length();i++){
                 if(!isLetter(inputWord.charAt(i))&&!isNumber(inputWord.charAt(i))){
                    error=true;
-                   System.out.println(inputWord+" : 标识符中出现非法字符："+inputWord.charAt(i));
+                   tokens.add(new Token(-1,"标识符中出现非法字符："+ inputWord.charAt(i)));
                    return;
                 }
             }
             syn=searchReserve(inputWord);
             if(syn==6){
                 error=true;
-                System.out.println(inputWord+" : play播放操作格式不正确");
+                tokens.add(new Token(-1,"play播放操作格式不正确"));
                 return;
             }
             if(syn==-1)
@@ -233,7 +234,7 @@ public class LexicalAnalysis {
             else{
                     if (!isNote(inputWord.charAt(0))) {
                         error = true;
-                        System.out.println(inputWord+" : 旋律中出现非法字符：" + inputWord.charAt(0));
+                        tokens.add(new Token(-1,"旋律中出现非法字符：" + inputWord.charAt(0)));
                         return;
                     }
                 syn=98;
@@ -282,12 +283,12 @@ public class LexicalAnalysis {
         else if(inputWord.charAt(0)=='<'&&inputWord.charAt(inputWord.length()-1)=='>'){
             if(inputWord.length()==2){
                 error = true;
-                System.out.println(inputWord+" : <>间缺少时长" );
+                tokens.add(new Token(-1,"<>间缺少时长"));
                 return;
             }
             if(inputWord.charAt(1)=='*'){
                 error = true;
-                System.out.println(inputWord+" : 附点*必须跟在其他音符时长之后" );
+                tokens.add(new Token(-1,"附点*必须跟在其他音符时长之后"));
                 return;
             }
             tokens.add(new Token(13,"<"));
@@ -296,7 +297,7 @@ public class LexicalAnalysis {
                     if(inputWord.charAt(i)==' ')
                         continue;
                     error = true;
-                    System.out.println(inputWord+" : 时长中出现非法字符：" + inputWord.charAt(i));
+                    tokens.add(new Token(-1,"时长中出现非法字符：" + inputWord.charAt(i)));
                     return;
                 }
                 tokens.add(new Token(99,String.valueOf(inputWord.charAt(i))));
@@ -313,7 +314,7 @@ public class LexicalAnalysis {
             return;
         else{
             error = true;
-            System.out.println(inputWord+" : 出现非法字符：" + inputWord.charAt(0));
+            tokens.add(new Token(-1,"出现非法字符：" + inputWord.charAt(0)));
         }
     }
 
@@ -322,7 +323,8 @@ public class LexicalAnalysis {
         input=filterResource(input);
         boolean isIdentifier=false;
         if(input==null){
-            System.out.println("词法分析检测到错误，停止程序");
+            error = true;
+            tokens.add(new Token(-1,"词法分析检测到错误，停止分析"));
             tokens.add(new Token(-1,"error"));
             return;
         }
@@ -348,7 +350,8 @@ public class LexicalAnalysis {
                 if(!temp.equals(""))
                     Scanner(temp,isIdentifier);
                 isIdentifier=false;
-                tokens.add(new Token(97, "\\n"));
+                if(!error)
+                    tokens.add(new Token(97, "\\n"));
                 start=i+1;
                 continue;
             }
@@ -361,8 +364,7 @@ public class LexicalAnalysis {
 
         }
         if(error) {
-            System.out.println("词法分析检测到错误，停止程序");
-            tokens.add(new Token(-1,"error"));
+            tokens.add(new Token(-1,"词法分析检测到错误，停止分析"));
         }
 
 

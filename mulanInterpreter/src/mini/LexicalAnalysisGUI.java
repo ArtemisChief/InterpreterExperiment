@@ -96,6 +96,9 @@ public class LexicalAnalysisGUI {
                 {
                     outputText.setText("输入为空！");
                 }
+                if(lexicalAnalysis.getError()){
+                    outputText.append("词法分析在第"+lexicalAnalysis.getCount()+"行检测到错误，停止分析");
+                }
             }
         });
         panel.add(analyzeButton);

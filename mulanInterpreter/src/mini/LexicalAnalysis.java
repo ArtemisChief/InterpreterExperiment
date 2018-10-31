@@ -6,6 +6,7 @@ public class LexicalAnalysis {
 
     private boolean error=false;
     private ArrayList<Token> tokens=new ArrayList();
+    private  int count=1;
 
     /*
     <错误,-1> 错误token
@@ -90,6 +91,8 @@ public class LexicalAnalysis {
                 if (input.charAt(i) == '/' && input.charAt(i + 1) == '*') {//若为多行注释“/* 。。。*/”则去除该内容
                     i += 2;
                     while (input.charAt(i) != '*' || input.charAt(i + 1) != '/') {
+                        if(input.charAt(i)=='\n')
+                            temp+=String.valueOf(input.charAt(i));
                         i++;//继续扫描
                         if (i == input.length()) {
                             tokens.add(new Token(-1,"注释出错，没有找到 */"));
@@ -361,6 +364,14 @@ public class LexicalAnalysis {
                 }
                 tokens.add(new Token(13, "<"));
                 for (int i = 1; i < inputWord.length() - 1; i++) {
+                    if(inputWord.charAt(i)=='{'){
+                        tokens.add(new Token(11,"{"));
+                        continue;
+                    }
+                    if(inputWord.charAt(i)=='}'){
+                        tokens.add(new Token(12,"}"));
+                        continue;
+                    }
                     if (!isTime(inputWord.charAt(i))) {
                         if (inputWord.charAt(i) == ' ')
                             continue;
@@ -372,7 +383,8 @@ public class LexicalAnalysis {
                 }
                 tokens.add(new Token(14, ">"));
             }
-            else{error = true;
+            else{
+                error = true;
             tokens.add(new Token(-1, "时长格式错误"));
             return;
             }
@@ -394,6 +406,7 @@ public class LexicalAnalysis {
 
 
     public void Lex(String input){
+        count=1;
         input=filterResource(input);
         boolean isIdentifier=false;
         if(input==null){
@@ -422,6 +435,8 @@ public class LexicalAnalysis {
                 String temp=input.substring(start,i);
                 if(!temp.equals(""))
                     Scanner(temp,isIdentifier);
+                if(!error)
+                    count++;
                 isIdentifier=false;
                 if(!error)
                     tokens.add(new Token(97, "\\n"));
@@ -436,16 +451,14 @@ public class LexicalAnalysis {
             }
 
         }
-        if(error) {
-            tokens.add(new Token(-1,"词法分析检测到错误，停止分析"));
-        }
-
 
     }
 
     public ArrayList<Token> getTokens(){return this.tokens;}
 
 
+    public  boolean getError(){return error;}
+    public  int getCount(){return  count;}
 
 
 }

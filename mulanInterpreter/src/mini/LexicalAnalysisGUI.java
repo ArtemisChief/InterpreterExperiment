@@ -96,7 +96,10 @@ public class LexicalAnalysisGUI {
                 {
                     outputText.setText("输入为空！");
                 }
-                if(lexicalAnalysis.getError()){
+                if(lexicalAnalysis.getCount()==(-1)){
+                    outputText.append("未找到注释结束标识*/，停止分析");
+                }
+                else if(lexicalAnalysis.getError()){
                     outputText.append("词法分析在第"+lexicalAnalysis.getCount()+"行检测到错误，停止分析");
                 }
             }

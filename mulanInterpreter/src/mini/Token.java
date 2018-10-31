@@ -99,7 +99,9 @@ public class Token {
                 type="标识符";
                 break;
         }
-        return String.format("%-30s\t%-30s\t类型码:%s ",content,type,syn);
+        if(count==-1)
+            return String.format("%-30s\t%-30s\t类型码:%s\t",content,type,syn);
+        return String.format("%-30s\t%-30s\t类型码:%s\t行号:%s ",content,type,syn,count);
     }
 
     public int getSyn(){

@@ -79,6 +79,7 @@ public class LexicalAnalysis {
     }
 
 
+    //预处理
     public String filterResource(String input){
         String temp="";
         for(int i=0;i<input.length();i++){
@@ -98,7 +99,7 @@ public class LexicalAnalysis {
                             temp+=String.valueOf(input.charAt(i));
                         i++;//继续扫描
                         if (i == input.length()) {
-                            tokens.add(new Token(-1,"注释出错，没有找到 */",0));
+                            count=-1;
                             error = true;
                             return null;
                         }

@@ -180,7 +180,8 @@ public class LexicalAnalysis {
                             start=i;
                         }
                     }
-                    tokens.add(new Token(8,")"));
+                    if(!error)
+                        tokens.add(new Token(8,")"));
                     return;
                 }
             }
@@ -226,13 +227,59 @@ public class LexicalAnalysis {
         }
         //调性 旋律
         else if(isNumber(inputWord.charAt(0))){
+            if(isIdentifier){
+                error = true;
+                tokens.add(new Token(-1,"标识符不能以数字开头"));
+                return;
+            }
             if(inputWord.length()>=2&&inputWord.charAt(0)=='1'&&inputWord.charAt(1)=='='){
                 syn=4;
                 tokens.add(new Token(syn,"1="));
-                Scanner(inputWord.substring(2),false);
+                if(inputWord.length()==3){
+                    if (!isTonality(inputWord.charAt(2))) {
+                        error=true;
+                        tokens.add(new Token(-1, "调性格式错误！"));
+                        return;
+                    }
+                    else{
+                        tokens.add(new Token(95,String.valueOf(inputWord.charAt(2))));
+                        return;
+                    }
+                }
+                if(inputWord.length()==4){
+                    if (inputWord.charAt(2)!='b'&&inputWord.charAt(2)!='#'){
+                        error=true;
+                        tokens.add(new Token(-1, "调性格式错误！"));
+                        return;
+                    }
+                    else
+                        Scanner(String.valueOf(inputWord.charAt(2)),false);
+
+                    if (!isTonality(inputWord.charAt(3))) {
+                        error=true;
+                        tokens.add(new Token(-1, "调性格式错误！"));
+                        return;
+                    }
+                    else{
+                        tokens.add(new Token(95,String.valueOf(inputWord.charAt(3))));
+                        return;
+                    }
+                }
+                else{
+                    error=true;
+                    tokens.add(new Token(-1, "调性格式错误！"));
+                    return;
+                }
+
+
             }
             else{
                 for(int i=0;i<inputWord.length();i++){
+                    if(inputWord.charAt(i)=='<'){
+                        Scanner(inputWord.substring(0,i),false);
+                        Scanner(inputWord.substring(i),false);
+                        return;
+                    }
                     if(!isNote(inputWord.charAt(i))&&inputWord.charAt(i)!='('&&inputWord.charAt(i)!=')'&&inputWord.charAt(i)!='{'&&inputWord.charAt(i)!='}'
                     &&inputWord.charAt(i)!='b'&&inputWord.charAt(i)!='#'){
                         for(int j=0;j<i;j++){
@@ -242,6 +289,7 @@ public class LexicalAnalysis {
                         tokens.add(new Token(-1,"旋律中出现非法字符：" + inputWord.charAt(i)));
                         return;
                     }
+
                 }
                     if (!isNote(inputWord.charAt(0))) {
                         error = true;
@@ -324,6 +372,11 @@ public class LexicalAnalysis {
                 }
                 tokens.add(new Token(14, ">"));
             }
+            else{error = true;
+            tokens.add(new Token(-1, "时长格式错误"));
+            return;
+            }
+
         }
         else if(inputWord.charAt(0)=='#'){
             syn=18;
@@ -346,7 +399,6 @@ public class LexicalAnalysis {
         if(input==null){
             error = true;
             tokens.add(new Token(-1,"词法分析检测到错误，停止分析"));
-            tokens.add(new Token(-1,"error"));
             return;
         }
         int start=0;

@@ -3,15 +3,18 @@ package mini;
 public class Token {
     private int syn;
     private String content;
+    private  int count;
 
     public Token(){
         this.syn=0;
         this.content="";
+        this.count=0;
     }
 
-    public Token(int syn, String content){
+    public Token(int syn, String content,int count){
         this.syn=syn;
         this.content=content;
+        this.count=count;
     }
 
     public String toString(){

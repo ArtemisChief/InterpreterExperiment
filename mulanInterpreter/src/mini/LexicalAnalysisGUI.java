@@ -12,9 +12,9 @@ public class LexicalAnalysisGUI {
         // 创建 JFrame 实例
         JFrame frame = new JFrame("Lexical Analysis");
         // Setting the width and height of frame
-        frame.setSize(800, 600);
+        frame.setSize(650, 730);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        frame.setResizable(false);
         /* 创建面板，这个类似于 HTML 的 div 标签
          * 我们可以创建多个面板并在 JFrame 中指定位置
          * 面板中我们可以添加文本字段，按钮及其他组件。
@@ -44,41 +44,41 @@ public class LexicalAnalysisGUI {
          * setBounds(x, y, width, height)
          * x 和 y 指定左上角的新位置，由 width 和 height 指定新的大小。
          */
-        inputLabel.setFont(new Font("等线",0,20));
-        inputLabel.setBounds(40,20,80,25);
+        inputLabel.setFont(new Font("微软雅黑",0,18));
+        inputLabel.setBounds(10,20,80,25);
         panel.add(inputLabel);
 
         /*
          * 创建文本域用于用户输入
          */
         JScrollPane inputPane=new JScrollPane();
-        inputPane.setBounds(100,20,500,200);
+        inputPane.setBounds(70,20,550,400);
         panel.add(inputPane);
         JTextArea inputText = new JTextArea(10,20);
-        inputText.setFont(new Font("等线",0,15));
-        inputText.setBounds(100,20,500,200);
+        inputText.setFont(new Font("微软雅黑",0,15));
+        inputText.setBounds(70,20,550,400);
         inputPane.setViewportView(inputText);
 
         // 输出的文本域
         JLabel outputLabel = new JLabel("输出：");
-        outputLabel.setFont(new Font("等线",0,20));
-        outputLabel.setBounds(40,250,80,25);
+        outputLabel.setFont(new Font("微软雅黑",0,18));
+        outputLabel.setBounds(10,440,80,25);
         panel.add(outputLabel);
 
         /*
          *创建文本域用于显示输出
          */
         JScrollPane outputPane=new JScrollPane();
-        outputPane.setBounds(100,250,500,200);
+        outputPane.setBounds(70,440,550,200);
         panel.add(outputPane);
-        JTextArea outputText = new JTextArea(10,20);
-        outputText.setFont(new Font("等线",0,15));
-        outputText.setBounds(100,250,500,200);
+        JTextArea outputText = new JTextArea(9,20);
+        outputText.setFont(new Font("微软雅黑",0,15));
+        outputText.setBounds(70,440,550,200);
         outputPane.setViewportView(outputText);
 
         // 创建按钮
         JButton analyzeButton = new JButton("分析");
-        analyzeButton.setBounds(550, 475, 80, 30);
+        analyzeButton.setBounds(540, 655, 80, 30);
         analyzeButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {

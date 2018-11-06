@@ -100,8 +100,8 @@ public class Token {
                 break;
         }
         if(count==-1)
-            return String.format("%-30s\t%-30s\t类型码:%s\t",content,type,syn);
-        return String.format("%-30s\t%-30s\t类型码:%s\t行号:%s ",content,type,syn,count);
+            return String.format("%-30s%-20s类型码:%-30s",content,type,syn);
+        return String.format("Line%-10s%-14s\t%-24s\t类型码:%s",count,content,type,syn);
     }
 
     public int getSyn(){

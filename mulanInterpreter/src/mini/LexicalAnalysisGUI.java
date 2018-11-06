@@ -1,5 +1,7 @@
 package mini;
 
+import mini.utils.LineNumberHeaderView;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -55,9 +57,10 @@ public class LexicalAnalysisGUI {
         inputPane.setBounds(70,20,550,400);
         panel.add(inputPane);
         JTextArea inputText = new JTextArea(10,20);
-        inputText.setFont(new Font("微软雅黑",0,15));
+        inputText.setFont(new Font("微软雅黑",0,13));
         inputText.setBounds(70,20,550,400);
         inputPane.setViewportView(inputText);
+        inputPane.setRowHeaderView(new LineNumberHeaderView());
 
         // 输出的文本域
         JLabel outputLabel = new JLabel("输出：");
@@ -72,7 +75,7 @@ public class LexicalAnalysisGUI {
         outputPane.setBounds(70,440,550,200);
         panel.add(outputPane);
         JTextArea outputText = new JTextArea(9,20);
-        outputText.setFont(new Font("微软雅黑",0,15));
+        outputText.setFont(new Font("微软雅黑",0,13));
         outputText.setBounds(70,440,550,200);
         outputPane.setViewportView(outputText);
 

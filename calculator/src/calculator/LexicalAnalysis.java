@@ -55,9 +55,9 @@ public class LexicalAnalysis {
                     }
                 }
                 mark = curr + 1;
-                state = 3;
+                state = 4;
                 System.out.println(input.substring(curr, curr + 1) + "\t是运算符\t\t类型码:4");
-                tokens.add(new Token("3", input.substring(curr, curr + 1)));
+                tokens.add(new Token("4", input.substring(curr, curr + 1)));
             } else if (isNumber(input.charAt(curr))) {
                 if (mark == curr) {
                     state = 2;
@@ -79,7 +79,7 @@ public class LexicalAnalysis {
                     System.out.println("词法分析检测到错误，标识符中不能出现\".\"");
                     return null;
                 }
-                if (state == 3||curr==0) {
+                if (state == 4||curr==0) {
                     System.out.println("词法分析检测到错误，常数不能以\".\"开头");
                     return null;
                 }

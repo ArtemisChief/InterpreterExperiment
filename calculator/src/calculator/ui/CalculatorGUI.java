@@ -16,11 +16,20 @@ import net.miginfocom.swing.*;
 
 /**
  * @author Chief
+ *
+ * 计算器GUI版本：
+ * 花了大量功夫做了输入限制
+ * 基本上还原了Windows10自带计算器的输入模式
+ * 交给解释器处理的内容几乎不可能出现错误了（笑）
  */
 public class CalculatorGUI extends JFrame {
 
-    StringBuilder inputString=new StringBuilder();
-    StringBuilder expressionString=new StringBuilder();
+    StringBuilder inputString=new StringBuilder();          //输入字符串（下面一行）
+    StringBuilder expressionString=new StringBuilder();     //表达式字符串（上面一行）
+
+    /**
+     * 按键监听，实现小键盘操作计算器
+     */
     KeyListener keyListener=new KeyListener() {
         @Override
         public void keyTyped(KeyEvent e) {
@@ -101,7 +110,7 @@ public class CalculatorGUI extends JFrame {
 
     public CalculatorGUI() {
         initComponents();
-        setFocusable(true);
+        setFocusable(true);     //只有Form可以聚焦，其他的控件都设置为false以保证按键监听有效
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         addKeyListener(keyListener);
@@ -113,13 +122,23 @@ public class CalculatorGUI extends JFrame {
         return false;
     }
 
-    private void newNumber(){
+    /**
+     * 用于将一个个Digit组成Number添加进表达式中
+     */
+    private void newNumber() {
+        if (inputString.length() > 0 && inputString.charAt(inputString.length() - 1) == '.')
+            inputString.deleteCharAt(inputString.length() - 1);
         expressionString.append(inputString);
-        inputString.delete(0,inputString.length());
+        inputString.delete(0, inputString.length());
         resultTxtField.setText(inputString.toString());
-        hasDot=false;
+        hasDot = false;
     }
 
+    /**
+     * 输入单个Digit的同时做了对括号的部分处理
+     * 表现在如果右括号出现了，后面跟着输入的不是运算符而是数字，
+     * 则将括号成对删除
+     */
     private void button0MouseClicked(MouseEvent e) {
         if (inputString.length() > 0)
             inputString.append('0');
@@ -192,13 +211,27 @@ public class CalculatorGUI extends JFrame {
         resultTxtField.setText(inputString.toString());
     }
 
-    int bracketCount=0;
+
+    int bracketCount=0;         //记录还没有成对的左括号数量，即需要的右括号数量
+
+    /**
+     * 成对删除括号
+     * 思路是找到最后一个左括号之后有几个右括号
+     * 然后遍历找到对应数量的左括号的位置
+     * 然后删除之间的内容
+     */
     private void removeBrackets() {
-        int pos = 0;
-        for (int i = 0; i < bracketCount; i++) {
-            pos = expressionString.indexOf("(", pos + 1);
+        int count = 0;
+        String str = expressionString.substring(expressionString.lastIndexOf("("), expressionString.length());
+        for (int j = 0; j < str.length(); j++) {
+            if (str.charAt(j) == ')')
+                count++;
         }
-        expressionString.delete(expressionString.indexOf("(", pos), expressionString.length());
+        str = expressionString.substring(0, expressionString.lastIndexOf("(")+1);
+        for (int i = 0; i < count; i++) {
+            str = str.substring(0, str.lastIndexOf("("));
+        }
+        expressionString.delete(str.length(), expressionString.length());
     }
     private void leftBracketBtnMouseClicked(MouseEvent e) {
         if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
@@ -236,8 +269,8 @@ public class CalculatorGUI extends JFrame {
     }
 
     private void clearBtnMouseClicked(MouseEvent e) {
-        expressionString.delete(0,expressionString.length());
         newNumber();
+        expressionString.delete(0,expressionString.length());
         bracketCount=0;
         expressionTxtField.setText(inputString.toString());
         resultTxtField.setText(expressionString.toString());
@@ -294,12 +327,15 @@ public class CalculatorGUI extends JFrame {
 
     boolean hasDot=false;
     private void buttonDotMouseClicked(MouseEvent e) {
+        if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
+            removeBrackets();
         if (!hasDot) {
             if (inputString.length() == 0)
                 inputString.append("0");
             inputString.append('.');
             hasDot = true;
         }
+        expressionTxtField.setText(expressionString.toString());
         resultTxtField.setText(inputString.toString());
     }
 

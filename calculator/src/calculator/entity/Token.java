@@ -1,21 +1,22 @@
-package calculator;
+package calculator.entity;
 
 public class Token {
     private final String nullToken="NULL_TOKEN";
-    private String type;
     private String content;
+    private String type;
+
 
     public Token(){
         this.type=nullToken;
     }
 
-    public Token(String type, String content){
-        this.type=type;
-        this.content=content;
+    public Token(String content, String type) {
+        this.content = content;
+        this.type = type;
     }
 
     public String toString(){
-        return String.format("%s: %s",type,content);
+        return String.format("类型码: %s\t内容: %s\n",content,type);
     }
 
     public String getType(){

@@ -16,7 +16,7 @@ new FormModel {
 					name: "expressionTxtField"
 					"editable": false
 					"focusable": false
-					"font": new java.awt.Font( "Consolas", 0, 15 )
+					"font": new java.awt.Font( "Consolas", 0, 10 )
 					"horizontalAlignment": 4
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 0 0 4 1"
@@ -25,7 +25,8 @@ new FormModel {
 					name: "resultTxtField"
 					"editable": false
 					"focusable": false
-					"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 5, false )
+					"font": new com.jformdesigner.model.SwingDerivedFont( "Consolas", 1, 5, false )
+					"horizontalAlignment": 4
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 0 1 4 1"
 				} )

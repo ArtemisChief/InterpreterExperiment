@@ -2,11 +2,16 @@
  * Created by JFormDesigner on Fri Nov 09 14:47:47 CST 2018
  */
 
-package calculator;
+package calculator.ui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import javax.swing.*;
+
+import calculator.component.LexicalAnalysis;
+import calculator.component.SyntacticAnalysis;
+import calculator.entity.Token;
 import net.miginfocom.swing.*;
 
 /**
@@ -15,6 +20,7 @@ import net.miginfocom.swing.*;
 public class CalculatorGUI extends JFrame {
 
     StringBuilder inputString=new StringBuilder();
+    StringBuilder expressionString=new StringBuilder();
     KeyListener keyListener=new KeyListener() {
         @Override
         public void keyTyped(KeyEvent e) {
@@ -101,100 +107,217 @@ public class CalculatorGUI extends JFrame {
         addKeyListener(keyListener);
     }
 
+    private boolean isOperator(char op) {
+        if (op == '+' || op == '-' || op == '×' || op == '÷' || op == '*' || op == '/')
+            return true;
+        return false;
+    }
+
+    private void newNumber(){
+        expressionString.append(inputString);
+        inputString.delete(0,inputString.length());
+        resultTxtField.setText(inputString.toString());
+        hasDot=false;
+    }
 
     private void button0MouseClicked(MouseEvent e) {
-        inputString.append('0');
-        expressionTxtField.setText(inputString.toString());
+        if (inputString.length() > 0)
+            inputString.append('0');
+        if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
+            removeBrackets();
+        expressionTxtField.setText(expressionString.toString());
+        resultTxtField.setText(inputString.toString());
     }
     private void button1MouseClicked(MouseEvent e) {
         inputString.append('1');
-        expressionTxtField.setText(inputString.toString());
+        if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
+            removeBrackets();
+        expressionTxtField.setText(expressionString.toString());
+        resultTxtField.setText(inputString.toString());
     }
     private void button2MouseClicked(MouseEvent e) {
         inputString.append('2');
-        expressionTxtField.setText(inputString.toString());
+        if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
+            removeBrackets();
+        expressionTxtField.setText(expressionString.toString());
+        resultTxtField.setText(inputString.toString());
     }
     private void button3MouseClicked(MouseEvent e) {
         inputString.append('3');
-        expressionTxtField.setText(inputString.toString());
+        if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
+            removeBrackets();
+        expressionTxtField.setText(expressionString.toString());
+        resultTxtField.setText(inputString.toString());
     }
     private void button4MouseClicked(MouseEvent e) {
         inputString.append('4');
-        expressionTxtField.setText(inputString.toString());
+        if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
+            removeBrackets();
+        expressionTxtField.setText(expressionString.toString());
+        resultTxtField.setText(inputString.toString());
     }
     private void button5MouseClicked(MouseEvent e) {
         inputString.append('5');
-        expressionTxtField.setText(inputString.toString());
+        if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
+            removeBrackets();
+        expressionTxtField.setText(expressionString.toString());
+        resultTxtField.setText(inputString.toString());
     }
     private void button6MouseClicked(MouseEvent e) {
         inputString.append('6');
-        expressionTxtField.setText(inputString.toString());
+        if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
+            removeBrackets();
+        expressionTxtField.setText(expressionString.toString());
+        resultTxtField.setText(inputString.toString());
     }
     private void button7MouseClicked(MouseEvent e) {
         inputString.append('7');
-        expressionTxtField.setText(inputString.toString());
+        if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
+            removeBrackets();
+        expressionTxtField.setText(expressionString.toString());
+        resultTxtField.setText(inputString.toString());
     }
     private void button8MouseClicked(MouseEvent e) {
         inputString.append('8');
-        expressionTxtField.setText(inputString.toString());
+        if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
+            removeBrackets();
+        expressionTxtField.setText(expressionString.toString());
+        resultTxtField.setText(inputString.toString());
     }
     private void button9MouseClicked(MouseEvent e) {
         inputString.append('9');
-        expressionTxtField.setText(inputString.toString());
+        if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
+            removeBrackets();
+        expressionTxtField.setText(expressionString.toString());
+        resultTxtField.setText(inputString.toString());
+    }
+
+    int bracketCount=0;
+    private void removeBrackets() {
+        int pos = 0;
+        for (int i = 0; i < bracketCount; i++) {
+            pos = expressionString.indexOf("(", pos + 1);
+        }
+        expressionString.delete(expressionString.indexOf("(", pos), expressionString.length());
     }
     private void leftBracketBtnMouseClicked(MouseEvent e) {
-        inputString.append('(');
-        expressionTxtField.setText(inputString.toString());
+        if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
+            removeBrackets();
+        expressionString.append('(');
+        bracketCount++;
+        expressionTxtField.setText(expressionString.toString());
     }
     private void rightBracketBtnMouseClicked(MouseEvent e) {
-        inputString.append(')');
-        expressionTxtField.setText(inputString.toString());
-    }
-    private void backBtnMouseClicked(MouseEvent e) {
-        if (inputString.length() != 0) {
-            if (inputString.length() > 1)
-                if (inputString.charAt(inputString.length() - 2) == '+'
-                        || inputString.charAt(inputString.length() - 2) == '-'
-                        || inputString.charAt(inputString.length() - 2) == '×'
-                        || inputString.charAt(inputString.length() - 2) == '÷')
-                    inputString.delete(inputString.length() - 3, inputString.length() - 1);
-
-            inputString.deleteCharAt(inputString.length() - 1);
-            expressionTxtField.setText(inputString.toString());
+        if (bracketCount > 0) {
+            newNumber();
+            if (expressionString.charAt(expressionString.length() - 1) == '(')
+                expressionString.append("0");
+            if (!isOperator(expressionString.charAt(expressionString.length() - 2))) {
+                expressionString.append(')');
+                bracketCount--;
+            }
+            expressionTxtField.setText(expressionString.toString());
         }
     }
-    private void clearBtnMouseClicked(MouseEvent e) {
-        inputString.delete(0,inputString.length());
-        expressionTxtField.setText(inputString.toString());
+
+    private void backBtnMouseClicked(MouseEvent e) {
+        if (inputString.length() != 0) {
+
+            if (inputString.charAt(inputString.length() - 1) == '(')
+                bracketCount --;
+            if (inputString.charAt(inputString.length() - 1) == ')')
+                bracketCount ++;
+            if (inputString.charAt(inputString.length() - 1) == '.')
+                hasDot = false;
+
+            inputString.deleteCharAt(inputString.length() - 1);
+            resultTxtField.setText(inputString.toString());
+        }
     }
-    private void buttonDivideMouseClicked(MouseEvent e) {
-        inputString.append(" ÷ ");
+
+    private void clearBtnMouseClicked(MouseEvent e) {
+        expressionString.delete(0,expressionString.length());
+        newNumber();
+        bracketCount=0;
         expressionTxtField.setText(inputString.toString());
+        resultTxtField.setText(expressionString.toString());
+    }
+
+    private void buttonDivideMouseClicked(MouseEvent e) {
+        newNumber();
+        if (expressionString.length() == 0)
+            expressionString.append('0');
+        if(expressionString.charAt(expressionString.length()-1)=='(')
+            expressionString.append('0');
+        if (expressionString.length() > 1 && isOperator(expressionString.charAt(expressionString.length() - 2)))
+            expressionString.setCharAt(expressionString.length() - 2, '÷');
+        else
+            expressionString.append(" ÷ ");
+        expressionTxtField.setText(expressionString.toString());
     }
     private void buttonMutiplyMouseClicked(MouseEvent e) {
-        inputString.append(" × ");
-        expressionTxtField.setText(inputString.toString());
+        newNumber();
+        if (expressionString.length() == 0)
+            expressionString.append('0');
+        if(expressionString.charAt(expressionString.length()-1)=='(')
+            expressionString.append('0');
+        if (expressionString.length() > 1 && isOperator(expressionString.charAt(expressionString.length() - 2)))
+            expressionString.setCharAt(expressionString.length() - 2, '×');
+        else
+            expressionString.append(" × ");
+        expressionTxtField.setText(expressionString.toString());
     }
     private void buttonMinusMouseClicked(MouseEvent e) {
-        inputString.append(" - ");
-        expressionTxtField.setText(inputString.toString());
+        newNumber();
+        if (expressionString.length() == 0)
+            expressionString.append('0');
+        if(expressionString.charAt(expressionString.length()-1)=='(')
+            expressionString.append('0');
+        if (expressionString.length() > 1 && isOperator(expressionString.charAt(expressionString.length() - 2)))
+            expressionString.setCharAt(expressionString.length() - 2, '-');
+        else
+            expressionString.append(" - ");
+        expressionTxtField.setText(expressionString.toString());
     }
     private void buttonAddMouseClicked(MouseEvent e) {
-        inputString.append(" + ");
-        expressionTxtField.setText(inputString.toString());
+        newNumber();
+        if (expressionString.length() == 0)
+            expressionString.append('0');
+        if(expressionString.charAt(expressionString.length()-1)=='(')
+            expressionString.append('0');
+        if (expressionString.length() > 1 && isOperator(expressionString.charAt(expressionString.length() - 2)))
+            expressionString.setCharAt(expressionString.length() - 2, '+');
+        else
+            expressionString.append(" + ");
+        expressionTxtField.setText(expressionString.toString());
     }
+
+    boolean hasDot=false;
     private void buttonDotMouseClicked(MouseEvent e) {
-        inputString.append('.');
-        expressionTxtField.setText(inputString.toString());
+        if (!hasDot) {
+            if (inputString.length() == 0)
+                inputString.append("0");
+            inputString.append('.');
+            hasDot = true;
+        }
+        resultTxtField.setText(inputString.toString());
     }
+
     private void buttonEqualMouseClicked(MouseEvent e) {
         calculateResult();
     }
 
-    private void calculateResult(){
-        String input=inputString.toString().replace(" ","").replace('÷','/').replace('×','*');
+    private void calculateResult() {
+        String input = inputString.toString().
+                replace(" ", "").
+                replace('÷', '/').
+                replace('×', '*');
+
         LexicalAnalysis lexicalAnalysis = new LexicalAnalysis();
-        lexicalAnalysis.Lex(input);
+        ArrayList<Token> tokens = lexicalAnalysis.Lex(input);
+
+        SyntacticAnalysis syntacticAnalysis = new SyntacticAnalysis(tokens);
+        syntacticAnalysis.parse();
     }
 
     private void initComponents() {
@@ -250,14 +373,15 @@ public class CalculatorGUI extends JFrame {
             //---- expressionTxtField ----
             expressionTxtField.setEditable(false);
             expressionTxtField.setFocusable(false);
-            expressionTxtField.setFont(new Font("Consolas", Font.PLAIN, 15));
+            expressionTxtField.setFont(new Font("Consolas", Font.PLAIN, 10));
             expressionTxtField.setHorizontalAlignment(SwingConstants.RIGHT);
             panel1.add(expressionTxtField, "cell 0 0 4 1");
 
             //---- resultTxtField ----
             resultTxtField.setEditable(false);
             resultTxtField.setFocusable(false);
-            resultTxtField.setFont(resultTxtField.getFont().deriveFont(resultTxtField.getFont().getStyle() | Font.BOLD, resultTxtField.getFont().getSize() + 5f));
+            resultTxtField.setFont(new Font("Consolas", resultTxtField.getFont().getStyle() | Font.BOLD, resultTxtField.getFont().getSize() + 5));
+            resultTxtField.setHorizontalAlignment(SwingConstants.RIGHT);
             panel1.add(resultTxtField, "cell 0 1 4 1");
 
             //---- leftBracketBtn ----

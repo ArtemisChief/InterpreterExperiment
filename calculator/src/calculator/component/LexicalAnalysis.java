@@ -1,4 +1,6 @@
-package calculator;
+package calculator.component;
+
+import calculator.entity.Token;
 
 import java.util.ArrayList;
 
@@ -33,7 +35,7 @@ public class LexicalAnalysis {
         tokens = new ArrayList<>();
     }
 
-    ArrayList<Token> Lex(String input) {
+    public ArrayList<Token> Lex(String input) {
         int mark = 0, state = 0;
         boolean isFloat = false;
         for (int curr = 0; curr < input.length(); curr++) {

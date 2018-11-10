@@ -1,7 +1,9 @@
 package calculator;
 
+import calculator.component.LexicalAnalysis;
 import calculator.ui.CalculatorGUI;
 import javax.swing.*;
+import java.util.Scanner;
 
 public class Calculator {
 
@@ -17,5 +19,14 @@ public class Calculator {
         }
         CalculatorGUI calculatorGUI=new CalculatorGUI();
         calculatorGUI.setVisible(true);
+
+//        while (true) {
+//            System.out.println("Please type a expression:");
+//            Scanner in = new Scanner(System.in);
+//            String input = in.next();
+//            LexicalAnalysis lexicalAnalysis = new LexicalAnalysis();
+//            lexicalAnalysis.Lex(input);
+//        }
+
     }
 }

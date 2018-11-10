@@ -1,25 +1,19 @@
 package calculator.entity;
 
 public class Token {
-    private final String nullToken="NULL_TOKEN";
     private String content;
-    private String type;
+    private int type;
 
-
-    public Token(){
-        this.type=nullToken;
-    }
-
-    public Token(String content, String type) {
+    public Token(int type,String content) {
         this.content = content;
         this.type = type;
     }
 
-    public String toString(){
-        return String.format("类型码: %s\t内容: %s\n",content,type);
+    public String toString() {
+        return String.format("Type: %s\tContent: %s\n", type, content);
     }
 
-    public String getType(){
+    public int getType(){
         return type;
     }
 
@@ -27,7 +21,7 @@ public class Token {
         return content;
     }
 
-    public boolean isEmpty(){
-        return type.equals(nullToken);
+    public boolean isExist() {
+        return type != 0;
     }
 }

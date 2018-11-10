@@ -4,22 +4,23 @@ import calculator.entity.Token;
 
 import java.util.ArrayList;
 
-/*
-标识符  letter(letter | digit)*            1
-整形数  (digit)+                           2
-浮点数  (digit)+.(digit)+                  3
-运算符  {'+', '-', '*', '/', '(', ')'}     4
+/**
+ * Token Set
+ * number   1
+ * add      2
+ * sub      3
+ * mul      4
+ * div      5
+ * lparen   6
+ * rparen   7
+ * error    -1
  */
 
 public class LexicalAnalysis {
 
     private ArrayList<Token> tokens;
 
-    private boolean isLetter(char letter) {
-        return letter >= 'a' && letter <= 'z' || letter >= 'A' && letter <= 'Z';
-    }
-
-    private boolean isNumber(char num) {
+    private boolean isDigit(char num) {
         return num >= '0' && num <= '9';
     }
 
@@ -28,7 +29,7 @@ public class LexicalAnalysis {
     }
 
     private boolean isOperater(char op) {
-        return op == '+' || op == '-' || op == '*' || op == '/' || op == '(' || op == ')' || op == '=';
+        return op == '+' || op == '-' || op == '*' || op == '/' || op == '(' || op == ')';
     }
 
     public LexicalAnalysis() {
@@ -36,53 +37,60 @@ public class LexicalAnalysis {
     }
 
     public ArrayList<Token> Lex(String input) {
+        System.out.println("-------------------------------------------------------------------\n");
         int mark = 0, state = 0;
         boolean isFloat = false;
         for (int curr = 0; curr < input.length(); curr++) {
             if (isOperater(input.charAt(curr))) {
                 if (state == 1) {
-                    System.out.println(input.substring(mark, curr) + "\t是标识符\t\t类型码:1");
-                    tokens.add(new Token("1", input.substring(mark, curr)));
-                } else if (state == 2) {
                     if (input.charAt(curr - 1) == '.') {
-                        System.out.println("词法分析检测到错误，常数不能以\'.\'结尾");
+                        System.out.println("词法分析检测到错误，实数不能以\'.\'结尾");
                         return null;
                     }
-                    if (isFloat) {
-                        System.out.println(input.substring(mark, curr) + "\t是浮点数\t\t类型码:3");
-                        tokens.add(new Token("3", input.substring(mark, curr)));
-                    } else {
-                        System.out.println(input.substring(mark, curr) + "\t是整形数\t\t类型码:2");
-                        tokens.add(new Token("2", input.substring(mark, curr)));
-                    }
+                    System.out.println(input.substring(mark, curr) + "\t\tis Number\t\t\tType: 1");
+                    tokens.add(new Token(1, input.substring(mark, curr)));
                 }
                 mark = curr + 1;
-                state = 4;
-                System.out.println(input.substring(curr, curr + 1) + "\t是运算符\t\t类型码:4");
-                tokens.add(new Token("4", input.substring(curr, curr + 1)));
-            } else if (isNumber(input.charAt(curr))) {
+                state = 2;
+                switch (input.substring(curr, curr + 1)) {
+                    case "+":
+                        System.out.println(input.substring(curr, curr + 1) + "\t\tis Add   \t\t\tType: 2");
+                        tokens.add(new Token(2, input.substring(curr, curr + 1)));
+                        break;
+                    case "-":
+                        System.out.println(input.substring(curr, curr + 1) + "\t\tis Sub   \t\t\tType: 3");
+                        tokens.add(new Token(3, input.substring(curr, curr + 1)));
+                        break;
+                    case "*":
+                        System.out.println(input.substring(curr, curr + 1) + "\t\tis Mul   \t\t\tType: 4");
+                        tokens.add(new Token(4, input.substring(curr, curr + 1)));
+                        break;
+                    case "/":
+                        System.out.println(input.substring(curr, curr + 1) + "\t\tis Div   \t\t\tType: 5");
+                        tokens.add(new Token(5, input.substring(curr, curr + 1)));
+                        break;
+                    case "(":
+                        System.out.println(input.substring(curr, curr + 1) + "\t\tis Lparen\t\t\tType: 6");
+                        tokens.add(new Token(6, input.substring(curr, curr + 1)));
+                        break;
+                    case ")":
+                        System.out.println(input.substring(curr, curr + 1) + "\t\tis Rparen\t\t\tType: 7");
+                        tokens.add(new Token(7, input.substring(curr, curr + 1)));
+                        break;
+                }
+
+            } else if (isDigit(input.charAt(curr))) {
                 if (mark == curr) {
-                    state = 2;
+                    state = 1;
                     isFloat = false;
                 }
-            } else if (isLetter(input.charAt(curr))) {
-                if (state == 2) {
-                    System.out.println("词法分析检测到错误，常数中不能出现字母");
-                    return null;
-                }
-                if (mark == curr)
-                    state = 1;
             } else if (isDot(input.charAt(curr))) {
                 if (isFloat) {
-                    System.out.println("词法分析检测到错误，常数中不能出现多个\".\"");
+                    System.out.println("词法分析检测到错误，实数中不能出现多个\".\"");
                     return null;
                 }
-                if (state == 1) {
-                    System.out.println("词法分析检测到错误，标识符中不能出现\".\"");
-                    return null;
-                }
-                if (state == 4||curr==0) {
-                    System.out.println("词法分析检测到错误，常数不能以\".\"开头");
+                if (state == 2 || curr == 0) {
+                    System.out.println("词法分析检测到错误，实数不能以\".\"开头");
                     return null;
                 }
                 isFloat = true;
@@ -92,27 +100,21 @@ public class LexicalAnalysis {
             }
         }
         if (state == 1) {
-            System.out.println(input.substring(mark) + "\t是标识符\t\t类型码:1");
-            tokens.add(new Token("1", input.substring(mark)));
-        } else if (state == 2) {
             if (input.charAt(input.length() - 1) == '.') {
-                System.out.println("词法分析检测到错误，数字串不能以\'.\'结尾");
+                System.out.println("词法分析检测到错误，实数不能以\'.\'结尾");
                 return null;
             }
-            if (isFloat) {
-                System.out.println(input.substring(mark) + "\t是浮点数\t\t类型码:3");
-                tokens.add(new Token("3", input.substring(mark)));
-            } else {
-                System.out.println(input.substring(mark) + "\t是整形数\t\t类型码:2");
-                tokens.add(new Token("2", input.substring(mark)));
-            }
+            System.out.println(input.substring(mark) + "\t\tis Number\t\t\tType: 1");
+            tokens.add(new Token(1, input.substring(mark)));
         }
 
         StringBuilder output = new StringBuilder();
         for (Token t : tokens) {
             output.append("\'").append(t.getContent()).append("\'\t ");
         }
-        System.out.println("字符栈: " + output + "\n词法正确\n");
+        System.out.println("\nTokens:\n" + output + "\nLexical Analysis Complete\n");
+        System.out.println("-------------------------------------------------------------------\n");
+        tokens.add(new Token(0, "Null"));
         return tokens;
     }
 }

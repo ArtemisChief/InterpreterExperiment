@@ -340,11 +340,16 @@ public class CalculatorGUI extends JFrame {
     }
 
     private void buttonEqualMouseClicked(MouseEvent e) {
+        newNumber();
         calculateResult();
+        expressionTxtField.setText(expressionString.toString());
     }
 
     private void calculateResult() {
-        String input = inputString.toString().
+        while (bracketCount > 0)
+            rightBracketBtnMouseClicked(null);
+
+        String input = expressionString.toString().
                 replace(" ", "").
                 replace('÷', '/').
                 replace('×', '*');

@@ -8,16 +8,13 @@ import java.util.Scanner;
 public class Calculator {
 
     public static void main(String[] args) {
-        try
-        {
+        try {
             org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
-            UIManager.put("RootPane.setupButtonVisible",false);
-        }
-        catch(Exception e)
-        {
+            UIManager.put("RootPane.setupButtonVisible", false);
+        } catch (Exception e) {
             System.out.println(e.toString());
         }
-        CalculatorGUI calculatorGUI=new CalculatorGUI();
+        CalculatorGUI calculatorGUI = new CalculatorGUI();
         calculatorGUI.setVisible(true);
 
 //        while (true) {

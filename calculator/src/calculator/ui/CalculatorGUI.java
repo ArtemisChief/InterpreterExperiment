@@ -24,16 +24,16 @@ import net.miginfocom.swing.*;
  */
 public class CalculatorGUI extends JFrame {
 
-    StringBuilder inputString=new StringBuilder();          //输入字符串（下面一行）
-    StringBuilder expressionString=new StringBuilder();     //表达式字符串（上面一行）
+    StringBuilder inputString = new StringBuilder();          //输入字符串（下面一行）
+    StringBuilder expressionString = new StringBuilder();     //表达式字符串（上面一行）
 
     /**
      * 按键监听，实现小键盘操作计算器
      */
-    KeyListener keyListener=new KeyListener() {
+    KeyListener keyListener = new KeyListener() {
         @Override
         public void keyTyped(KeyEvent e) {
-            char c=e.getKeyChar();
+            char c = e.getKeyChar();
             switch (c) {
                 case '0':
                     button0MouseClicked(null);
@@ -147,6 +147,7 @@ public class CalculatorGUI extends JFrame {
         expressionTxtField.setText(expressionString.toString());
         resultTxtField.setText(inputString.toString());
     }
+
     private void button1MouseClicked(MouseEvent e) {
         inputString.append('1');
         if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
@@ -154,6 +155,7 @@ public class CalculatorGUI extends JFrame {
         expressionTxtField.setText(expressionString.toString());
         resultTxtField.setText(inputString.toString());
     }
+
     private void button2MouseClicked(MouseEvent e) {
         inputString.append('2');
         if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
@@ -161,6 +163,7 @@ public class CalculatorGUI extends JFrame {
         expressionTxtField.setText(expressionString.toString());
         resultTxtField.setText(inputString.toString());
     }
+
     private void button3MouseClicked(MouseEvent e) {
         inputString.append('3');
         if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
@@ -168,6 +171,7 @@ public class CalculatorGUI extends JFrame {
         expressionTxtField.setText(expressionString.toString());
         resultTxtField.setText(inputString.toString());
     }
+
     private void button4MouseClicked(MouseEvent e) {
         inputString.append('4');
         if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
@@ -175,6 +179,7 @@ public class CalculatorGUI extends JFrame {
         expressionTxtField.setText(expressionString.toString());
         resultTxtField.setText(inputString.toString());
     }
+
     private void button5MouseClicked(MouseEvent e) {
         inputString.append('5');
         if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
@@ -182,6 +187,7 @@ public class CalculatorGUI extends JFrame {
         expressionTxtField.setText(expressionString.toString());
         resultTxtField.setText(inputString.toString());
     }
+
     private void button6MouseClicked(MouseEvent e) {
         inputString.append('6');
         if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
@@ -189,6 +195,7 @@ public class CalculatorGUI extends JFrame {
         expressionTxtField.setText(expressionString.toString());
         resultTxtField.setText(inputString.toString());
     }
+
     private void button7MouseClicked(MouseEvent e) {
         inputString.append('7');
         if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
@@ -196,6 +203,7 @@ public class CalculatorGUI extends JFrame {
         expressionTxtField.setText(expressionString.toString());
         resultTxtField.setText(inputString.toString());
     }
+
     private void button8MouseClicked(MouseEvent e) {
         inputString.append('8');
         if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
@@ -203,6 +211,7 @@ public class CalculatorGUI extends JFrame {
         expressionTxtField.setText(expressionString.toString());
         resultTxtField.setText(inputString.toString());
     }
+
     private void button9MouseClicked(MouseEvent e) {
         inputString.append('9');
         if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
@@ -212,7 +221,7 @@ public class CalculatorGUI extends JFrame {
     }
 
 
-    int bracketCount=0;         //记录还没有成对的左括号数量，即需要的右括号数量
+    int bracketCount = 0;         //记录还没有成对的左括号数量，即需要的右括号数量
 
     /**
      * 成对删除括号
@@ -227,12 +236,13 @@ public class CalculatorGUI extends JFrame {
             if (str.charAt(j) == ')')
                 count++;
         }
-        str = expressionString.substring(0, expressionString.lastIndexOf("(")+1);
+        str = expressionString.substring(0, expressionString.lastIndexOf("(") + 1);
         for (int i = 0; i < count; i++) {
             str = str.substring(0, str.lastIndexOf("("));
         }
         expressionString.delete(str.length(), expressionString.length());
     }
+
     private void leftBracketBtnMouseClicked(MouseEvent e) {
         if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
             removeBrackets();
@@ -240,6 +250,7 @@ public class CalculatorGUI extends JFrame {
         bracketCount++;
         expressionTxtField.setText(expressionString.toString());
     }
+
     private void rightBracketBtnMouseClicked(MouseEvent e) {
         if (bracketCount > 0) {
             newNumber();
@@ -257,9 +268,9 @@ public class CalculatorGUI extends JFrame {
         if (inputString.length() != 0) {
 
             if (inputString.charAt(inputString.length() - 1) == '(')
-                bracketCount --;
+                bracketCount--;
             if (inputString.charAt(inputString.length() - 1) == ')')
-                bracketCount ++;
+                bracketCount++;
             if (inputString.charAt(inputString.length() - 1) == '.')
                 hasDot = false;
 
@@ -270,8 +281,8 @@ public class CalculatorGUI extends JFrame {
 
     private void clearBtnMouseClicked(MouseEvent e) {
         newNumber();
-        expressionString.delete(0,expressionString.length());
-        bracketCount=0;
+        expressionString.delete(0, expressionString.length());
+        bracketCount = 0;
         expressionTxtField.setText(inputString.toString());
         resultTxtField.setText(expressionString.toString());
     }
@@ -280,7 +291,7 @@ public class CalculatorGUI extends JFrame {
         newNumber();
         if (expressionString.length() == 0)
             expressionString.append('0');
-        if(expressionString.charAt(expressionString.length()-1)=='(')
+        if (expressionString.charAt(expressionString.length() - 1) == '(')
             expressionString.append('0');
         if (expressionString.length() > 1 && isOperator(expressionString.charAt(expressionString.length() - 2)))
             expressionString.setCharAt(expressionString.length() - 2, '÷');
@@ -288,11 +299,12 @@ public class CalculatorGUI extends JFrame {
             expressionString.append(" ÷ ");
         expressionTxtField.setText(expressionString.toString());
     }
+
     private void buttonMutiplyMouseClicked(MouseEvent e) {
         newNumber();
         if (expressionString.length() == 0)
             expressionString.append('0');
-        if(expressionString.charAt(expressionString.length()-1)=='(')
+        if (expressionString.charAt(expressionString.length() - 1) == '(')
             expressionString.append('0');
         if (expressionString.length() > 1 && isOperator(expressionString.charAt(expressionString.length() - 2)))
             expressionString.setCharAt(expressionString.length() - 2, '×');
@@ -300,11 +312,12 @@ public class CalculatorGUI extends JFrame {
             expressionString.append(" × ");
         expressionTxtField.setText(expressionString.toString());
     }
+
     private void buttonMinusMouseClicked(MouseEvent e) {
         newNumber();
         if (expressionString.length() == 0)
             expressionString.append('0');
-        if(expressionString.charAt(expressionString.length()-1)=='(')
+        if (expressionString.charAt(expressionString.length() - 1) == '(')
             expressionString.append('0');
         if (expressionString.length() > 1 && isOperator(expressionString.charAt(expressionString.length() - 2)))
             expressionString.setCharAt(expressionString.length() - 2, '-');
@@ -312,11 +325,12 @@ public class CalculatorGUI extends JFrame {
             expressionString.append(" - ");
         expressionTxtField.setText(expressionString.toString());
     }
+
     private void buttonAddMouseClicked(MouseEvent e) {
         newNumber();
         if (expressionString.length() == 0)
             expressionString.append('0');
-        if(expressionString.charAt(expressionString.length()-1)=='(')
+        if (expressionString.charAt(expressionString.length() - 1) == '(')
             expressionString.append('0');
         if (expressionString.length() > 1 && isOperator(expressionString.charAt(expressionString.length() - 2)))
             expressionString.setCharAt(expressionString.length() - 2, '+');
@@ -325,7 +339,8 @@ public class CalculatorGUI extends JFrame {
         expressionTxtField.setText(expressionString.toString());
     }
 
-    boolean hasDot=false;
+    boolean hasDot = false;
+
     private void buttonDotMouseClicked(MouseEvent e) {
         if (expressionString.length() > 0 && expressionString.charAt(expressionString.length() - 1) == ')')
             removeBrackets();
@@ -356,6 +371,9 @@ public class CalculatorGUI extends JFrame {
 
         LexicalAnalysis lexicalAnalysis = new LexicalAnalysis();
         ArrayList<Token> tokens = lexicalAnalysis.Lex(input);
+
+        if (tokens == null)
+            return;
 
         SyntacticAnalysis syntacticAnalysis = new SyntacticAnalysis(tokens);
         syntacticAnalysis.parse();
@@ -395,21 +413,21 @@ public class CalculatorGUI extends JFrame {
         {
             panel1.setFocusable(false);
             panel1.setLayout(new MigLayout(
-                "hidemode 3",
-                // columns
-                "[fill]" +
-                "[fill]" +
-                "[fill]" +
-                "[fill]",
-                // rows
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]"));
+                    "hidemode 3",
+                    // columns
+                    "[fill]" +
+                            "[fill]" +
+                            "[fill]" +
+                            "[fill]",
+                    // rows
+                    "[]" +
+                            "[]" +
+                            "[]" +
+                            "[]" +
+                            "[]" +
+                            "[]" +
+                            "[]" +
+                            "[]"));
 
             //---- expressionTxtField ----
             expressionTxtField.setEditable(false);

@@ -17,13 +17,13 @@ public class SyntacticAnalysis {
 
     private ArrayList<Token> tokens;
     private Node root;
-    int index=0;
+    int index = 0;
 
-    public SyntacticAnalysis(ArrayList<Token> tokens){
-        this.tokens=tokens;
+    public SyntacticAnalysis(ArrayList<Token> tokens) {
+        this.tokens = tokens;
     }
 
-    public Node getRoot(){
+    public Node getRoot() {
         return root;
     }
 
@@ -69,7 +69,7 @@ public class SyntacticAnalysis {
     private Node Addop() {
         Node addop = new Node("addop");
         Node terminalNode;
-        Token Token=tokens.get(index);
+        Token Token = tokens.get(index);
 
         switch (Token.getType()) {
             case 2:
@@ -87,10 +87,10 @@ public class SyntacticAnalysis {
     }
 
     // mulop -> "*" | "/"
-    private Node Mulop(){
-        Node mulop=new Node("mulop");
+    private Node Mulop() {
+        Node mulop = new Node("mulop");
         Node terminalNode;
-        Token Token=tokens.get(index);
+        Token Token = tokens.get(index);
 
         switch (Token.getType()) {
             case 4:
@@ -138,5 +138,4 @@ public class SyntacticAnalysis {
         }
         return factor;
     }
-
 }

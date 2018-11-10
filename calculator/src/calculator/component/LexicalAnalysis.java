@@ -13,7 +13,6 @@ import java.util.ArrayList;
  * div      5
  * lparen   6
  * rparen   7
- * error    -1
  */
 
 public class LexicalAnalysis {

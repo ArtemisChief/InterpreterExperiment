@@ -29,9 +29,8 @@ public class SyntacticAnalysis {
 
     public Node parse() {
         root = Expression();
-        root.DFS(0);
 
-        if (index != tokens.size()) {
+        if (index != tokens.size() - 1) {
             StringBuilder stringBuilder = new StringBuilder();
 
             for (int i = 0; i < tokens.size() - 1; i++) {
@@ -50,6 +49,7 @@ public class SyntacticAnalysis {
             return null;
         }
 
+        root.print(0);
         return root;
     }
 

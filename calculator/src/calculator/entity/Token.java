@@ -20,8 +20,4 @@ public class Token {
     public String getContent(){
         return content;
     }
-
-    public boolean isExist() {
-        return type != 0;
-    }
 }

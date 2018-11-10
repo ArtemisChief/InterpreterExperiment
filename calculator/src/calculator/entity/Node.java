@@ -15,10 +15,6 @@ public class Node {
         childNodes = new ArrayList<>();
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public String getContent() {
         return content;
     }
@@ -41,13 +37,13 @@ public class Node {
         return String.format("%s\n", content);
     }
 
-    public void DFS(int height) {
+    public void print(int height) {
         for (int i = 0; i < height; i++) {
             System.out.printf("\t");
         }
         System.out.printf("%s\n", this.toString());
         for (Node child : childNodes) {
-            child.DFS(height + 1);
+            child.print(height + 1);
         }
     }
 }

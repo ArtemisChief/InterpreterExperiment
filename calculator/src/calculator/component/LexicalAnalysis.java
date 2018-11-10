@@ -113,7 +113,7 @@ public class LexicalAnalysis {
         }
         System.out.println("\nTokens:\n" + output + "\nLexical Analysis Complete\n");
         System.out.println("-------------------------------------------------------------------\n");
-        tokens.add(new Token(0, "Null"));
+        tokens.add(new Token(0, "END"));
         return tokens;
     }
 }

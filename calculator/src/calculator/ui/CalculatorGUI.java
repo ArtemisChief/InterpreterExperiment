@@ -379,7 +379,7 @@ public class CalculatorGUI extends JFrame {
 
         expressionString.delete(0, expressionString.length());
 
-        resultTxtField.setText(inputString.toString());
+        resultTxtField.setText("This is Result!");
         expressionTxtField.setText(expressionString.toString());
     }
 

@@ -30,6 +30,26 @@ public class SyntacticAnalysis {
     public Node parse() {
         root = Expression();
         root.DFS(0);
+
+        if (index != tokens.size()) {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            for (int i = 0; i < tokens.size() - 1; i++) {
+                stringBuilder.append(tokens.get(i).getContent());
+            }
+
+            String errorStr = "Error: At \"" + stringBuilder.toString() + "\"\n" + "           ";
+
+            for (int i = 0; i < index; i++)
+                for (int j = 0; j < tokens.get(i).getContent().length(); j++)
+                    errorStr += " ";
+
+            errorStr += "^\n";
+
+            System.out.println(errorStr);
+            return null;
+        }
+
         return root;
     }
 

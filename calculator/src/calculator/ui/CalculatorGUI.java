@@ -138,7 +138,7 @@ public class CalculatorGUI extends JFrame {
     private void newNumber() {
         if (inputString.length() > 0 && inputString.charAt(inputString.length() - 1) == '.')
             inputString.deleteCharAt(inputString.length() - 1);
-        if (inputString.length() > 2 && inputString.substring(2).replace("0", "").isEmpty())
+        if (inputString.length() > 2 && hasDot && inputString.substring(2).replace("0", "").isEmpty())
             inputString.delete(inputString.indexOf("."), inputString.length());
         if (inputString.toString().equals("divide by zero"))
             inputString = new StringBuilder();

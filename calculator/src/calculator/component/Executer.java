@@ -62,6 +62,6 @@ public class Executer {
             variables.put(variable, result);
         }
 
-        return result.toString();
+        return result.stripTrailingZeros().toPlainString();
     }
 }

@@ -9,8 +9,12 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
 
+import calculator.component.Executer;
 import calculator.component.LexicalAnalysis;
+import calculator.component.SemanticAnalysis;
 import calculator.component.SyntacticAnalysis;
+import calculator.entity.Node;
+import calculator.entity.Quadruple;
 import calculator.entity.Token;
 import net.miginfocom.swing.*;
 
@@ -26,6 +30,12 @@ public class CalculatorGUI extends JFrame {
 
     StringBuilder inputString = new StringBuilder();          //输入字符串（下面一行）
     StringBuilder expressionString = new StringBuilder();     //表达式字符串（上面一行）
+    String result="This is Result!";
+
+    LexicalAnalysis lexicalAnalysis = new LexicalAnalysis();
+    SyntacticAnalysis syntacticAnalysis = new SyntacticAnalysis();
+    SemanticAnalysis semanticAnalysis = new SemanticAnalysis();
+    Executer executer = new Executer();
 
     /**
      * 按键监听，实现小键盘操作计算器
@@ -128,8 +138,10 @@ public class CalculatorGUI extends JFrame {
     private void newNumber() {
         if (inputString.length() > 0 && inputString.charAt(inputString.length() - 1) == '.')
             inputString.deleteCharAt(inputString.length() - 1);
+        if (inputString.toString().equals("divide by zero"))
+            inputString = new StringBuilder();
         expressionString.append(inputString);
-        inputString.delete(0, inputString.length());
+        inputString = new StringBuilder();
         resultTxtField.setText(inputString.toString());
         hasDot = false;
     }
@@ -300,7 +312,8 @@ public class CalculatorGUI extends JFrame {
 
     private void clearBtnMouseClicked(MouseEvent e) {
         newNumber();
-        expressionString.delete(0, expressionString.length());
+        result="This is Result!";
+        expressionString=new StringBuilder();
         bracketCount = 0;
         expressionTxtField.setText(expressionString.toString());
         resultTxtField.setText(inputString.toString());
@@ -374,12 +387,19 @@ public class CalculatorGUI extends JFrame {
     }
 
     private void buttonEqualMouseClicked(MouseEvent e) {
+        if(inputString.toString().isEmpty())
+            return;
+
+        if(expressionString.toString().isEmpty())
+            return;
+
         newNumber();
+
         calculateResult();
 
-        expressionString.delete(0, expressionString.length());
-
-        resultTxtField.setText("This is Result!");
+        inputString.append(result);
+        resultTxtField.setText(inputString.toString());
+        expressionString=new StringBuilder();
         expressionTxtField.setText(expressionString.toString());
     }
 
@@ -392,14 +412,26 @@ public class CalculatorGUI extends JFrame {
                 replace('÷', '/').
                 replace('×', '*');
 
-        LexicalAnalysis lexicalAnalysis = new LexicalAnalysis();
+        //词法分析
         ArrayList<Token> tokens = lexicalAnalysis.Lex(input);
-
         if (tokens == null)
             return;
 
-        SyntacticAnalysis syntacticAnalysis = new SyntacticAnalysis(tokens);
-        syntacticAnalysis.parse();
+        //语法分析
+        Node AbstractSyntaxTree = syntacticAnalysis.Parse(tokens);
+        if (AbstractSyntaxTree == null)
+            return;
+
+        //语义分析（生成四元式）
+        ArrayList<Quadruple> quadruples = semanticAnalysis.GenerateQuadruples(AbstractSyntaxTree);
+
+        //虚拟机执行器
+        try {
+            result = executer.execute(quadruples);
+        } catch (ArithmeticException e) {
+
+            result = e.toString().substring(42);
+        }
     }
 
     private void initComponents() {

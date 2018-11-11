@@ -16,21 +16,28 @@ import java.util.ArrayList;
 public class SyntacticAnalysis {
 
     private ArrayList<Token> tokens;
-    private Node root;
-    int index = 0;
+    private Node AbstractSyntaxTree;
+    int index;
 
-    public SyntacticAnalysis(ArrayList<Token> tokens) {
+    //开始语法分析
+    public Node Parse(ArrayList<Token> tokens) {
+        index = 0;
         this.tokens = tokens;
+        System.out.println("\n-------------------------------------------------------------------\n");
+        AbstractSyntaxTree = new Node("root");
+        AbstractSyntaxTree.addChild(Expression());
+
+        if (analysisError())
+            ;
+//            return null;
+
+        AbstractSyntaxTree.print(0);
+        return AbstractSyntaxTree;
     }
 
-    public Node getRoot() {
-        return root;
-    }
-
-    public Node parse() {
-        root = Expression();
-
-        if (index != tokens.size() - 1) {
+    //处理Error，输出错误信息
+    private boolean analysisError() {
+        if (index != tokens.size() - 1 || !AbstractSyntaxTree.findError().isEmpty()) {
             StringBuilder stringBuilder = new StringBuilder();
 
             for (int i = 0; i < tokens.size() - 1; i++) {
@@ -43,14 +50,12 @@ public class SyntacticAnalysis {
                 for (int j = 0; j < tokens.get(i).getContent().length(); j++)
                     errorStr += " ";
 
-            errorStr += "^\n";
-
+            errorStr += "^\n" + AbstractSyntaxTree.findError();
             System.out.println(errorStr);
-            return null;
-        }
 
-        root.print(0);
-        return root;
+            return true;
+        }
+        return false;
     }
 
     //expression -> term { addop term }
@@ -93,13 +98,13 @@ public class SyntacticAnalysis {
 
         switch (Token.getType()) {
             case 2:
-                terminalNode = new Node("+");
+                terminalNode = new Node("add", "+");
                 break;
             case 3:
-                terminalNode = new Node("-");
+                terminalNode = new Node("sub", "-");
                 break;
             default:
-                return new Node("Error: 应为\"+\"或\"-\"");
+                return new Node("Error", "应为\"+\"或\"-\"");
         }
         addop.addChild(terminalNode);
         index++;
@@ -114,13 +119,13 @@ public class SyntacticAnalysis {
 
         switch (Token.getType()) {
             case 4:
-                terminalNode = new Node("*");
+                terminalNode = new Node("mul", "*");
                 break;
             case 5:
-                terminalNode = new Node("/");
+                terminalNode = new Node("div", "/");
                 break;
             default:
-                return new Node("Error: 应为\"*\"或\"/\"");
+                return new Node("Error:", "应为\"*\"或\"/\"");
         }
         mulop.addChild(terminalNode);
         index++;
@@ -135,13 +140,13 @@ public class SyntacticAnalysis {
 
         switch (Token.getType()) {
             case 1:
-                terminalNode = new Node(Token.getContent());
+                terminalNode = new Node("number", Token.getContent());
                 factor.addChild(terminalNode);
                 index++;
                 break;
 
             case 6:
-                terminalNode = new Node("(");
+                terminalNode = new Node("lparen", "(");
                 factor.addChild(terminalNode);
                 index++;
 
@@ -149,12 +154,14 @@ public class SyntacticAnalysis {
                 factor.addChild(expression);
 
                 if (tokens.get(index).getType() != 7)
-                    return new Node("Error: 缺少右括号");
+                    return new Node("Error", "缺少右括号");
 
-                terminalNode = new Node(")");
+                terminalNode = new Node("rparen", ")");
                 factor.addChild(terminalNode);
                 index++;
                 break;
+            default:
+                return new Node("Error", "运算符前后缺少常数");
         }
         return factor;
     }

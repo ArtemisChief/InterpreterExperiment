@@ -31,12 +31,10 @@ public class LexicalAnalysis {
         return op == '+' || op == '-' || op == '*' || op == '/' || op == '(' || op == ')';
     }
 
-    public LexicalAnalysis() {
-        tokens = new ArrayList<>();
-    }
-
+    //开始词法分析
     public ArrayList<Token> Lex(String input) {
-        System.out.println("-------------------------------------------------------------------\n");
+        tokens=new ArrayList<>();
+        System.out.println("\n-------------------------------------------------------------------\n");
         int mark = 0, state = 0;
         boolean isFloat = false;
         for (int curr = 0; curr < input.length(); curr++) {
@@ -111,8 +109,7 @@ public class LexicalAnalysis {
         for (Token t : tokens) {
             output.append("\'").append(t.getContent()).append("\'\t ");
         }
-        System.out.println("\nTokens:\n" + output + "\nLexical Analysis Complete\n");
-        System.out.println("-------------------------------------------------------------------\n");
+        System.out.println("\nTokens:\n" + output + "\nLexical Analysis Complete");
         tokens.add(new Token(0, "END"));
         return tokens;
     }

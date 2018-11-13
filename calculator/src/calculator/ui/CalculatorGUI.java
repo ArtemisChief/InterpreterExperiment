@@ -8,6 +8,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import calculator.component.Executer;
 import calculator.component.LexicalAnalysis;
@@ -124,6 +126,34 @@ public class CalculatorGUI extends JFrame {
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         addKeyListener(keyListener);
+
+        resultTxtField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                changeFontSizeOnResultTxtField();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                changeFontSizeOnResultTxtField();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                changeFontSizeOnResultTxtField();
+            }
+        });
+    }
+
+    private void changeFontSizeOnResultTxtField() {
+        if (resultTxtField.getText().length() < 20)
+            resultTxtField.setFont(new Font("Consolas", Font.BOLD, 17));
+        else if (resultTxtField.getText().length() < 25)
+            resultTxtField.setFont(new Font("Consolas", Font.BOLD, 15));
+        else if (resultTxtField.getText().length() < 30)
+            resultTxtField.setFont(new Font("Consolas", Font.BOLD, 13));
+        else
+            resultTxtField.setFont(new Font("Consolas", Font.BOLD, 11));
     }
 
     private boolean isOperator(char op) {

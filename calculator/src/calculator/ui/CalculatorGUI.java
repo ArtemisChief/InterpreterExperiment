@@ -188,6 +188,8 @@ public class CalculatorGUI extends JFrame {
      * 用于将一个个Digit组成Number添加进表达式中
      */
     private void newNumber() {
+        if(inputString.length()>1 && inputString.charAt(0)=='-')
+            inputString.insert(1," ");
         if (inputString.length() > 0 && inputString.charAt(inputString.length() - 1) == '.')
             inputString.deleteCharAt(inputString.length() - 1);
         if (inputString.length() > 2 && hasDot && inputString.substring(2).replace("0", "").isEmpty())
@@ -477,7 +479,7 @@ public class CalculatorGUI extends JFrame {
 
     private void buttonEqualMouseClicked(MouseEvent e) {
         if(buttonEqual.isEnabled()) {
-            if (inputString.toString().isEmpty())
+            if (inputString.toString().isEmpty() && isOperator(expressionString.charAt(expressionString.length() - 2)) && expressionString.length() > 1)
                 return;
 
             if (expressionString.toString().isEmpty())
@@ -501,6 +503,9 @@ public class CalculatorGUI extends JFrame {
         while (bracketCount > 0)
             rightBracketBtnMouseClicked(null);
 
+        if (expressionString.charAt(0) == '-')
+            expressionString.insert(0, '0');
+
         String input = expressionString.toString().
                 replace(" ", "").
                 replace('÷', '/').
@@ -518,6 +523,11 @@ public class CalculatorGUI extends JFrame {
 
         //语义分析（生成四元式）
         ArrayList<Quadruple> quadruples = semanticAnalysis.GenerateQuadruples(AbstractSyntaxTree);
+
+        if(quadruples==null) {
+            result=expressionString.toString();
+            return;
+        }
 
         //虚拟机执行器
         try {

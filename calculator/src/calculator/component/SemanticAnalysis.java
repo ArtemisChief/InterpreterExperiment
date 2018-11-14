@@ -17,11 +17,14 @@ public class SemanticAnalysis {
 
     //开始语义分析
     public ArrayList<Quadruple> GenerateQuadruples(Node abstractSyntaxTree) {
-        quadruples=new ArrayList<>();
+        quadruples = new ArrayList<>();
         resultCount = 0;
         System.out.println("\n-------------------------------------------------------------------\n");
 
         DFS(abstractSyntaxTree);
+        if (quadruples.size() == 0)
+            return null;
+
         quadruples.get(quadruples.size() - 1).setResult("OUT");   //设置最后一个四元式的寄存器为输出
 
         for (Quadruple quadruple : quadruples)

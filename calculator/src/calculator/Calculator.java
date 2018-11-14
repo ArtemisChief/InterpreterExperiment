@@ -47,6 +47,9 @@ public class Calculator {
 //            SemanticAnalysis semanticAnalysis = new SemanticAnalysis();
 //            ArrayList<Quadruple> quadruples = semanticAnalysis.GenerateQuadruples(AbstractSyntaxTree);
 //
+//            if(quadruples==null)
+//                return;
+//
 //            //虚拟机执行器
 //            Executer executer = new Executer();
 //            try {

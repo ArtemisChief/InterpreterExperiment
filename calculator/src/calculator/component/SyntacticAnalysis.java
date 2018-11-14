@@ -28,8 +28,7 @@ public class SyntacticAnalysis {
         AbstractSyntaxTree.addChild(Expression());
 
         if (analysisError())
-            ;
-//            return null;
+            return null;
 
         AbstractSyntaxTree.print(0);
         return AbstractSyntaxTree;

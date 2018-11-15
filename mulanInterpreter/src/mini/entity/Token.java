@@ -115,4 +115,8 @@ public class Token {
     public boolean isEmpty(){
         return syn==0;
     }
+
+    public int getCount(){
+        return count;
+    }
 }

@@ -1,39 +1,23 @@
 package mini;
 
-import mini.component.LexicalAnalysis;
-import mini.entity.Token;
+import mini.ui.MiniGUI;
 
-import java.io.*;
-import java.util.ArrayList;
+import javax.swing.*;
 
 public class Mini {
 
     public static void main(String[] args) {
-
-        LexicalAnalysis lexicalAnalysis = new LexicalAnalysis();
-        String pathname ="D:\\test.txt";
-        try{
-            File file = new File(pathname);
-            FileInputStream fileInputStream = new FileInputStream(file);
-            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            StringBuffer sb = new StringBuffer();
-            String lineTxt = null;
-            while((lineTxt = bufferedReader.readLine()) != null){
-                lineTxt+="\n";
-                sb.append(lineTxt);
-
-            }
-            String input=sb.toString();
-            lexicalAnalysis.Lex(input);
-
+        try {
+            System.setProperty("sun.java2d.noddraw", "true");
+            org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
+            UIManager.put("RootPane.setupButtonVisible", false);
+            org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.translucencyAtFrameInactive = false;
+        } catch (Exception e) {
+            System.out.println(e.toString());
         }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        ArrayList<Token> tokens=lexicalAnalysis.getTokens();
-        for (Token token:tokens) {
-            System.out.println(token.toString());
-        }
+
+        MiniGUI miniGUI=new MiniGUI();
+        miniGUI.setVisible(true);
+
     }
 }

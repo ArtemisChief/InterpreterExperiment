@@ -1,5 +1,8 @@
 package mini;
 
+import mini.component.LexicalAnalysis;
+import mini.entity.Token;
+
 import java.io.*;
 import java.util.ArrayList;
 

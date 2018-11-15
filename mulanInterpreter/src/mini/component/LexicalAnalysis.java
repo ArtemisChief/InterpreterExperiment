@@ -1,39 +1,39 @@
-package mini;
+package mini.component;
+
+import mini.entity.Token;
 
 import java.util.ArrayList;
+
+/**
+ *     <错误,-1> 错误token
+ *     <score,1> 乐谱
+ *     <paragraph,2> 段落
+ *     <speed=?,3> 速度
+ *     <1=?,4> 调性
+ *     <end,5>
+ *     <play,6> 播放操作
+ *     <(,7>
+ *     <),8>
+ *     <[,9>
+ *     <],10>
+ *     <{,11>
+ *     <},12>
+ *     <<,13>
+ *     <>,14>
+ *     <*,15>
+ *     <,,16>
+ *     <&,17>
+ *     <\n,97>换行
+ *     <音符，98>
+ *     <时值,99>
+ *     <标识符100 ，标识符指针>
+ */
 
 public class LexicalAnalysis {
 
     private boolean error=false;
     private ArrayList<Token> tokens=new ArrayList();
     private  int count=1;
-
-    /*
-    <错误,-1> 错误token
-    <score,1> 乐谱
-    <paragraph,2> 段落
-    <speed=?,3> 速度
-    <1=?,4> 调性
-    <end,5>
-    <play,6> 播放操作
-    <(,7>
-    <),8>
-    <[,9>
-    <],10>
-    <{,11>
-    <},12>
-    <<,13>
-    <>,14>
-    <*,15>
-    <,,16>
-    <&,17>
-    <\n,97>换行
-    <音符，98>
-    <时值,99>
-    <标识符100 ，标识符指针>
-    */
-
-
 
     private  int searchReserve(String s){
         switch (s){

@@ -1,4 +1,4 @@
-package mini;
+package mini.entity;
 
 public class Token {
     private int syn;

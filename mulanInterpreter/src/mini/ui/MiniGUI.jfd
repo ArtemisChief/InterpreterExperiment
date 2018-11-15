@@ -3,15 +3,96 @@ JFDML JFormDesigner: "6.0.2.0.116" Java: "1.8.0_152-release" encoding: "UTF-8"
 new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
-		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
-			"$layoutConstraints": "hidemode 3"
-			"$columnConstraints": "[fill][fill]"
-			"$rowConstraints": "[][][]"
-		} ) {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.GridLayout ) ) {
 			name: "this"
+			"resizable": false
+			"font": new java.awt.Font( "Microsoft YaHei UI", 0, 12 )
+			"title": "Music Interpreter"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+				"$layoutConstraints": "insets 0,hidemode 3"
+				"$columnConstraints": "[fill][fill]"
+				"$rowConstraints": "[fill]"
+			} ) {
+				name: "panel1"
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "scrollPane1"
+					add( new FormComponent( "javax.swing.JTextPane" ) {
+						name: "inputTextPane"
+						"font": new java.awt.Font( "Microsoft YaHei", 0, 14 )
+						"cursor": &Cursor0 new java.awt.Cursor( 2 )
+					} )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 0,width 410:410:410,height 600:600:600"
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "scrollPane2"
+					add( new FormComponent( "javax.swing.JTextPane" ) {
+						name: "outputTextPane"
+						"font": new java.awt.Font( "Microsoft YaHei", 0, 14 )
+						"cursor": #Cursor0
+					} )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 0,width 410:410:410,height 600:600:600"
+				} )
+			} )
+			menuBar: new FormContainer( "javax.swing.JMenuBar", new FormLayoutManager( class javax.swing.JMenuBar ) ) {
+				name: "menuBar1"
+				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+					name: "fileMenu"
+					"text": "File"
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "newMenuItem"
+						"text": "New"
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "newMenuItemMouseClicked", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "openMenuItem"
+						"text": "Open"
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "openMenuItemMouseClicked", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "saveMenuItem"
+						"text": "Save"
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "saveMenuItemMouseClicked", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "saveAsMenuItem"
+						"text": "Save As..."
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "saveAsMenuItemMouseClicked", true ) )
+					} )
+				} )
+				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+					name: "runMenu"
+					"text": "Run"
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "LexMenuItem"
+						"text": "Lexical Analysis"
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "LexMenuItemMouseClicked", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "synMenuItem"
+						"text": "Syntactic Analysis"
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "synMenuItemMouseClicked", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "semMenuItem"
+						"text": "Semantic Analysis"
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "semMenuItemMouseClicked", true ) )
+					} )
+				} )
+				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+					name: "buildMenu"
+					"text": "Build"
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "buildMenuItem"
+						"text": "Generate .ino file"
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "buildMenuItemMouseClicked", true ) )
+					} )
+				} )
+			}
 		}, new FormLayoutConstraints( null ) {
-			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 400, 300 )
+			"location": new java.awt.Point( 5, 0 )
+			"size": new java.awt.Dimension( 840, 670 )
 		} )
 	}
 }

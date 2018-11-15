@@ -43,22 +43,22 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "newMenuItem"
 						"text": "New"
-						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "newMenuItemMouseClicked", true ) )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "newMenuItemActionPerformed", true ) )
 					} )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "openMenuItem"
 						"text": "Open"
-						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "openMenuItemMouseClicked", true ) )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "openMenuItemActionPerformed", true ) )
 					} )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "saveMenuItem"
 						"text": "Save"
-						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "saveMenuItemMouseClicked", true ) )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "saveMenuItemActionPerformed", true ) )
 					} )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "saveAsMenuItem"
 						"text": "Save As..."
-						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "saveAsMenuItemMouseClicked", true ) )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "saveAsMenuItemActionPerformed", true ) )
 					} )
 				} )
 				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
@@ -67,17 +67,17 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "LexMenuItem"
 						"text": "Lexical Analysis"
-						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "LexMenuItemMouseClicked", true ) )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "LexMenuItemActionPerformed", true ) )
 					} )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "synMenuItem"
 						"text": "Syntactic Analysis"
-						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "synMenuItemMouseClicked", true ) )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "synMenuItemActionPerformed", true ) )
 					} )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "semMenuItem"
 						"text": "Semantic Analysis"
-						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "semMenuItemMouseClicked", true ) )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "semMenuItemActionPerformed", true ) )
 					} )
 				} )
 				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
@@ -86,7 +86,16 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "buildMenuItem"
 						"text": "Generate .ino file"
-						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "buildMenuItemMouseClicked", true ) )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "buildMenuItemActionPerformed", true ) )
+					} )
+				} )
+				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+					name: "helpMenu"
+					"text": "Help"
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "aboutMenuItem"
+						"text": "About"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "aboutMenuItemActionPerformed", true ) )
 					} )
 				} )
 			}

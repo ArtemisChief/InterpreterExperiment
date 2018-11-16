@@ -80,6 +80,9 @@ public class Token {
             case 19:
                 type="降号";
                 break;
+            case 94:
+                type="休止符";
+                break;
             case 95:
                 type="调性";
                 break;

@@ -8,7 +8,6 @@ import mini.component.LexicalAnalysis;
 import mini.component.SemanticAnalysis;
 import mini.component.SyntacticAnalysis;
 import mini.entity.Token;
-import mini.utils.LineNumberHeaderView;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -51,22 +50,21 @@ public class MiniGUI extends JFrame {
         setResizable(false);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
+        //样式
         attributeSet = new SimpleAttributeSet();
         durationAttributeSet = new SimpleAttributeSet();
         normalAttributeSet = new SimpleAttributeSet();
         commentAttributeSet = new SimpleAttributeSet();
-
         StyleConstants.setForeground(attributeSet, new Color(30, 80, 180));
         StyleConstants.setBold(attributeSet, true);
         StyleConstants.setForeground(durationAttributeSet, new Color(54, 163, 240));
         StyleConstants.setForeground(commentAttributeSet, new Color(128, 128, 128));
-
         inputStyledDocument = inputTextPane.getStyledDocument();
         outputStyledDocument = outputTextPane.getStyledDocument();
-
         keywordPattern = Pattern.compile("\\bparagraph\\b|\\bspeed=|\\b1=|\\bend\\b|\\bplay");
         parenPattern = Pattern.compile("<(\\s*\\{?\\s*(\\d|g)+\\s*\\}?\\s*)+>");
 
+        //关闭窗口提示
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -75,6 +73,7 @@ public class MiniGUI extends JFrame {
             }
         });
 
+        //着色与补全的监听
         inputTextPane.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -83,7 +82,9 @@ public class MiniGUI extends JFrame {
                         e.getKeyCode() == KeyEvent.VK_LEFT ||
                         e.getKeyCode() == KeyEvent.VK_RIGHT ||
                         e.getKeyCode() == KeyEvent.VK_BACK_SPACE ||
-                        e.getKeyCode() == KeyEvent.VK_SHIFT)
+                        e.getKeyCode() == KeyEvent.VK_SHIFT ||
+                        e.getKeyCode() == KeyEvent.VK_CONTROL ||
+                        e.getKeyCode() == KeyEvent.VK_ALT)
                     return;
 
                 autoComplete();
@@ -92,11 +93,14 @@ public class MiniGUI extends JFrame {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
                     autoRemove();
+                    refreshColor();
+                }
             }
         });
 
+        //是否有改动的监听
         inputTextPane.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -114,9 +118,19 @@ public class MiniGUI extends JFrame {
             }
         });
 
+        //组件实例化
         lexicalAnalysis = new LexicalAnalysis();
         syntacticAnalysis = new SyntacticAnalysis();
         semanticAnalysis = new SemanticAnalysis();
+
+        //滚动条
+        scrollPane3.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+        scrollPane3.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        String lineStr = "";
+        for (int i = 1; i < 1000; i++)
+            lineStr += i + "\n";
+        lineTextArea.setText(lineStr);
+        scrollPane1.getVerticalScrollBar().addAdjustmentListener(e -> scrollPane3.getVerticalScrollBar().setValue(scrollPane1.getVerticalScrollBar().getValue()));
     }
 
     //内容变动之后是否保存
@@ -155,40 +169,40 @@ public class MiniGUI extends JFrame {
 
     //自动补全界符与注释符号
     private void autoComplete() {
-            StringBuilder input = new StringBuilder(inputTextPane.getText().replace("\r", ""));
-            if (input.length() > 0) {
-                int pos = inputTextPane.getCaretPosition();
-                switch (input.charAt(pos - 1)) {
-                    case '(':
-                        input.insert(pos, ')');
+        StringBuilder input = new StringBuilder(inputTextPane.getText().replace("\r", ""));
+        int pos = inputTextPane.getCaretPosition();
+        if (input.length() > 0 && pos > 0) {
+            switch (input.charAt(pos - 1)) {
+                case '(':
+                    input.insert(pos, ')');
+                    inputTextPane.setText(input.toString());
+                    inputTextPane.setCaretPosition(pos);
+                    return;
+                case '[':
+                    input.insert(pos, ']');
+                    inputTextPane.setText(input.toString());
+                    inputTextPane.setCaretPosition(pos);
+                    return;
+                case '<':
+                    input.insert(pos, '>');
+                    inputTextPane.setText(input.toString());
+                    inputTextPane.setCaretPosition(pos);
+                    return;
+                case '{':
+                    input.insert(pos, '}');
+                    inputTextPane.setText(input.toString());
+                    inputTextPane.setCaretPosition(pos);
+                    return;
+                case '*':
+                    if (input.length() > 1 && input.charAt(pos - 2) == '/') {
+                        input.insert(inputTextPane.getCaretPosition(), "\n\n*/");
                         inputTextPane.setText(input.toString());
-                        inputTextPane.setCaretPosition(pos);
-                        return;
-                    case '[':
-                        input.insert(pos, ']');
-                        inputTextPane.setText(input.toString());
-                        inputTextPane.setCaretPosition(pos);
-                        return;
-                    case '<':
-                        input.insert(pos, '>');
-                        inputTextPane.setText(input.toString());
-                        inputTextPane.setCaretPosition(pos);
-                        return;
-                    case '{':
-                        input.insert(pos, '}');
-                        inputTextPane.setText(input.toString());
-                        inputTextPane.setCaretPosition(pos);
-                        return;
-                    case '*':
-                        if (input.length() > 1 && input.charAt(pos - 2) == '/') {
-                            input.insert(inputTextPane.getCaretPosition(), "\n\n*/");
-                            inputTextPane.setText(input.toString());
-                            inputTextPane.setCaretPosition(pos+1);
-                        }
-                        return;
-                }
+                        inputTextPane.setCaretPosition(pos + 1);
+                    }
+                    return;
             }
         }
+    }
 
     //代码着色
     private void refreshColor() {
@@ -378,7 +392,7 @@ public class MiniGUI extends JFrame {
             return;
 
         String str="//这是旋律\n" +
-                "paragraph melody:\n" +
+                "paragraph melody\n" +
                 "speed= 90\n" +
                 "1= G\n" +
                 "(5)52 15(5) <221 221>\n" +
@@ -392,7 +406,7 @@ public class MiniGUI extends JFrame {
                 "*/\n" +
                 "\n" +
                 "//这是贝斯\n" +
-                "paragraph bass:\n" +
+                "paragraph bass\n" +
                 "speed= 90\n" +
                 "1= G\n" +
                 "13#22<1111>\n" +
@@ -403,6 +417,16 @@ public class MiniGUI extends JFrame {
         inputTextPane.setText(str);
         refreshColor();
         hasChanged=false;
+    }
+
+    //
+    private void inputTextPaneFocusGained(FocusEvent e) {
+        scrollPane3.getVerticalScrollBar();
+    }
+
+    //
+    private void outputTextPaneFocusGained(FocusEvent e) {
+        // TODO add your code here
     }
 
 
@@ -424,6 +448,8 @@ public class MiniGUI extends JFrame {
         demoMenuItem = new JMenuItem();
         aboutMenuItem = new JMenuItem();
         panel1 = new JPanel();
+        scrollPane3 = new JScrollPane();
+        lineTextArea = new JTextArea();
         scrollPane1 = new JScrollPane();
         inputTextPane = new JTextPane();
         scrollPane2 = new JScrollPane();
@@ -520,10 +546,25 @@ public class MiniGUI extends JFrame {
             panel1.setLayout(new MigLayout(
                 "insets 0,hidemode 3",
                 // columns
-                "[fill]" +
+                "[fill]0" +
+                "[fill]0" +
                 "[fill]",
                 // rows
                 "[fill]"));
+
+            //======== scrollPane3 ========
+            {
+
+                //---- lineTextArea ----
+                lineTextArea.setFont(new Font("Microsoft YaHei", Font.PLAIN, 14));
+                lineTextArea.setEnabled(false);
+                lineTextArea.setEditable(false);
+                lineTextArea.setBorder(null);
+                lineTextArea.setBackground(Color.white);
+                lineTextArea.setForeground(new Color(153, 153, 153));
+                scrollPane3.setViewportView(lineTextArea);
+            }
+            panel1.add(scrollPane3, "cell 0 0,width 40:40:40");
 
             //======== scrollPane1 ========
             {
@@ -531,9 +572,16 @@ public class MiniGUI extends JFrame {
                 //---- inputTextPane ----
                 inputTextPane.setFont(new Font("Microsoft YaHei", Font.PLAIN, 14));
                 inputTextPane.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
+                inputTextPane.setBorder(null);
+                inputTextPane.addFocusListener(new FocusAdapter() {
+                    @Override
+                    public void focusGained(FocusEvent e) {
+                        inputTextPaneFocusGained(e);
+                    }
+                });
                 scrollPane1.setViewportView(inputTextPane);
             }
-            panel1.add(scrollPane1, "cell 0 0,width 410:410:410,height 600:600:600");
+            panel1.add(scrollPane1, "cell 1 0,width 400:400:400,height 600:600:600");
 
             //======== scrollPane2 ========
             {
@@ -541,9 +589,16 @@ public class MiniGUI extends JFrame {
                 //---- outputTextPane ----
                 outputTextPane.setFont(new Font("Microsoft YaHei", Font.PLAIN, 14));
                 outputTextPane.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
+                outputTextPane.setBorder(null);
+                outputTextPane.addFocusListener(new FocusAdapter() {
+                    @Override
+                    public void focusGained(FocusEvent e) {
+                        outputTextPaneFocusGained(e);
+                    }
+                });
                 scrollPane2.setViewportView(outputTextPane);
             }
-            panel1.add(scrollPane2, "cell 1 0,width 410:410:410,height 600:600:600");
+            panel1.add(scrollPane2, "cell 2 0,width 400:400:400,height 600:600:600");
         }
         contentPane.add(panel1);
         pack();
@@ -568,6 +623,8 @@ public class MiniGUI extends JFrame {
     private JMenuItem demoMenuItem;
     private JMenuItem aboutMenuItem;
     private JPanel panel1;
+    private JScrollPane scrollPane3;
+    private JTextArea lineTextArea;
     private JScrollPane scrollPane1;
     private JTextPane inputTextPane;
     private JScrollPane scrollPane2;

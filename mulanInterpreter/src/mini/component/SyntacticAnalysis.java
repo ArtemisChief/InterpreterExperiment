@@ -234,7 +234,7 @@ public class SyntacticAnalysis {
         return notes;
     }
 
-    //rhythm ->
+    //rhythm -> '<' length '>'
     public Node parseRhythm(){
         Node rhythm = new Node("Rhythm");
 

@@ -18,9 +18,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,6 +30,7 @@ public class MiniGUI extends JFrame {
 
     private File file;
     private boolean hasSaved = false;
+    private boolean hasChanged=false;
     private SimpleAttributeSet attributeSet;
     private SimpleAttributeSet durationAttributeSet;
     private SimpleAttributeSet normalAttributeSet;
@@ -49,7 +48,7 @@ public class MiniGUI extends JFrame {
     public MiniGUI() {
         initComponents();
         setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         attributeSet = new SimpleAttributeSet();
         durationAttributeSet = new SimpleAttributeSet();
@@ -67,6 +66,13 @@ public class MiniGUI extends JFrame {
         keywordPattern = Pattern.compile("\\bparagraph\\b|\\bspeed=|\\b1=|\\bend\\b|\\bplay");
         parenPattern = Pattern.compile("<(\\s*\\{?\\s*(\\d|g)+\\s*\\}?\\s*)+>");
 
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (showSaveComfirm("Exist unsaved content, save before exit?"))
+                    System.exit(0);
+            }
+        });
 
         inputTextPane.addKeyListener(new KeyAdapter() {
             @Override
@@ -90,9 +96,43 @@ public class MiniGUI extends JFrame {
             }
         });
 
+        inputTextPane.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                hasChanged = true;
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                hasChanged = true;
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                hasChanged = true;
+            }
+        });
+
         lexicalAnalysis = new LexicalAnalysis();
         syntacticAnalysis = new SyntacticAnalysis();
         semanticAnalysis = new SemanticAnalysis();
+    }
+
+    //内容变动之后是否保存
+    private boolean showSaveComfirm(String confirm){
+        if (hasChanged) {
+            int exit = JOptionPane.showConfirmDialog(null, confirm, "Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            switch (exit) {
+                case JOptionPane.YES_OPTION:
+                    saveMenuItemActionPerformed(null);
+                    break;
+                case JOptionPane.NO_OPTION:
+                    break;
+                case JOptionPane.CANCEL_OPTION:
+                    return false;
+            }
+        }
+        return true;
     }
 
     //自动删除界符
@@ -208,13 +248,19 @@ public class MiniGUI extends JFrame {
 
     //新建文件
     private void newMenuItemActionPerformed(ActionEvent e) {
-        hasSaved = false;
-        inputTextPane.setText("");
-        outputTextPane.setText("");
+        if(showSaveComfirm("Exist unsaved content, save before new file?")) {
+            hasSaved = false;
+            inputTextPane.setText("");
+            outputTextPane.setText("");
+            hasChanged = false;
+        }
     }
 
     //打开文件
     private void openMenuItemActionPerformed(ActionEvent e) {
+        if (!showSaveComfirm("Exist unsaved content, save before open fire?"))
+            return;
+
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Music Interpreter File", "mui");
@@ -236,6 +282,7 @@ public class MiniGUI extends JFrame {
             outputTextPane.setText("");
             refreshColor();
             hasSaved = true;
+            hasChanged = false;
         } catch (FileNotFoundException e1) {
 //            e1.printStackTrace();
         } catch (IOException e1) {
@@ -254,6 +301,7 @@ public class MiniGUI extends JFrame {
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
                 bufferedWriter.write(inputTextPane.getText());
                 bufferedWriter.close();
+                hasChanged = false;
             } catch (IOException e1) {
 //                e1.printStackTrace();
             }
@@ -278,6 +326,7 @@ public class MiniGUI extends JFrame {
             bufferedWriter.write(inputTextPane.getText());
             bufferedWriter.close();
             hasSaved = true;
+            hasChanged = false;
         } catch (FileNotFoundException e1) {
 //            e1.printStackTrace();
         } catch (IOException e1) {
@@ -312,6 +361,7 @@ public class MiniGUI extends JFrame {
         // TODO add your code here
     }
 
+    //关于
     private void aboutMenuItemActionPerformed(ActionEvent e) {
         String str = "-----------------------------------------------------------\n" +
                 "Music Language Interpreter\nMade By Chief, yzdxm and AsrielMao\nVersion: 0.0.1\n\n" +
@@ -319,6 +369,39 @@ public class MiniGUI extends JFrame {
                 "to Arduino code\n" +
                 "-----------------------------------------------------------";
         JOptionPane.showMessageDialog(this, str, "About", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    //展示Demo
+    private void demoMenuItemActionPerformed(ActionEvent e) {
+        if(!showSaveComfirm("Exist unsaved content, save before open the demo?"))
+            return;
+
+        String str="//这是旋律\n" +
+                "paragraph melody:\n" +
+                "speed= 90\n" +
+                "1= G\n" +
+                "(5)52 15(5) <221 221>\n" +
+                "(5)1{55}6521<2224 4221>\n" +
+                "end\n" +
+                "\n" +
+                "/*\n" +
+                "多行注释\n" +
+                "多行注释\n" +
+                "多行注释\n" +
+                "*/\n" +
+                "\n" +
+                "//这是贝斯\n" +
+                "paragraph bass:\n" +
+                "speed= 90\n" +
+                "1= G\n" +
+                "13#22<1111>\n" +
+                "13#22<1111>\n" +
+                "end\n" +
+                "\n" +
+                "play(melody&bass)\n";
+        inputTextPane.setText(str);
+        refreshColor();
+        hasChanged=false;
     }
 
 
@@ -337,6 +420,7 @@ public class MiniGUI extends JFrame {
         buildMenu = new JMenu();
         buildMenuItem = new JMenuItem();
         helpMenu = new JMenu();
+        demoMenuItem = new JMenuItem();
         aboutMenuItem = new JMenuItem();
         panel1 = new JPanel();
         scrollPane1 = new JScrollPane();
@@ -416,6 +500,11 @@ public class MiniGUI extends JFrame {
             {
                 helpMenu.setText("Help");
 
+                //---- demoMenuItem ----
+                demoMenuItem.setText("Demo");
+                demoMenuItem.addActionListener(e -> demoMenuItemActionPerformed(e));
+                helpMenu.add(demoMenuItem);
+
                 //---- aboutMenuItem ----
                 aboutMenuItem.setText("About");
                 aboutMenuItem.addActionListener(e -> aboutMenuItemActionPerformed(e));
@@ -475,6 +564,7 @@ public class MiniGUI extends JFrame {
     private JMenu buildMenu;
     private JMenuItem buildMenuItem;
     private JMenu helpMenu;
+    private JMenuItem demoMenuItem;
     private JMenuItem aboutMenuItem;
     private JPanel panel1;
     private JScrollPane scrollPane1;

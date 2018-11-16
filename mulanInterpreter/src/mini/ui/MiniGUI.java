@@ -71,9 +71,15 @@ public class MiniGUI extends JFrame {
         inputTextPane.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() != KeyEvent.VK_BACK_SPACE) {
-                    autoComplete();
-                }
+                if (e.getKeyCode() == KeyEvent.VK_UP ||
+                        e.getKeyCode() == KeyEvent.VK_DOWN ||
+                        e.getKeyCode() == KeyEvent.VK_LEFT ||
+                        e.getKeyCode() == KeyEvent.VK_RIGHT ||
+                        e.getKeyCode() == KeyEvent.VK_BACK_SPACE ||
+                        e.getKeyCode() == KeyEvent.VK_SHIFT)
+                    return;
+
+                autoComplete();
                 refreshColor();
             }
 
@@ -92,54 +98,56 @@ public class MiniGUI extends JFrame {
     //自动删除界符
     private void autoRemove() {
         StringBuilder input = new StringBuilder(inputTextPane.getText().replace("\r", ""));
-        if (input.length() > 1 && inputTextPane.getCaretPosition() == input.length() - 1) {
-            int pos = inputTextPane.getCaretPosition() - 1;
-            if ((input.charAt(pos) == '(' && input.charAt(pos + 1) == ')') ||
-                    (input.charAt(pos) == '[' && input.charAt(pos + 1) == ']') ||
-                    (input.charAt(pos) == '<' && input.charAt(pos + 1) == '>') ||
-                    (input.charAt(pos) == '{' && input.charAt(pos + 1) == '}')) {
-                input.deleteCharAt(input.length() - 1);
+        int pos = inputTextPane.getCaretPosition();
+        if (input.length() > 1 && pos < input.length() && pos > 0) {
+            if ((input.charAt(pos - 1) == '(' && input.charAt(pos) == ')') ||
+                    (input.charAt(pos - 1) == '[' && input.charAt(pos) == ']') ||
+                    (input.charAt(pos - 1) == '<' && input.charAt(pos) == '>') ||
+                    (input.charAt(pos - 1) == '{' && input.charAt(pos) == '}')) {
+                input.deleteCharAt(pos);
                 inputTextPane.setText(input.toString());
+                inputTextPane.setCaretPosition(pos);
                 return;
             }
         }
     }
 
     //自动补全界符与注释符号
-    private void autoComplete() {
-        StringBuilder input = new StringBuilder(inputTextPane.getText().replace("\r", ""));
-        if (input.length() > 0 && inputTextPane.getCaretPosition() == input.length()) {
-            switch (input.charAt(inputTextPane.getCaretPosition() - 1)) {
-                case '(':
-                    input.append(')');
-                    inputTextPane.setText(input.toString());
-                    inputTextPane.setCaretPosition(input.length() - 1);
-                    return;
-                case '[':
-                    input.append(']');
-                    inputTextPane.setText(input.toString());
-                    inputTextPane.setCaretPosition(input.length() - 1);
-                    return;
-                case '<':
-                    input.append('>');
-                    inputTextPane.setText(input.toString());
-                    inputTextPane.setCaretPosition(input.length() - 1);
-                    return;
-                case '{':
-                    input.append('}');
-                    inputTextPane.setText(input.toString());
-                    inputTextPane.setCaretPosition(input.length() - 1);
-                    return;
-                case '*':
-                    if (input.charAt(inputTextPane.getCaretPosition() - 2) == '/') {
-                        input.append("\n\n*/");
+        private void autoComplete() {
+            StringBuilder input = new StringBuilder(inputTextPane.getText().replace("\r", ""));
+            if (input.length() > 0) {
+                int pos = inputTextPane.getCaretPosition();
+                switch (input.charAt(pos - 1)) {
+                    case '(':
+                        input.insert(pos, ')');
                         inputTextPane.setText(input.toString());
-                        inputTextPane.setCaretPosition(input.length() - 3);
-                    }
-                    return;
+                        inputTextPane.setCaretPosition(pos);
+                        return;
+                    case '[':
+                        input.insert(pos, ']');
+                        inputTextPane.setText(input.toString());
+                        inputTextPane.setCaretPosition(pos);
+                        return;
+                    case '<':
+                        input.insert(pos, '>');
+                        inputTextPane.setText(input.toString());
+                        inputTextPane.setCaretPosition(pos);
+                        return;
+                    case '{':
+                        input.insert(pos, '}');
+                        inputTextPane.setText(input.toString());
+                        inputTextPane.setCaretPosition(pos);
+                        return;
+                    case '*':
+                        if (input.length() > 1 && input.charAt(pos - 2) == '/') {
+                            input.insert(inputTextPane.getCaretPosition(), "\n\n*/");
+                            inputTextPane.setText(input.toString());
+                            inputTextPane.setCaretPosition(pos+1);
+                        }
+                        return;
+                }
             }
         }
-    }
 
     //代码着色
     private void refreshColor() {

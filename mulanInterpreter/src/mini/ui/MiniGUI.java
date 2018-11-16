@@ -113,7 +113,7 @@ public class MiniGUI extends JFrame {
     }
 
     //自动补全界符与注释符号
-        private void autoComplete() {
+    private void autoComplete() {
             StringBuilder input = new StringBuilder(inputTextPane.getText().replace("\r", ""));
             if (input.length() > 0) {
                 int pos = inputTextPane.getCaretPosition();
@@ -267,10 +267,10 @@ public class MiniGUI extends JFrame {
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Music Interpreter File", "mui");
         fileChooser.setFileFilter(filter);
         fileChooser.showSaveDialog(this);
+        if (fileChooser.getSelectedFile() == null)
+            return;
         String fileStr = fileChooser.getSelectedFile().getAbsoluteFile() + ".mui";
         file = new File(fileStr);
-        if (file == null)
-            return;
         try {
             if (!file.exists())
                 file.createNewFile();
@@ -345,9 +345,9 @@ public class MiniGUI extends JFrame {
         outputTextPane = new JTextPane();
 
         //======== this ========
-        setResizable(false);
         setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 12));
         setTitle("Music Interpreter");
+        setResizable(false);
         Container contentPane = getContentPane();
         contentPane.setLayout(new GridLayout());
 

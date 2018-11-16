@@ -98,15 +98,22 @@ public class LexicalAnalysis {
                 }
                 if (i + 1 < input.length() && input.charAt(i) == '/' && input.charAt(i + 1) == '*') {//若为多行注释“/* 。。。*/”则去除该内容
                     i += 2;
-                    while (input.charAt(i) != '*' || input.charAt(i + 1) != '/') {
-                        if (input.charAt(i) == '\n')
-                            temp += String.valueOf(input.charAt(i));
-                        i++;//继续扫描
-                        if (i == input.length()) {
-                            count = -1;
-                            error = true;
-                            return null;
+                    if(i+1<input.length()) {
+                        while (input.charAt(i) != '*' || input.charAt(i + 1) != '/') {
+                            if (input.charAt(i) == '\n')
+                                temp += String.valueOf(input.charAt(i));
+                            i++;//继续扫描
+                            if (i == input.length()) {
+                                count = -1;
+                                error = true;
+                                return null;
+                            }
                         }
+                    }
+                    else{
+                        count = -1;
+                        error = true;
+                        return null;
                     }
                     i += 1;//跨过“*/”
                     continue;
@@ -343,8 +350,11 @@ public class LexicalAnalysis {
                     tokens.add(new Token(-1, "旋律中出现非法字符：" + inputWord.charAt(0), count));
                     return;
                 }
-                //将最前面的单个旋律音符加入tokens中，然后去掉最前面的音符继续分析（以将旋律句子分为单个音符token）
-                syn = 98;
+                //将最前面的单个旋律音符加入tokens中，然后去掉最前面的音符继续分析（已将旋律句子分为单个音符token）
+                if(inputWord.charAt(0)=='0')
+                    syn=94;
+                else
+                    syn = 98;
                 tokens.add(new Token(syn, String.valueOf(inputWord.charAt(0)), count));
                 if (inputWord.length() > 1)
                     Scanner(inputWord.substring(1), false);

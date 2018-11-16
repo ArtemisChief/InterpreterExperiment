@@ -11,6 +11,8 @@ import mini.entity.Token;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -31,7 +33,7 @@ public class MiniGUI extends JFrame {
     private File file;
     private boolean hasSaved = false;
     private SimpleAttributeSet attributeSet;
-    private SimpleAttributeSet rhythmAttributeSet;
+    private SimpleAttributeSet durationAttributeSet;
     private SimpleAttributeSet normalAttributeSet;
     private SimpleAttributeSet commentAttributeSet;
     private StyledDocument inputStyledDocument;
@@ -50,26 +52,35 @@ public class MiniGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         attributeSet = new SimpleAttributeSet();
-        rhythmAttributeSet = new SimpleAttributeSet();
+        durationAttributeSet = new SimpleAttributeSet();
         normalAttributeSet = new SimpleAttributeSet();
         commentAttributeSet = new SimpleAttributeSet();
 
         StyleConstants.setForeground(attributeSet, new Color(30, 80, 180));
         StyleConstants.setBold(attributeSet, true);
-        StyleConstants.setForeground(rhythmAttributeSet, new Color(54, 163, 240));
+        StyleConstants.setForeground(durationAttributeSet, new Color(54, 163, 240));
         StyleConstants.setForeground(commentAttributeSet, new Color(128, 128, 128));
 
         inputStyledDocument = inputTextPane.getStyledDocument();
         outputStyledDocument = outputTextPane.getStyledDocument();
 
         keywordPattern = Pattern.compile("\\bparagraph\\b|\\bspeed=|\\b1=|\\bend\\b|\\bplay");
-        parenPattern = Pattern.compile("<(\\s*\\{?\\s*\\d+\\s*\\}?\\s*)+>");
+        parenPattern = Pattern.compile("<(\\s*\\{?\\s*(\\d|g)+\\s*\\}?\\s*)+>");
 
-        //代码着色
+
         inputTextPane.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() != KeyEvent.VK_BACK_SPACE) {
+                    autoComplete();
+                }
                 refreshColor();
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+                    autoRemove();
             }
         });
 
@@ -78,6 +89,59 @@ public class MiniGUI extends JFrame {
         semanticAnalysis = new SemanticAnalysis();
     }
 
+    //自动删除界符
+    private void autoRemove() {
+        StringBuilder input = new StringBuilder(inputTextPane.getText().replace("\r", ""));
+        if (input.length() > 1 && inputTextPane.getCaretPosition() == input.length() - 1) {
+            int pos = inputTextPane.getCaretPosition() - 1;
+            if ((input.charAt(pos) == '(' && input.charAt(pos + 1) == ')') ||
+                    (input.charAt(pos) == '[' && input.charAt(pos + 1) == ']') ||
+                    (input.charAt(pos) == '<' && input.charAt(pos + 1) == '>') ||
+                    (input.charAt(pos) == '{' && input.charAt(pos + 1) == '}')) {
+                input.deleteCharAt(input.length() - 1);
+                inputTextPane.setText(input.toString());
+                return;
+            }
+        }
+    }
+
+    //自动补全界符与注释符号
+    private void autoComplete() {
+        StringBuilder input = new StringBuilder(inputTextPane.getText().replace("\r", ""));
+        if (input.length() > 0 && inputTextPane.getCaretPosition() == input.length()) {
+            switch (input.charAt(inputTextPane.getCaretPosition() - 1)) {
+                case '(':
+                    input.append(')');
+                    inputTextPane.setText(input.toString());
+                    inputTextPane.setCaretPosition(input.length() - 1);
+                    return;
+                case '[':
+                    input.append(']');
+                    inputTextPane.setText(input.toString());
+                    inputTextPane.setCaretPosition(input.length() - 1);
+                    return;
+                case '<':
+                    input.append('>');
+                    inputTextPane.setText(input.toString());
+                    inputTextPane.setCaretPosition(input.length() - 1);
+                    return;
+                case '{':
+                    input.append('}');
+                    inputTextPane.setText(input.toString());
+                    inputTextPane.setCaretPosition(input.length() - 1);
+                    return;
+                case '*':
+                    if (input.charAt(inputTextPane.getCaretPosition() - 2) == '/') {
+                        input.append("\n\n*/");
+                        inputTextPane.setText(input.toString());
+                        inputTextPane.setCaretPosition(input.length() - 3);
+                    }
+                    return;
+            }
+        }
+    }
+
+    //代码着色
     private void refreshColor() {
         String input = inputTextPane.getText().replace("\r", "");
 
@@ -103,7 +167,7 @@ public class MiniGUI extends JFrame {
             inputStyledDocument.setCharacterAttributes(
                     parenMatcher.start(),
                     parenMatcher.end() - parenMatcher.start(),
-                    rhythmAttributeSet, true
+                    durationAttributeSet, true
             );
         }
 
@@ -356,12 +420,12 @@ public class MiniGUI extends JFrame {
         //======== panel1 ========
         {
             panel1.setLayout(new MigLayout(
-                    "insets 0,hidemode 3",
-                    // columns
-                    "[fill]" +
-                            "[fill]",
-                    // rows
-                    "[fill]"));
+                "insets 0,hidemode 3",
+                // columns
+                "[fill]" +
+                "[fill]",
+                // rows
+                "[fill]"));
 
             //======== scrollPane1 ========
             {

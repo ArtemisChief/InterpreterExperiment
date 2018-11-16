@@ -2,6 +2,12 @@ package mini.entity;
 
 import java.util.ArrayList;
 
+/**
+ * 树节点类
+ * 用于构造语法树
+ * 以便进行语义分析
+ */
+
 public class Node {
     private ArrayList<Node> childNodes;
     private String content;

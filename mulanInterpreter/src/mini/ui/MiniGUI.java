@@ -1,5 +1,5 @@
 /*
- * Created by JFormDesigner on Thu Nov 15 10:05:17 CST 2018
+ * Created by Chief on Thu Nov 15 10:05:17 CST 2018
  */
 
 package mini.ui;
@@ -8,6 +8,7 @@ import mini.component.LexicalAnalysis;
 import mini.component.SemanticAnalysis;
 import mini.component.SyntacticAnalysis;
 import mini.entity.Token;
+import mini.utils.LineNumberHeaderView;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;

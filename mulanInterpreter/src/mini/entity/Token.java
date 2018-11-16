@@ -1,5 +1,11 @@
 package mini.entity;
 
+/**
+ * 词类
+ * 用于词法分析构造token数组
+ * 以便进行语法分析
+ */
+
 public class Token {
     private int syn;
     private String content;

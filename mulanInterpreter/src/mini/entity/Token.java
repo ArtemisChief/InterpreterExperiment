@@ -103,8 +103,8 @@ public class Token {
                 break;
         }
         if(count==-1)
-            return String.format("%-14s\t%-24s类型码:%s",content,type,syn);
-        return String.format("Line%-10s%-14s\t%-24s\t类型码:%s",count,content,type,syn);
+            return String.format("%-9s\t%-13s\t类型码:%s\n",content,type,syn);
+        return String.format("Line%-8s\t%-9s\t%-13s\t类型码:%s\n",count,content,type,syn);
     }
 
     public int getSyn(){

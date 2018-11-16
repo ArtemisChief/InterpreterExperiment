@@ -4,42 +4,47 @@
 
 package mini.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.io.BufferedReader;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.sound.sampled.Line;
+import mini.component.LexicalAnalysis;
+import mini.component.SemanticAnalysis;
+import mini.component.SyntacticAnalysis;
+import mini.entity.Token;
+import net.miginfocom.swing.MigLayout;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.Document;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-
-import mini.utils.LineNumberHeaderView;
-import net.miginfocom.swing.*;
-import sun.plugin2.util.ColorUtil;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Chief
  */
 public class MiniGUI extends JFrame {
 
-    private String fileStr;
+    private File file;
+    private boolean hasSaved = false;
     private SimpleAttributeSet attributeSet;
-    private SimpleAttributeSet rhythmAttributeSet;
+    private SimpleAttributeSet durationAttributeSet;
     private SimpleAttributeSet normalAttributeSet;
     private SimpleAttributeSet commentAttributeSet;
     private StyledDocument inputStyledDocument;
     //todo 输出内容高亮
     private StyledDocument outputStyledDocument;
-    private Pattern keywordPattern=Pattern.compile("\\bparagraph\\b|\\bspeed=|\\b1=|\\bend\\b|\\bplay");
-    private Pattern parenPattern=Pattern.compile("<(\\s*\\{?\\s*\\d+\\s*\\}?\\s*)+>");
+    private Pattern keywordPattern;
+    private Pattern parenPattern;
+
+    private LexicalAnalysis lexicalAnalysis;
+    private SyntacticAnalysis syntacticAnalysis;
+    private SemanticAnalysis semanticAnalysis;
 
     public MiniGUI() {
         initComponents();
@@ -47,112 +52,266 @@ public class MiniGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         attributeSet = new SimpleAttributeSet();
-        rhythmAttributeSet = new SimpleAttributeSet();
+        durationAttributeSet = new SimpleAttributeSet();
         normalAttributeSet = new SimpleAttributeSet();
         commentAttributeSet = new SimpleAttributeSet();
+
+        StyleConstants.setForeground(attributeSet, new Color(30, 80, 180));
+        StyleConstants.setBold(attributeSet, true);
+        StyleConstants.setForeground(durationAttributeSet, new Color(54, 163, 240));
+        StyleConstants.setForeground(commentAttributeSet, new Color(128, 128, 128));
 
         inputStyledDocument = inputTextPane.getStyledDocument();
         outputStyledDocument = outputTextPane.getStyledDocument();
 
-        StyleConstants.setForeground(attributeSet, new Color(30, 80, 180));
-        StyleConstants.setBold(attributeSet, true);
-        StyleConstants.setForeground(rhythmAttributeSet, new Color(54, 163, 240));
-        StyleConstants.setForeground(commentAttributeSet, new Color(128, 128, 128));
+        keywordPattern = Pattern.compile("\\bparagraph\\b|\\bspeed=|\\b1=|\\bend\\b|\\bplay");
+        parenPattern = Pattern.compile("<(\\s*\\{?\\s*(\\d|g)+\\s*\\}?\\s*)+>");
 
-        //代码着色
+
         inputTextPane.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                String input = inputTextPane.getText().replace("\r", "");
-
-                inputStyledDocument.setCharacterAttributes(
-                        0,
-                        input.length(),
-                        normalAttributeSet, true
-                );
-
-                //关键字着色
-                Matcher inputMatcher = keywordPattern.matcher(input);
-                while (inputMatcher.find()) {
-                    inputStyledDocument.setCharacterAttributes(
-                            inputMatcher.start(),
-                            inputMatcher.end() - inputMatcher.start(),
-                            attributeSet, true
-                    );
+                if (e.getKeyCode() != KeyEvent.VK_BACK_SPACE) {
+                    autoComplete();
                 }
+                refreshColor();
+            }
 
-                //节奏片段着色
-                Matcher parenMatcher = parenPattern.matcher(input);
-                while (parenMatcher.find()) {
-                    inputStyledDocument.setCharacterAttributes(
-                            parenMatcher.start(),
-                            parenMatcher.end() - parenMatcher.start(),
-                            rhythmAttributeSet, true
-                    );
-                }
-
-                //注释着色
-                for (int i = 0; i < input.length(); i++) {
-                    //单行注释
-                    if (i + 1 < input.length())
-                        if (input.charAt(i) == '/' && input.charAt(i + 1) == '/')
-                            while (i + 1 < input.length() && input.charAt(i) != '\n') {
-                                i++;
-                                inputStyledDocument.setCharacterAttributes(
-                                        i - 1,
-                                        2,
-                                        commentAttributeSet, true
-                                );
-                            }
-
-                    //多行注释
-                    if (i + 1 < input.length() && input.charAt(i) == '/' && input.charAt(i + 1) == '*')
-                        while (i + 1 < input.length() && (input.charAt(i) != '*' || input.charAt(i + 1) != '/')) {
-                            i++;
-                            inputStyledDocument.setCharacterAttributes(
-                                    i - 1,
-                                    3,
-                                    commentAttributeSet, true
-                            );
-                        }
-                }
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+                    autoRemove();
             }
         });
+
+        lexicalAnalysis = new LexicalAnalysis();
+        syntacticAnalysis = new SyntacticAnalysis();
+        semanticAnalysis = new SemanticAnalysis();
     }
 
-    private void newMenuItemMouseClicked(MouseEvent e) {
+    //自动删除界符
+    private void autoRemove() {
+        StringBuilder input = new StringBuilder(inputTextPane.getText().replace("\r", ""));
+        if (input.length() > 1 && inputTextPane.getCaretPosition() == input.length() - 1) {
+            int pos = inputTextPane.getCaretPosition() - 1;
+            if ((input.charAt(pos) == '(' && input.charAt(pos + 1) == ')') ||
+                    (input.charAt(pos) == '[' && input.charAt(pos + 1) == ']') ||
+                    (input.charAt(pos) == '<' && input.charAt(pos + 1) == '>') ||
+                    (input.charAt(pos) == '{' && input.charAt(pos + 1) == '}')) {
+                input.deleteCharAt(input.length() - 1);
+                inputTextPane.setText(input.toString());
+                return;
+            }
+        }
+    }
+
+    //自动补全界符与注释符号
+    private void autoComplete() {
+        StringBuilder input = new StringBuilder(inputTextPane.getText().replace("\r", ""));
+        if (input.length() > 0 && inputTextPane.getCaretPosition() == input.length()) {
+            switch (input.charAt(inputTextPane.getCaretPosition() - 1)) {
+                case '(':
+                    input.append(')');
+                    inputTextPane.setText(input.toString());
+                    inputTextPane.setCaretPosition(input.length() - 1);
+                    return;
+                case '[':
+                    input.append(']');
+                    inputTextPane.setText(input.toString());
+                    inputTextPane.setCaretPosition(input.length() - 1);
+                    return;
+                case '<':
+                    input.append('>');
+                    inputTextPane.setText(input.toString());
+                    inputTextPane.setCaretPosition(input.length() - 1);
+                    return;
+                case '{':
+                    input.append('}');
+                    inputTextPane.setText(input.toString());
+                    inputTextPane.setCaretPosition(input.length() - 1);
+                    return;
+                case '*':
+                    if (input.charAt(inputTextPane.getCaretPosition() - 2) == '/') {
+                        input.append("\n\n*/");
+                        inputTextPane.setText(input.toString());
+                        inputTextPane.setCaretPosition(input.length() - 3);
+                    }
+                    return;
+            }
+        }
+    }
+
+    //代码着色
+    private void refreshColor() {
+        String input = inputTextPane.getText().replace("\r", "");
+
+        inputStyledDocument.setCharacterAttributes(
+                0,
+                input.length(),
+                normalAttributeSet, true
+        );
+
+        //关键字着色
+        Matcher inputMatcher = keywordPattern.matcher(input);
+        while (inputMatcher.find()) {
+            inputStyledDocument.setCharacterAttributes(
+                    inputMatcher.start(),
+                    inputMatcher.end() - inputMatcher.start(),
+                    attributeSet, true
+            );
+        }
+
+        //节奏片段着色
+        Matcher parenMatcher = parenPattern.matcher(input);
+        while (parenMatcher.find()) {
+            inputStyledDocument.setCharacterAttributes(
+                    parenMatcher.start(),
+                    parenMatcher.end() - parenMatcher.start(),
+                    durationAttributeSet, true
+            );
+        }
+
+        //注释着色
+        for (int i = 0; i < input.length(); i++) {
+            //单行注释
+            if (i + 1 < input.length())
+                if (input.charAt(i) == '/' && input.charAt(i + 1) == '/')
+                    while (i + 1 < input.length() && input.charAt(i) != '\n') {
+                        i++;
+                        inputStyledDocument.setCharacterAttributes(
+                                i - 1,
+                                2,
+                                commentAttributeSet, true
+                        );
+                    }
+
+            //多行注释
+            if (i + 1 < input.length() && input.charAt(i) == '/' && input.charAt(i + 1) == '*')
+                while (i + 1 < input.length() && (input.charAt(i) != '*' || input.charAt(i + 1) != '/')) {
+                    i++;
+                    inputStyledDocument.setCharacterAttributes(
+                            i - 1,
+                            3,
+                            commentAttributeSet, true
+                    );
+                }
+        }
+    }
+
+    //新建文件
+    private void newMenuItemActionPerformed(ActionEvent e) {
+        hasSaved = false;
+        inputTextPane.setText("");
+        outputTextPane.setText("");
+    }
+
+    //打开文件
+    private void openMenuItemActionPerformed(ActionEvent e) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Music Interpreter File", "mui");
+        fileChooser.setFileFilter(filter);
+        fileChooser.showOpenDialog(this);
+        file = fileChooser.getSelectedFile();
+        if (file == null)
+            return;
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+            StringBuilder stringBuilder = new StringBuilder();
+            String content;
+            while ((content = bufferedReader.readLine()) != null) {
+                stringBuilder.append(content);
+                stringBuilder.append(System.getProperty("line.separator"));
+            }
+            bufferedReader.close();
+            inputTextPane.setText(stringBuilder.toString());
+            outputTextPane.setText("");
+            refreshColor();
+            hasSaved = true;
+        } catch (FileNotFoundException e1) {
+//            e1.printStackTrace();
+        } catch (IOException e1) {
+//            e1.printStackTrace();
+        }
+    }
+
+    //保存文件
+    private void saveMenuItemActionPerformed(ActionEvent e) {
+        if (!hasSaved) {
+            saveAsMenuItemActionPerformed(null);
+        } else {
+            try {
+                if (!file.exists())
+                    file.createNewFile();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+                bufferedWriter.write(inputTextPane.getText());
+                bufferedWriter.close();
+            } catch (IOException e1) {
+//                e1.printStackTrace();
+            }
+        }
+    }
+
+    //另存为文件
+    private void saveAsMenuItemActionPerformed(ActionEvent e) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Music Interpreter File", "mui");
+        fileChooser.setFileFilter(filter);
+        fileChooser.showSaveDialog(this);
+        String fileStr = fileChooser.getSelectedFile().getAbsoluteFile() + ".mui";
+        file = new File(fileStr);
+        if (file == null)
+            return;
+        try {
+            if (!file.exists())
+                file.createNewFile();
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+            bufferedWriter.write(inputTextPane.getText());
+            bufferedWriter.close();
+            hasSaved = true;
+        } catch (FileNotFoundException e1) {
+//            e1.printStackTrace();
+        } catch (IOException e1) {
+//            e1.printStackTrace();
+        }
+    }
+
+    //执行词法分析
+    private void LexMenuItemActionPerformed(ActionEvent e) {
+        StringBuilder stringBuilder = new StringBuilder();
+        lexicalAnalysis.Lex(inputTextPane.getText());
+        if (lexicalAnalysis.getError())
+            stringBuilder.append("检测到词法错误:\n");
+        for (Token token : lexicalAnalysis.getTokens()) {
+            stringBuilder.append(token);
+        }
+        outputTextPane.setText(stringBuilder.toString());
+    }
+
+    //执行语法分析
+    private void synMenuItemActionPerformed(ActionEvent e) {
         // TODO add your code here
     }
 
-    private void openMenuItemMouseClicked(MouseEvent e) {
-        FileDialog fileDialog=new FileDialog(this,"Open File");
-        fileStr=fileDialog.getFile();
-    }
-
-    private void saveMenuItemMouseClicked(MouseEvent e) {
+    //执行语义分析
+    private void semMenuItemActionPerformed(ActionEvent e) {
         // TODO add your code here
     }
 
-    private void saveAsMenuItemMouseClicked(MouseEvent e) {
+    //保存执行文件
+    private void buildMenuItemActionPerformed(ActionEvent e) {
         // TODO add your code here
     }
 
-    private void LexMenuItemMouseClicked(MouseEvent e) {
-        // TODO add your code here
+    private void aboutMenuItemActionPerformed(ActionEvent e) {
+        String str = "-----------------------------------------------------------\n" +
+                "Music Language Interpreter\nMade By Chief, yzdxm and AsrielMao\nVersion: 0.0.1\n\n" +
+                "A light weight interpreter for converting digit score       \n" +
+                "to Arduino code\n" +
+                "-----------------------------------------------------------";
+        JOptionPane.showMessageDialog(this, str, "About", JOptionPane.INFORMATION_MESSAGE);
     }
-
-    private void synMenuItemMouseClicked(MouseEvent e) {
-        // TODO add your code here
-    }
-
-    private void semMenuItemMouseClicked(MouseEvent e) {
-        // TODO add your code here
-    }
-
-    private void buildMenuItemMouseClicked(MouseEvent e) {
-        // TODO add your code here
-    }
-
 
 
     private void initComponents() {
@@ -169,6 +328,8 @@ public class MiniGUI extends JFrame {
         semMenuItem = new JMenuItem();
         buildMenu = new JMenu();
         buildMenuItem = new JMenuItem();
+        helpMenu = new JMenu();
+        aboutMenuItem = new JMenuItem();
         panel1 = new JPanel();
         scrollPane1 = new JScrollPane();
         inputTextPane = new JTextPane();
@@ -191,42 +352,22 @@ public class MiniGUI extends JFrame {
 
                 //---- newMenuItem ----
                 newMenuItem.setText("New");
-                newMenuItem.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        newMenuItemMouseClicked(e);
-                    }
-                });
+                newMenuItem.addActionListener(e -> newMenuItemActionPerformed(e));
                 fileMenu.add(newMenuItem);
 
                 //---- openMenuItem ----
                 openMenuItem.setText("Open");
-                openMenuItem.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        openMenuItemMouseClicked(e);
-                    }
-                });
+                openMenuItem.addActionListener(e -> openMenuItemActionPerformed(e));
                 fileMenu.add(openMenuItem);
 
                 //---- saveMenuItem ----
                 saveMenuItem.setText("Save");
-                saveMenuItem.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        saveMenuItemMouseClicked(e);
-                    }
-                });
+                saveMenuItem.addActionListener(e -> saveMenuItemActionPerformed(e));
                 fileMenu.add(saveMenuItem);
 
                 //---- saveAsMenuItem ----
                 saveAsMenuItem.setText("Save As...");
-                saveAsMenuItem.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        saveAsMenuItemMouseClicked(e);
-                    }
-                });
+                saveAsMenuItem.addActionListener(e -> saveAsMenuItemActionPerformed(e));
                 fileMenu.add(saveAsMenuItem);
             }
             menuBar1.add(fileMenu);
@@ -237,32 +378,17 @@ public class MiniGUI extends JFrame {
 
                 //---- LexMenuItem ----
                 LexMenuItem.setText("Lexical Analysis");
-                LexMenuItem.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        LexMenuItemMouseClicked(e);
-                    }
-                });
+                LexMenuItem.addActionListener(e -> LexMenuItemActionPerformed(e));
                 runMenu.add(LexMenuItem);
 
                 //---- synMenuItem ----
                 synMenuItem.setText("Syntactic Analysis");
-                synMenuItem.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        synMenuItemMouseClicked(e);
-                    }
-                });
+                synMenuItem.addActionListener(e -> synMenuItemActionPerformed(e));
                 runMenu.add(synMenuItem);
 
                 //---- semMenuItem ----
                 semMenuItem.setText("Semantic Analysis");
-                semMenuItem.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        semMenuItemMouseClicked(e);
-                    }
-                });
+                semMenuItem.addActionListener(e -> semMenuItemActionPerformed(e));
                 runMenu.add(semMenuItem);
             }
             menuBar1.add(runMenu);
@@ -273,15 +399,21 @@ public class MiniGUI extends JFrame {
 
                 //---- buildMenuItem ----
                 buildMenuItem.setText("Generate .ino file");
-                buildMenuItem.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        buildMenuItemMouseClicked(e);
-                    }
-                });
+                buildMenuItem.addActionListener(e -> buildMenuItemActionPerformed(e));
                 buildMenu.add(buildMenuItem);
             }
             menuBar1.add(buildMenu);
+
+            //======== helpMenu ========
+            {
+                helpMenu.setText("Help");
+
+                //---- aboutMenuItem ----
+                aboutMenuItem.setText("About");
+                aboutMenuItem.addActionListener(e -> aboutMenuItemActionPerformed(e));
+                helpMenu.add(aboutMenuItem);
+            }
+            menuBar1.add(helpMenu);
         }
         setJMenuBar(menuBar1);
 
@@ -334,6 +466,8 @@ public class MiniGUI extends JFrame {
     private JMenuItem semMenuItem;
     private JMenu buildMenu;
     private JMenuItem buildMenuItem;
+    private JMenu helpMenu;
+    private JMenuItem aboutMenuItem;
     private JPanel panel1;
     private JScrollPane scrollPane1;
     private JTextPane inputTextPane;

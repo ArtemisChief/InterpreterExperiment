@@ -5,35 +5,35 @@ import mini.entity.Token;
 import java.util.ArrayList;
 
 /**
- * <错误,-1> 错误token
- * <score,1> 乐谱
- * <paragraph,2> 段落
- * <speed=?,3> 速度
- * <1=?,4> 调性
- * <end,5>
- * <play,6> 播放操作
- * <(,7>
- * <),8>
- * <[,9>
- * <],10>
- * <{,11>
- * <},12>
- * <<,13>
- * <>,14>
- * <*,15>
- * <,,16>
- * <&,17>
- * <\n,97>换行
- * <音符，98>
- * <时值,99>
- * <标识符100 ，标识符指针>
+ *     <错误,-1> 错误token
+ *     <score,1> 乐谱
+ *     <paragraph,2> 段落
+ *     <speed=?,3> 速度
+ *     <1=?,4> 调性
+ *     <end,5>
+ *     <play,6> 播放操作
+ *     <(,7>
+ *     <),8>
+ *     <[,9>
+ *     <],10>
+ *     <{,11>
+ *     <},12>
+ *     <<,13>
+ *     <>,14>
+ *     <*,15>
+ *     <,,16>
+ *     <&,17>
+ *     <\n,97>换行
+ *     <音符，98>
+ *     <时值,99>
+ *     <标识符100 ，标识符指针>
  */
 
 public class LexicalAnalysis {
 
-    private boolean error = false;
-    private ArrayList<Token> tokens = new ArrayList();
-    private int count = 1;
+    private boolean error;
+    private ArrayList<Token> tokens;
+    private int count;
 
     private int searchReserve(String s) {
         switch (s) {
@@ -98,21 +98,15 @@ public class LexicalAnalysis {
                 }
                 if (i + 1 < input.length() && input.charAt(i) == '/' && input.charAt(i + 1) == '*') {//若为多行注释“/* 。。。*/”则去除该内容
                     i += 2;
-                    if (i + 1 < input.length()) {
-                        while (input.charAt(i) != '*' || input.charAt(i + 1) != '/') {
-                            if (input.charAt(i) == '\n')
-                                temp += String.valueOf(input.charAt(i));
-                            i++;//继续扫描
-                            if (i == input.length()) {
-                                count = -1;
-                                error = true;
-                                return null;
-                            }
+                    while (input.charAt(i) != '*' || input.charAt(i + 1) != '/') {
+                        if (input.charAt(i) == '\n')
+                            temp += String.valueOf(input.charAt(i));
+                        i++;//继续扫描
+                        if (i == input.length()) {
+                            count = -1;
+                            error = true;
+                            return null;
                         }
-                    } else {
-                        count = -1;
-                        error = true;
-                        return null;
                     }
                     i += 1;//跨过“*/”
                     continue;
@@ -350,10 +344,7 @@ public class LexicalAnalysis {
                     return;
                 }
                 //将最前面的单个旋律音符加入tokens中，然后去掉最前面的音符继续分析（以将旋律句子分为单个音符token）
-                if (inputWord.charAt(0) == '0')
-                    syn = 94;
-                else
-                    syn = 98;
+                syn = 98;
                 tokens.add(new Token(syn, String.valueOf(inputWord.charAt(0)), count));
                 if (inputWord.length() > 1)
                     Scanner(inputWord.substring(1), false);
@@ -456,6 +447,9 @@ public class LexicalAnalysis {
 
 
     public void Lex(String input) {
+        count=1;
+        error=false;
+        tokens = new ArrayList();
         //初始化行号
         count = 1;
         //预处理注释、空格
@@ -523,6 +517,4 @@ public class LexicalAnalysis {
     public int getCount() {
         return count;
     }
-
-
 }

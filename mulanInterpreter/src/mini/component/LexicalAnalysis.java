@@ -119,7 +119,10 @@ public class LexicalAnalysis {
                     continue;
                 }
             }
-            if (i < input.length() && input.charAt(i) != '\t' && input.charAt(i) != '\r') {//若出现无用字符，则过滤；否则加载
+            if (i < input.length() && input.charAt(i) == '\t') {//若出现\t则替换成空格
+                temp += " ";
+            }
+            else if (i < input.length() && input.charAt(i) != '\r'){//若出现无用字符，则过滤；否则加载
                 temp += String.valueOf(input.charAt(i));
             }
         }

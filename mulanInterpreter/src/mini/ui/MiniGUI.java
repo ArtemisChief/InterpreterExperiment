@@ -62,7 +62,7 @@ public class MiniGUI extends JFrame {
         inputStyledDocument = inputTextPane.getStyledDocument();
         outputStyledDocument = outputTextPane.getStyledDocument();
         keywordPattern = Pattern.compile("\\bparagraph\\b|\\bspeed=|\\b1=|\\bend\\b|\\bplay");
-        parenPattern = Pattern.compile("<(\\s*\\{?\\s*(\\d|g)+\\s*\\}?\\s*)+>");
+        parenPattern = Pattern.compile("<(\\s*\\{?\\s*(1|2|4|8|g)+\\s*\\}?\\s*)+>");
 
         //关闭窗口提示
         addWindowListener(new WindowAdapter() {
@@ -123,7 +123,7 @@ public class MiniGUI extends JFrame {
         syntacticAnalysis = new SyntacticAnalysis();
         semanticAnalysis = new SemanticAnalysis();
 
-        //滚动条
+        //行号与滚动条
         scrollPane3.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
         scrollPane3.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         String lineStr = "";
@@ -419,17 +419,6 @@ public class MiniGUI extends JFrame {
         hasChanged=false;
     }
 
-    //
-    private void inputTextPaneFocusGained(FocusEvent e) {
-        scrollPane3.getVerticalScrollBar();
-    }
-
-    //
-    private void outputTextPaneFocusGained(FocusEvent e) {
-        // TODO add your code here
-    }
-
-
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         menuBar1 = new JMenuBar();
@@ -573,12 +562,6 @@ public class MiniGUI extends JFrame {
                 inputTextPane.setFont(new Font("Microsoft YaHei", Font.PLAIN, 14));
                 inputTextPane.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
                 inputTextPane.setBorder(null);
-                inputTextPane.addFocusListener(new FocusAdapter() {
-                    @Override
-                    public void focusGained(FocusEvent e) {
-                        inputTextPaneFocusGained(e);
-                    }
-                });
                 scrollPane1.setViewportView(inputTextPane);
             }
             panel1.add(scrollPane1, "cell 1 0,width 400:400:400,height 600:600:600");
@@ -590,12 +573,6 @@ public class MiniGUI extends JFrame {
                 outputTextPane.setFont(new Font("Microsoft YaHei", Font.PLAIN, 14));
                 outputTextPane.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
                 outputTextPane.setBorder(null);
-                outputTextPane.addFocusListener(new FocusAdapter() {
-                    @Override
-                    public void focusGained(FocusEvent e) {
-                        outputTextPaneFocusGained(e);
-                    }
-                });
                 scrollPane2.setViewportView(outputTextPane);
             }
             panel1.add(scrollPane2, "cell 2 0,width 400:400:400,height 600:600:600");

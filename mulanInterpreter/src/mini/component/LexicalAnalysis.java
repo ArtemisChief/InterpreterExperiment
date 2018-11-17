@@ -476,9 +476,11 @@ public class LexicalAnalysis {
         int start = 0;
         for (int i = 0; i < input.length() && !error; i++) {
             //start==i且当前字符为空格时继续以略过连续空格
-            if (input.charAt(i) == ' ' && start == i) {
-                i++;
-                start = i;
+            if (i<input.length()&&input.charAt(i) == ' ' && start == i) {
+                while (i<input.length()&&input.charAt(i) == ' ' && start == i){
+                    i++;
+                    start = i;
+                }
                 continue;
             }
             //出现空格时，将start到空格处的字符串分析

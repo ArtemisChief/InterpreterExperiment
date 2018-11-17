@@ -31,6 +31,8 @@ public class MiniGUI extends JFrame {
     private File file;
     private boolean hasSaved = false;
     private boolean hasChanged=false;
+    private boolean ctrlPressed=false;
+    private boolean sPressed=false;
     private SimpleAttributeSet attributeSet;
     private SimpleAttributeSet durationAttributeSet;
     private SimpleAttributeSet normalAttributeSet;
@@ -62,7 +64,7 @@ public class MiniGUI extends JFrame {
         inputStyledDocument = inputTextPane.getStyledDocument();
         outputStyledDocument = outputTextPane.getStyledDocument();
         keywordPattern = Pattern.compile("\\bparagraph\\b|\\bspeed=|\\b1=|\\bend\\b|\\bplay");
-        parenPattern = Pattern.compile("<(\\s*\\{?\\s*(1|2|4|8|g)+\\s*\\}?\\s*)+>");
+        parenPattern = Pattern.compile("<(\\s*\\{?\\s*(1|2|4|8|g|\\*)+\\s*\\}?\\s*)+>");
 
         //关闭窗口提示
         addWindowListener(new WindowAdapter() {
@@ -83,9 +85,18 @@ public class MiniGUI extends JFrame {
                         e.getKeyCode() == KeyEvent.VK_RIGHT ||
                         e.getKeyCode() == KeyEvent.VK_BACK_SPACE ||
                         e.getKeyCode() == KeyEvent.VK_SHIFT ||
-                        e.getKeyCode() == KeyEvent.VK_CONTROL ||
                         e.getKeyCode() == KeyEvent.VK_ALT)
                     return;
+
+                if(e.getKeyCode()==KeyEvent.VK_CONTROL){
+                    ctrlPressed=false;
+                    return;
+                }
+
+                if(e.getKeyCode()==KeyEvent.VK_S) {
+                    sPressed = false;
+                    return;
+                }
 
                 autoComplete();
                 refreshColor();
@@ -97,6 +108,18 @@ public class MiniGUI extends JFrame {
                     autoRemove();
                     refreshColor();
                 }
+
+                if(e.getKeyCode()==KeyEvent.VK_CONTROL)
+                    ctrlPressed=true;
+
+                if(e.getKeyCode()==KeyEvent.VK_S)
+                    sPressed=true;
+
+                if(ctrlPressed&&sPressed) {
+                    sPressed = false;
+                    ctrlPressed = false;
+                    saveMenuItemActionPerformed(null);
+                }
             }
         });
 
@@ -104,17 +127,17 @@ public class MiniGUI extends JFrame {
         inputTextPane.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                hasChanged = true;
+                contentChanged();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                hasChanged = true;
+                contentChanged();
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                hasChanged = true;
+                contentChanged();
             }
         });
 
@@ -131,6 +154,16 @@ public class MiniGUI extends JFrame {
             lineStr += i + "\n";
         lineTextArea.setText(lineStr);
         scrollPane1.getVerticalScrollBar().addAdjustmentListener(e -> scrollPane3.getVerticalScrollBar().setValue(scrollPane1.getVerticalScrollBar().getValue()));
+    }
+
+    //内容变动调用的函数
+    private void contentChanged(){
+        if(hasChanged)
+            return;
+
+        hasChanged=true;
+        if(this.getTitle().lastIndexOf("(Unsaved)")==-1)
+            this.setTitle(this.getTitle()+" (Unsaved)");
     }
 
     //内容变动之后是否保存
@@ -171,36 +204,37 @@ public class MiniGUI extends JFrame {
     private void autoComplete() {
         StringBuilder input = new StringBuilder(inputTextPane.getText().replace("\r", ""));
         int pos = inputTextPane.getCaretPosition();
-        if (input.length() > 0 && pos > 0) {
-            switch (input.charAt(pos - 1)) {
-                case '(':
-                    input.insert(pos, ')');
-                    inputTextPane.setText(input.toString());
-                    inputTextPane.setCaretPosition(pos);
-                    return;
-                case '[':
-                    input.insert(pos, ']');
-                    inputTextPane.setText(input.toString());
-                    inputTextPane.setCaretPosition(pos);
-                    return;
-                case '<':
-                    input.insert(pos, '>');
-                    inputTextPane.setText(input.toString());
-                    inputTextPane.setCaretPosition(pos);
-                    return;
-                case '{':
-                    input.insert(pos, '}');
-                    inputTextPane.setText(input.toString());
-                    inputTextPane.setCaretPosition(pos);
-                    return;
-                case '*':
-                    if (input.length() > 1 && input.charAt(pos - 2) == '/') {
-                        input.insert(inputTextPane.getCaretPosition(), "\n\n*/");
+        if (pos > 0) {
+            if (pos < input.length() && (input.substring(pos, pos + 1).equals(" ")||input.substring(pos, pos + 1).equals("\n")) || pos == input.length())
+                switch (input.charAt(pos - 1)) {
+                    case '(':
+                        input.insert(pos, ')');
                         inputTextPane.setText(input.toString());
-                        inputTextPane.setCaretPosition(pos + 1);
-                    }
-                    return;
-            }
+                        inputTextPane.setCaretPosition(pos);
+                        return;
+                    case '[':
+                        input.insert(pos, ']');
+                        inputTextPane.setText(input.toString());
+                        inputTextPane.setCaretPosition(pos);
+                        return;
+                    case '<':
+                        input.insert(pos, '>');
+                        inputTextPane.setText(input.toString());
+                        inputTextPane.setCaretPosition(pos);
+                        return;
+                    case '{':
+                        input.insert(pos, '}');
+                        inputTextPane.setText(input.toString());
+                        inputTextPane.setCaretPosition(pos);
+                        return;
+                    case '*':
+                        if (input.charAt(pos - 2) == '/') {
+                            input.insert(inputTextPane.getCaretPosition(), "\n\n*/");
+                            inputTextPane.setText(input.toString());
+                            inputTextPane.setCaretPosition(pos + 1);
+                        }
+                        return;
+                }
         }
     }
 
@@ -268,6 +302,7 @@ public class MiniGUI extends JFrame {
             inputTextPane.setText("");
             outputTextPane.setText("");
             hasChanged = false;
+            this.setTitle("Music Interpreter - New File");
         }
     }
 
@@ -298,6 +333,7 @@ public class MiniGUI extends JFrame {
             refreshColor();
             hasSaved = true;
             hasChanged = false;
+            this.setTitle("Music Interpreter - "+file.getName());
         } catch (FileNotFoundException e1) {
 //            e1.printStackTrace();
         } catch (IOException e1) {
@@ -317,6 +353,7 @@ public class MiniGUI extends JFrame {
                 bufferedWriter.write(inputTextPane.getText());
                 bufferedWriter.close();
                 hasChanged = false;
+                this.setTitle("Music Interpreter - " + file.getName());
             } catch (IOException e1) {
 //                e1.printStackTrace();
             }
@@ -332,7 +369,9 @@ public class MiniGUI extends JFrame {
         fileChooser.showSaveDialog(this);
         if (fileChooser.getSelectedFile() == null)
             return;
-        String fileStr = fileChooser.getSelectedFile().getAbsoluteFile() + ".mui";
+        String fileStr = fileChooser.getSelectedFile().getAbsoluteFile().toString();
+        if (fileStr.lastIndexOf(".mui") == -1)
+            fileStr += ".mui";
         file = new File(fileStr);
         try {
             if (!file.exists())
@@ -342,6 +381,7 @@ public class MiniGUI extends JFrame {
             bufferedWriter.close();
             hasSaved = true;
             hasChanged = false;
+            this.setTitle("Music Interpreter - " + file.getName());
         } catch (FileNotFoundException e1) {
 //            e1.printStackTrace();
         } catch (IOException e1) {
@@ -391,32 +431,46 @@ public class MiniGUI extends JFrame {
         if(!showSaveComfirm("Exist unsaved content, save before open the demo?"))
             return;
 
-        String str="//这是旋律\n" +
-                "paragraph melody\n" +
-                "speed= 90\n" +
-                "1= G\n" +
-                "(5)52 15(5) <221 221>\n" +
-                "(5)1{55}6521<2224 4221>\n" +
+        String str="/*\n" +
+                " 欢乐颂\n" +
+                " 女高音 + 女中音\n" +
+                " 双声部 Version\n" +
+                " */\n" +
+                "\n" +
+                "//女高音\n" +
+                "paragraph soprano\n" +
+                "speed= 100\n" +
+                "1= D\n" +
+                "3345 5432 <4444 4444>\n" +
+                "1123 322 <4444 4*82>\n" +
+                "3345 5432 <4444 4444>\n" +
+                "1123 211 <4444 4*82>\n" +
+                "2231 23431 <4444 4{88}44>\n" +
+                "23432 12(5) <4{88}44 {44}4>\n" +
+                "33345 54342 <{44}444 44{48}8>\n" +
+                "1123 211 <4444 4*82>\n" +
                 "end\n" +
                 "\n" +
-                "/*\n" +
-                "多行注释\n" +
-                "多行注释\n" +
-                "多行注释\n" +
-                "*/\n" +
-                "\n" +
-                "//这是贝斯\n" +
-                "paragraph bass\n" +
-                "speed= 90\n" +
-                "1= G\n" +
-                "13#22<1111>\n" +
-                "13#22<1111>\n" +
+                "//女中音\n" +
+                "paragraph alto\n" +
+                "speed= 100\n" +
+                "1= D\n" +
+                "1123 321(5) <4444 4444>\n" +
+                "(3555) 1(77) <4444 4*82>\n" +
+                "1123 321(5) <4444 4444>\n" +
+                "(3555) (533) <4444 4*82>\n" +
+                "(77)1(5) (77)1(5) <4444 4444>\n" +
+                "(7#5#5#56#45) <4444 {44}4>\n" +
+                "11123 3211(5) <{44}444 44{48}8>\n" +
+                "(3555 533) <4444 4*82>\n" +
                 "end\n" +
                 "\n" +
-                "play(melody&bass)\n";
+                "//双声部同时播放\n" +
+                "play(melody&bass)";
         inputTextPane.setText(str);
         refreshColor();
         hasChanged=false;
+        this.setTitle("Music Interpreter - Demo (Unsaved)");
     }
 
     private void initComponents() {
@@ -446,7 +500,7 @@ public class MiniGUI extends JFrame {
 
         //======== this ========
         setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 12));
-        setTitle("Music Interpreter");
+        setTitle("Music Interpreter - New File");
         setResizable(false);
         Container contentPane = getContentPane();
         contentPane.setLayout(new GridLayout());

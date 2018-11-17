@@ -11,6 +11,8 @@ public class SyntacticAnalysis {
     private Node AbstractSyntaxTree;
     private int index;
 
+    private boolean sentenceError;
+
     //Start
     public Node Parse(ArrayList<Token> tokens){
         index = 0;
@@ -48,11 +50,12 @@ public class SyntacticAnalysis {
         //identifier(段落名)
         if(tokens.get(index).getSyn()!=100){
             nextLine();
-            return new Node("Error", "缺少标识符");
+            paragraph.addChild(new Node("Error", "缺少标识符"));
+        }else{
+            terminalNode = new Node("identifier",tokens.get(index).getContent());
+            paragraph.addChild(terminalNode);
+            index++;
         }
-        terminalNode = new Node("identifier",tokens.get(index).getContent());
-        paragraph.addChild(terminalNode);
-        index++;
 
         //speed & tone
         Node speed,tone;
@@ -81,6 +84,14 @@ public class SyntacticAnalysis {
 
         //{ sentence }
         while(tokens.get(index).getSyn()!=5){
+            //没遇到end就遇到play或paragraph
+            if(tokens.get(index).getSyn()==6|tokens.get(index).getSyn()==2){
+                paragraph.addChild(new Node("Error","缺少end标识"));
+                return paragraph;
+            }
+
+            sentenceError = false;
+
             Node sentence = parseSentence();
             paragraph.addChild(sentence);
         }
@@ -152,11 +163,13 @@ public class SyntacticAnalysis {
 
         //melody
         Node melody = parseMelody();
+        sentence.addChild(melody);
+        if(sentenceError){
+            return sentence;
+        }
 
         //rhythm
         Node rhythm = parseRhythm();
-
-        sentence.addChild(melody);
         sentence.addChild(rhythm);
 
         return sentence;
@@ -167,6 +180,8 @@ public class SyntacticAnalysis {
         Node melody = new Node("melody");
 
         while(tokens.get(index).getSyn()!=13){
+            if(sentenceError)
+                break;
             Node notesInEight = parseNotesInEight();
             melody.addChild(notesInEight);
         }
@@ -184,9 +199,12 @@ public class SyntacticAnalysis {
                 index++;
 
                 notesInEight.addChild(parseNotes());
+                if(sentenceError)
+                    return  notesInEight;
 
                 if(tokens.get(index).getSyn()!=8){
                     nextLine();
+                    sentenceError = true;
                     return new Node("Error","缺少右括号");
                 }
                 notesInEight.addChild(new Node("lower right parentheses",")"));
@@ -196,24 +214,37 @@ public class SyntacticAnalysis {
                 index++;
 
                 notesInEight.addChild(parseNotes());
+                if(sentenceError)
+                    return  notesInEight;
 
                 if(tokens.get(index).getSyn()!=10){
                     nextLine();
+                    sentenceError = true;
                     return new Node("Error","缺少右括号");
                 }
                 notesInEight.addChild(new Node("lower right parentheses","]"));
                 index++;
             default:
                 notesInEight.addChild(parseNotes());
+                //if(sentenceError)
+                //    return  notesInEight;
         }
 
         return notesInEight;
     }
 
-    //Notes -> ([#|b] notesValue) | notesValue
+    //Notes -> ([#|b] notesValue) | notesValue | 0
     public Node parseNotes(){
         Node notes = new Node("Notes");
         Node terminalNode;
+
+        //'0',休止符
+        if(tokens.get(index).getSyn()==94){
+            terminalNode = new Node("Rest","0");
+            notes.addChild(terminalNode);
+            index++;
+            return notes;
+        }
 
         //#|b
         if(tokens.get(index).getSyn()==18 | tokens.get(index).getSyn()==19){
@@ -225,6 +256,7 @@ public class SyntacticAnalysis {
         //notesValue
         if(tokens.get(index).getSyn()!=98){
             nextLine();
+            sentenceError = true;
             return new Node("Error", "音符不正确");
         }
         terminalNode = new Node("notes value",tokens.get(index).getContent());
@@ -237,11 +269,80 @@ public class SyntacticAnalysis {
     //rhythm -> '<' length '>'
     public Node parseRhythm(){
         Node rhythm = new Node("Rhythm");
+        Node terminalNode;
 
-        //...
+        //'<'
+        if(tokens.get(index).getSyn()!=13){
+            nextLine();
+            sentenceError = true;
+            return new Node("Error","缺少节奏");
+        }
+        terminalNode = new Node("left Angle brackets","<");
+        rhythm.addChild(terminalNode);
+        index++;
+
+        //length
+        boolean inCurlyBraces = false;
+        while(tokens.get(index).getSyn()!=14){
+
+            //'{'，连音左括号
+            if(tokens.get(index).getSyn()==11){
+                if(inCurlyBraces){
+                    nextLine();
+                    sentenceError = true;
+                    return new Node("Error","连音括号中出现连音括号");
+                }
+                inCurlyBraces=true;
+                terminalNode = new Node("leftCurlyBrace","{");
+                rhythm.addChild(terminalNode);
+                index++;
+            }
+
+            //'}',连音右括号
+            if(tokens.get(index).getSyn()==12){
+                if(!inCurlyBraces){
+                    nextLine();
+                    sentenceError = true;
+                    return new Node("Error","缺少连音左括号");
+                }
+                inCurlyBraces=false;
+                terminalNode = new Node("rightCurlyBrace","}");
+                rhythm.addChild(terminalNode);
+                index++;
+            }
+
+            //音符长度
+            if(tokens.get(index).getSyn()!=99){
+                nextLine();
+                sentenceError = true;
+                return new Node("Error","节奏格式错误");
+            }
+            terminalNode = new Node("length",tokens.get(index).getContent());
+            rhythm.addChild(terminalNode);
+            index++;
+
+            //附点
+            if(tokens.get(index).getSyn()==15){
+                terminalNode = new Node("Dot.","*");
+                rhythm.addChild(terminalNode);
+                index++;
+            }
+        }
+
+
+        //'>'
+        if(tokens.get(index).getSyn()!=14){
+            nextLine();
+            sentenceError = true;
+            return new Node("Error","缺少右尖括号");
+        }
+        terminalNode = new Node("left Angle brackets",">");
+        rhythm.addChild(terminalNode);
+        index++;
 
         return rhythm;
     }
+
 
     //get default speed if never set
     public Node getSpeed(){

@@ -501,8 +501,6 @@ public class LexicalAnalysis {
                 if (!error)
                     count++;
                 isIdentifier = false;
-                if (!error)
-                    tokens.add(new Token(97, "\\n", count));
                 start = i + 1;
                 continue;
             }

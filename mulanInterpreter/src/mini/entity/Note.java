@@ -54,12 +54,35 @@ public class Note {
         public static final String HBS = "2093";
     }
 
-
     public class Duration{
         public static final String _1 = "16";
         public static final String _2 = "8";
         public static final String _4 = "4";
         public static final String _8 = "2";
         public static final String _g = "1";
+    }
+
+    public class Tonality{
+        public static final String CF="0.9439";
+        public static final String C="1";
+        public static final String CS="1.0595";
+        public static final String DF="1.0595";
+        public static final String D="1.1225";
+        public static final String DS="1.1892";
+        public static final String EF="1.1892";
+        public static final String E="1.2599";
+        public static final String ES="1.3348";
+        public static final String FF="1.2599";
+        public static final String F="1.3348";
+        public static final String FS="1.4142";
+        public static final String GF="1.4142";
+        public static final String G="1.4983";
+        public static final String GS="1.5874";
+        public static final String AF="1.5874";
+        public static final String A="1.6818";
+        public static final String AS="1.7818";
+        public static final String BF="1.7818";
+        public static final String B="1.8877";
+        public static final String BS="2";
     }
 }

@@ -7,6 +7,7 @@ package mini.ui;
 import mini.component.LexicalAnalysis;
 import mini.component.SemanticAnalysis;
 import mini.component.SyntacticAnalysis;
+import mini.entity.Node;
 import mini.entity.Token;
 import net.miginfocom.swing.MigLayout;
 
@@ -20,6 +21,7 @@ import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -404,6 +406,16 @@ public class MiniGUI extends JFrame {
     //执行语法分析
     private void synMenuItemActionPerformed(ActionEvent e) {
         // TODO add your code here
+        lexicalAnalysis.Lex(inputTextPane.getText());
+        ArrayList<Token> tokens = lexicalAnalysis.getTokens();
+        Node AbstractSyntaxTree = syntacticAnalysis.Parse(tokens);
+        if (AbstractSyntaxTree == null){
+            System.out.println("null tree");
+            return;
+        }
+        System.out.println("successed");
+        AbstractSyntaxTree.print(1);
+
     }
 
     //执行语义分析

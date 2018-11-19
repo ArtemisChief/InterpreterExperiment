@@ -48,10 +48,7 @@ public class Node {
     }
 
     private boolean isTerminal(){
-////        if(type=="add"||type=="sub"||type=="mul"||type=="div"||type=="number"||type=="lparen"||type=="rparen")
-//            return true;
-//        return false;
-        return true;
+        return content==null;
     }
 
     public String toString() {
@@ -68,7 +65,7 @@ public class Node {
         for (int i = 0; i < height; i++) {
             System.out.printf("\t");
         }
-        System.out.printf("%s\n", this.toString(isTerminal()));
+        System.out.printf("%s\n", this.toString(content!=null));
         for (Node child : childNodes) {
             child.print(height + 1);
         }

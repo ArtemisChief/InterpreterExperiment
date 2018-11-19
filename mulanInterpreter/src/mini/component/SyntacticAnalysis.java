@@ -21,15 +21,17 @@ public class SyntacticAnalysis {
         AbstractSyntaxTree = new Node("root");
 
         //Node score = parseScore();
-        while(tokens.get(index).getSyn()==2){
+        while(tokens.get(index)!=null&&tokens.get(index).getSyn()==2){
             Node paragraph = parseParagraph();
             AbstractSyntaxTree.addChild(paragraph);
         }
 
 
 
-        Node execution = parseExecution();
-        AbstractSyntaxTree.addChild(execution);
+        if(tokens.get(index)!=null){
+            Node execution = parseExecution();
+            AbstractSyntaxTree.addChild(execution);
+        }
 
         //...
 
@@ -209,6 +211,7 @@ public class SyntacticAnalysis {
                 }
                 notesInEight.addChild(new Node("lower right parentheses",")"));
                 index++;
+                break;
             case 9:
                 notesInEight.addChild(new Node("lower left parentheses","["));
                 index++;
@@ -224,6 +227,7 @@ public class SyntacticAnalysis {
                 }
                 notesInEight.addChild(new Node("lower right parentheses","]"));
                 index++;
+                break;
             default:
                 notesInEight.addChild(parseNotes());
                 //if(sentenceError)
@@ -388,7 +392,7 @@ public class SyntacticAnalysis {
         //leftParentheses,(
         if(tokens.get(index).getSyn()!=7){
             nextLine();
-            return new Node("Error", "缺少左括号");
+            return new Node("Error", "缺少左小括号");
         }
         terminalNode = new Node("leftParentheses","(");
         execution.addChild(terminalNode);
@@ -401,7 +405,7 @@ public class SyntacticAnalysis {
         //rightParentheses,(
         if(tokens.get(index).getSyn()!=8){
             nextLine();
-            return new Node("Error", "缺少右括号");
+            return new Node("Error", "缺少右小括号");
         }
         terminalNode = new Node("rightParentheses",")");
         execution.addChild(terminalNode);

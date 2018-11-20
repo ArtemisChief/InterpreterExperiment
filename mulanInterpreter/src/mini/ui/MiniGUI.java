@@ -405,16 +405,23 @@ public class MiniGUI extends JFrame {
 
     //执行语法分析
     private void synMenuItemActionPerformed(ActionEvent e) {
-        // TODO add your code here
         lexicalAnalysis.Lex(inputTextPane.getText());
         ArrayList<Token> tokens = lexicalAnalysis.getTokens();
-        Node AbstractSyntaxTree = syntacticAnalysis.Parse(tokens);
-        if (AbstractSyntaxTree == null){
-            System.out.println("null tree");
+
+        if(lexicalAnalysis.getError())
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("检测到词法错误:\n");
+            for (Token token : lexicalAnalysis.getTokens()) {
+                stringBuilder.append(token);
+            }
+            outputTextPane.setText(stringBuilder.toString());
             return;
         }
-        System.out.println("successed");
-        AbstractSyntaxTree.print(1);
+
+        Node AbstractSyntaxTree = syntacticAnalysis.Parse(tokens);
+
+        outputTextPane.setText(AbstractSyntaxTree.print(0));
 
     }
 
@@ -431,7 +438,7 @@ public class MiniGUI extends JFrame {
     //关于
     private void aboutMenuItemActionPerformed(ActionEvent e) {
         String str = "-----------------------------------------------------------\n" +
-                "Music Language Interpreter\nMade By Chief, yzdxm and AsrielMao\nVersion: 0.0.1\n\n" +
+                "Music Language Interpreter\nMade By Chief, yzdxm and AsrielMao\nVersion: 0.1.0\n\n" +
                 "A light weight interpreter for converting digit score       \n" +
                 "to Arduino code\n" +
                 "-----------------------------------------------------------";

@@ -61,14 +61,16 @@ public class Node {
         return String.format("%s\n", type);
     }
 
-    public void print(int height) {
+    public String print(int height) {
+        String str="";
         for (int i = 0; i < height; i++) {
-            System.out.printf("\t");
+            str+="           ";
         }
-        System.out.printf("%s\n", this.toString(content!=null));
+        str+=this.toString(content!=null)+"\n";
         for (Node child : childNodes) {
-            child.print(height + 1);
+            str+=child.print(height + 1);
         }
+        return str;
     }
 
     public String findError(){

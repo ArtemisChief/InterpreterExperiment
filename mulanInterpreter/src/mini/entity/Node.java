@@ -47,8 +47,8 @@ public class Node {
         return null;
     }
 
-    private boolean isTerminal(){
-        return content==null;
+    public boolean isTerminal(){
+        return content!=null;
     }
 
     public String toString() {

@@ -41,7 +41,7 @@ public class SyntacticAnalysis {
 
     //paragraph -> 'paragraph' identifier speed tone { sentence } 'end'
     public Node parseParagraph(){
-        Node paragraph = new Node("paragraph");
+        Node paragraph = new Node("score");
         Node terminalNode;
 
         //'paragraph',因为遇到'paragraph'才进入此函数，所以第一个不需要判断
@@ -179,14 +179,97 @@ public class SyntacticAnalysis {
 
     //melody -> { NotesInEight }
     public Node parseMelody(){
-        Node melody = new Node("melody");
+        Node melody;
 
+        //一整句存在melody节点的content中
+        String notes = "";
+        int group = 0;
         while(tokens.get(index).getSyn()!=13){
+            //'(',低八度左括号
+            if(tokens.get(index).getSyn()==7){
+                if(group>0){
+                    nextLine();
+                    sentenceError = true;
+                    return new Node("Error","八度转换错误");
+                }
+                group--;
+                notes += "(";
+                index++;
+                continue;
+            }
+            //')',低八度右括号
+            if(tokens.get(index).getSyn()==8){
+                if(group>=0){
+                    nextLine();
+                    sentenceError = true;
+                    return new Node("Error","八度转换错误");
+                }
+                group++;
+                notes += ")";
+                index++;
+                continue;
+            }
+            //'['，高八度左括号
+            if(tokens.get(index).getSyn()==9){
+                if(group<0){
+                    nextLine();
+                    sentenceError = true;
+                    return new Node("Error","八度转换错误");
+                }
+                group++;
+                notes += "[";
+                index++;
+                continue;
+            }
+            //']',高八度右括号
+            if(tokens.get(index).getSyn()==9){
+                if(group<=0){
+                    nextLine();
+                    sentenceError = true;
+                    return new Node("Error","八度转换错误");
+                }
+                group--;
+                notes += "]";
+                index++;
+                continue;
+            }
+
+            //音符
+            Node note = parseNotes();
             if(sentenceError)
-                break;
-            Node notesInEight = parseNotesInEight();
-            melody.addChild(notesInEight);
+                return new Node("Error",note.getContent());
+            notes += note.getContent();
+
+
+
+
+
+//            Node notesInEight = parseNotesInEight();
+//            if(sentenceError){
+//                melody = new Node("melody");
+//                melody.addChild(notesInEight);
+//                return melody;
+//            }
+//            for(Node childNode : notesInEight.getChildren()){
+//                if(childNode.isTerminal()){
+//                    notes += childNode.getContent();
+//                    continue;
+//                }
+//                for(Node cNode : childNode.getChildren()){
+//                    notes += cNode.getContent();
+//                }
+//
+//            }
         }
+        melody = new Node("melody",notes);
+
+//每个音符作为一个节点保存
+//        while(tokens.get(index).getSyn()!=13){
+//            if(sentenceError)
+//                break;
+//            Node notesInEight = parseNotesInEight();
+//            melody.addChild(notesInEight);
+//        }
 
         return melody;
     }
@@ -194,6 +277,8 @@ public class SyntacticAnalysis {
     //NotesInEight -> '(' Notes ')' | '[' Notes ']' | Notes
     public Node parseNotesInEight(){
         Node notesInEight = new Node("NotesInEight");
+
+
 
         switch (tokens.get(index).getSyn()){
             case 7:
@@ -239,21 +324,23 @@ public class SyntacticAnalysis {
 
     //Notes -> ([#|b] notesValue) | notesValue | 0
     public Node parseNotes(){
-        Node notes = new Node("Notes");
-        Node terminalNode;
+        Node notes;
+        String notesValue = "";
 
         //'0',休止符
         if(tokens.get(index).getSyn()==94){
-            terminalNode = new Node("Rest","0");
-            notes.addChild(terminalNode);
+            //terminalNode = new Node("Rest","0");
+            //notes.addChild(terminalNode);
+            notes = new Node("Notes","0");
             index++;
             return notes;
         }
 
         //#|b
         if(tokens.get(index).getSyn()==18 | tokens.get(index).getSyn()==19){
-            terminalNode = new Node("lift mark",tokens.get(index).getContent());
-            notes.addChild(terminalNode);
+            //terminalNode = new Node("lift mark",tokens.get(index).getContent());
+            //notes.addChild(terminalNode);
+            notesValue += tokens.get(index).getContent();
             index++;
         }
 
@@ -263,10 +350,12 @@ public class SyntacticAnalysis {
             sentenceError = true;
             return new Node("Error", "音符不正确");
         }
-        terminalNode = new Node("notes value",tokens.get(index).getContent());
-        notes.addChild(terminalNode);
+        //terminalNode = new Node("notes value",tokens.get(index).getContent());
+        //notes.addChild(terminalNode);
+        notesValue += tokens.get(index).getContent();
         index++;
 
+        notes = new Node("Notes",notesValue);
         return notes;
     }
 
@@ -274,6 +363,7 @@ public class SyntacticAnalysis {
     public Node parseRhythm(){
         Node rhythm = new Node("Rhythm");
         Node terminalNode;
+        String rhythmContent = "";
 
         //'<'
         if(tokens.get(index).getSyn()!=13){
@@ -297,8 +387,9 @@ public class SyntacticAnalysis {
                     return new Node("Error","连音括号中出现连音括号");
                 }
                 inCurlyBraces=true;
-                terminalNode = new Node("leftCurlyBrace","{");
-                rhythm.addChild(terminalNode);
+                //terminalNode = new Node("leftCurlyBrace","{");
+                //rhythm.addChild(terminalNode);
+                rhythmContent += "{";
                 index++;
             }
 
@@ -310,8 +401,9 @@ public class SyntacticAnalysis {
                     return new Node("Error","缺少连音左括号");
                 }
                 inCurlyBraces=false;
-                terminalNode = new Node("rightCurlyBrace","}");
-                rhythm.addChild(terminalNode);
+                //terminalNode = new Node("rightCurlyBrace","}");
+                //rhythm.addChild(terminalNode);
+                rhythmContent += "}";
                 index++;
             }
 
@@ -321,17 +413,20 @@ public class SyntacticAnalysis {
                 sentenceError = true;
                 return new Node("Error","节奏格式错误");
             }
-            terminalNode = new Node("length",tokens.get(index).getContent());
-            rhythm.addChild(terminalNode);
+            //terminalNode = new Node("length",tokens.get(index).getContent());
+            //rhythm.addChild(terminalNode);
+            rhythmContent += tokens.get(index).getContent();
             index++;
 
             //附点
             if(tokens.get(index).getSyn()==15){
-                terminalNode = new Node("Dot.","*");
-                rhythm.addChild(terminalNode);
+                //terminalNode = new Node("Dot.","*");
+                //rhythm.addChild(terminalNode);
+                rhythmContent += "*";
                 index++;
             }
         }
+        rhythm.addChild(new Node("rhythmValue",rhythmContent));
 
 
         //'>'

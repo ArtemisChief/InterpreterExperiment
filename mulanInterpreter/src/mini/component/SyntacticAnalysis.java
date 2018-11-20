@@ -17,7 +17,6 @@ public class SyntacticAnalysis {
     public Node Parse(ArrayList<Token> tokens){
         index = 0;
         this.tokens = tokens;
-        System.out.println("\n-------------------------------------------------------------------\n");
         AbstractSyntaxTree = new Node("root");
 
         //Node score = parseScore();
@@ -46,8 +45,8 @@ public class SyntacticAnalysis {
 
         //'paragraph',因为遇到'paragraph'才进入此函数，所以第一个不需要判断
         Node statement = new Node("statement");
-        terminalNode = new Node("paragraph","paragraph");
-        statement.addChild(terminalNode);
+//        terminalNode = new Node("paragraph","paragraph");
+//        statement.addChild(terminalNode);
         index++;
 
         //identifier(段落名)
@@ -115,8 +114,8 @@ public class SyntacticAnalysis {
         Node terminalNode;
 
         //'speed='
-        terminalNode = new Node("speed mark","speed=");
-        speed.addChild(terminalNode);
+//        terminalNode = new Node("speed mark","speed=");
+//        speed.addChild(terminalNode);
         index++;
 
         //speed value
@@ -133,29 +132,33 @@ public class SyntacticAnalysis {
     }
 
     //tone -> ([#|b] toneValue)|toneValue
-    public Node parseTone(){
-        Node tone = new Node("tone");
+    public Node parseTone() {
+        Node tone = new Node("tonality");
         Node terminalNode;
-
+        String tonality = "";
         //'1='
-        terminalNode = new Node("tone mark","1=");
-        tone.addChild(terminalNode);
+//        terminalNode = new Node("tone mark","1=");
+//        tone.addChild(terminalNode);
         index++;
 
         //#|b
-        if(tokens.get(index).getSyn()==18 | tokens.get(index).getSyn()==19){
-            terminalNode = new Node("lift mark",tokens.get(index).getContent());
-            tone.addChild(terminalNode);
+        if (tokens.get(index).getSyn() == 18 | tokens.get(index).getSyn() == 19) {
+            tonality += tokens.get(index).getContent();
+//            terminalNode = new Node("lift mark",tokens.get(index).getContent());
+//            tone.addChild(terminalNode);
             index++;
         }
 
         //tone value
-        if(tokens.get(index).getSyn()!=95){
+        if (tokens.get(index).getSyn() != 95) {
             nextLine();
             return new Node("Error", "调号不正确");
         }
-        terminalNode = new Node("tone value",tokens.get(index).getContent());
+        tonality += tokens.get(index).getContent();
+        terminalNode = new Node("tone value", tonality);
         tone.addChild(terminalNode);
+//        terminalNode = new Node("tone value",tokens.get(index).getContent());
+//        tone.addChild(terminalNode);
         index++;
 
         return tone;
@@ -362,8 +365,8 @@ public class SyntacticAnalysis {
 
     //rhythm -> '<' length '>'
     public Node parseRhythm(){
-        Node rhythm = new Node("Rhythm");
-        Node terminalNode;
+        Node rhythm = new Node("rhythm");
+//        Node terminalNode;
         String rhythmContent = "";
 
         //'<'
@@ -372,8 +375,8 @@ public class SyntacticAnalysis {
             sentenceError = true;
             return new Node("Error","缺少节奏");
         }
-        terminalNode = new Node("left Angle brackets","<");
-        rhythm.addChild(terminalNode);
+//        terminalNode = new Node("left Angle brackets","<");
+//        rhythm.addChild(terminalNode);
         index++;
 
         //length
@@ -436,8 +439,8 @@ public class SyntacticAnalysis {
             sentenceError = true;
             return new Node("Error","缺少右尖括号");
         }
-        terminalNode = new Node("left Angle brackets",">");
-        rhythm.addChild(terminalNode);
+//        terminalNode = new Node("left Angle brackets",">");
+//        rhythm.addChild(terminalNode);
         index++;
 
         return rhythm;
@@ -462,8 +465,8 @@ public class SyntacticAnalysis {
         Node tone = new Node("tone");
         Node terminalNode;
 
-        terminalNode = new Node("tone mark","1=");
-        tone.addChild(terminalNode);
+//        terminalNode = new Node("tone mark","1=");
+//        tone.addChild(terminalNode);
         terminalNode = new Node("tone value","C");
         tone.addChild(terminalNode);
 
@@ -481,8 +484,8 @@ public class SyntacticAnalysis {
             nextLine();
             return new Node("Error", "Syntax error");
         }
-        terminalNode = new Node("play","play");
-        execution.addChild(terminalNode);
+//        terminalNode = new Node("play","play");
+//        execution.addChild(terminalNode);
         index++;
 
         //leftParentheses,(
@@ -490,8 +493,8 @@ public class SyntacticAnalysis {
             nextLine();
             return new Node("Error", "缺少左小括号");
         }
-        terminalNode = new Node("leftParentheses","(");
-        execution.addChild(terminalNode);
+//        terminalNode = new Node("leftParentheses","(");
+//        execution.addChild(terminalNode);
         index++;
 
         //playlist
@@ -503,8 +506,8 @@ public class SyntacticAnalysis {
             nextLine();
             return new Node("Error", "缺少右小括号");
         }
-        terminalNode = new Node("rightParentheses",")");
-        execution.addChild(terminalNode);
+//        terminalNode = new Node("rightParentheses",")");
+//        execution.addChild(terminalNode);
         index++;
 
 

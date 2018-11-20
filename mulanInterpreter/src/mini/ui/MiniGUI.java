@@ -405,14 +405,14 @@ public class MiniGUI extends JFrame {
 
     //执行语法分析
     private void synMenuItemActionPerformed(ActionEvent e) {
+        StringBuilder stringBuilder = new StringBuilder();
+
         lexicalAnalysis.Lex(inputTextPane.getText());
         ArrayList<Token> tokens = lexicalAnalysis.getTokens();
 
-        if(lexicalAnalysis.getError())
-        {
-            StringBuilder stringBuilder = new StringBuilder();
+        if(lexicalAnalysis.getError()) {
             stringBuilder.append("检测到词法错误:\n");
-            for (Token token : lexicalAnalysis.getTokens()) {
+            for (Token token : tokens) {
                 stringBuilder.append(token);
             }
             outputTextPane.setText(stringBuilder.toString());
@@ -420,9 +420,7 @@ public class MiniGUI extends JFrame {
         }
 
         Node AbstractSyntaxTree = syntacticAnalysis.Parse(tokens);
-
         outputTextPane.setText(AbstractSyntaxTree.print(0));
-
     }
 
     //执行语义分析

@@ -478,7 +478,7 @@ public class MiniGUI extends JFrame {
                 "end\n" +
                 "\n" +
                 "//双声部同时播放\n" +
-                "play(melody&bass)";
+                "play(soprano&alto)";
         inputTextPane.setText(str);
         refreshColor();
         hasChanged=false;

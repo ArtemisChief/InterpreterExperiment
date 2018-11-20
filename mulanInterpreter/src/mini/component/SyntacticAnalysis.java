@@ -267,6 +267,12 @@ public class SyntacticAnalysis {
 //
 //            }
 
+        }//end while
+        if(group!=0){
+            sentenceError = true;
+            isError = true;
+            nextLine();
+            return new Node("Error","Line: " + (tokens.get(index-1).getCount()) +" 八度转换错误");
         }
 
 //每个音符作为一个节点保存
@@ -439,6 +445,14 @@ public class SyntacticAnalysis {
                 index++;
             }
         }
+        if(inCurlyBraces){
+            sentenceError = true;
+            isError = true;
+            nextLine();
+            return new Node("Error","Line: " + (tokens.get(index-1).getCount()) +" 连音符号错误");
+        }
+
+
         rhythm.addChild(new Node("rhythmValue", rhythmContent));
 
 

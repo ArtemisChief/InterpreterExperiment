@@ -394,12 +394,19 @@ public class MiniGUI extends JFrame {
     //执行词法分析
     private void LexMenuItemActionPerformed(ActionEvent e) {
         StringBuilder stringBuilder = new StringBuilder();
-        lexicalAnalysis.Lex(inputTextPane.getText());
-        if (lexicalAnalysis.getError())
-            stringBuilder.append("检测到词法错误:\n");
-        for (Token token : lexicalAnalysis.getTokens()) {
+
+        ArrayList<Token> tokens = lexicalAnalysis.Lex(inputTextPane.getText());
+
+        for (Token token : tokens) {
             stringBuilder.append(token);
         }
+
+        if (lexicalAnalysis.getError()) {
+            stringBuilder.append("检测到词法错误，分析停止");
+            outputTextPane.setText(stringBuilder.toString());
+            return;
+        }
+
         outputTextPane.setText(stringBuilder.toString());
     }
 
@@ -407,25 +414,64 @@ public class MiniGUI extends JFrame {
     private void synMenuItemActionPerformed(ActionEvent e) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        lexicalAnalysis.Lex(inputTextPane.getText());
-        ArrayList<Token> tokens = lexicalAnalysis.getTokens();
+        ArrayList<Token> tokens = lexicalAnalysis.Lex(inputTextPane.getText());
+        for (Token token : tokens) {
+            stringBuilder.append(token);
+        }
 
-        if(lexicalAnalysis.getError()) {
-            stringBuilder.append("检测到词法错误:\n");
-            for (Token token : tokens) {
-                stringBuilder.append(token);
-            }
+        if (lexicalAnalysis.getError()) {
+            stringBuilder.append("\n检测到词法错误，分析停止\n");
             outputTextPane.setText(stringBuilder.toString());
             return;
         }
 
+        stringBuilder.append("\n=======词法分析结束======开始语法分析=======\n\n");
+
         Node AbstractSyntaxTree = syntacticAnalysis.Parse(tokens);
-        outputTextPane.setText(AbstractSyntaxTree.print(0));
+        stringBuilder.append(AbstractSyntaxTree.print(0));
+
+        if (syntacticAnalysis.getIsError()) {
+            stringBuilder.append(syntacticAnalysis.getErrors(AbstractSyntaxTree));
+            stringBuilder.append("\n检测到语法错误，分析停止\n");
+            outputTextPane.setText(stringBuilder.toString());
+            return;
+        }
+        outputTextPane.setText(stringBuilder.toString());
     }
 
     //执行语义分析
     private void semMenuItemActionPerformed(ActionEvent e) {
-        // TODO add your code here
+        StringBuilder stringBuilder = new StringBuilder();
+
+        ArrayList<Token> tokens = lexicalAnalysis.Lex(inputTextPane.getText());
+        for (Token token : tokens) {
+            stringBuilder.append(token);
+        }
+
+        if (lexicalAnalysis.getError()) {
+            stringBuilder.append("\n检测到词法错误，分析停止\n");
+            outputTextPane.setText(stringBuilder.toString());
+            return;
+        }
+
+        stringBuilder.append("\n=======词法分析结束======开始语法分析=======\n\n");
+
+        Node AbstractSyntaxTree = syntacticAnalysis.Parse(tokens);
+        stringBuilder.append(AbstractSyntaxTree.print(0));
+
+        if (syntacticAnalysis.getIsError()) {
+            stringBuilder.append(syntacticAnalysis.getErrors(AbstractSyntaxTree));
+            stringBuilder.append("\n检测到语法错误，分析停止\n");
+            outputTextPane.setText(stringBuilder.toString());
+            return;
+        }
+        stringBuilder.append("\n=======语法分析结束======开始语义分析=======\n\n");
+
+        String code = semanticAnalysis.ConvertToArduino(AbstractSyntaxTree);
+        stringBuilder.append(code);
+
+
+        outputTextPane.setText(stringBuilder.toString());
     }
 
     //保存执行文件

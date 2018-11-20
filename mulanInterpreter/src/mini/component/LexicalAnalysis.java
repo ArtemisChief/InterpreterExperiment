@@ -459,7 +459,7 @@ public class LexicalAnalysis {
     }
 
 
-    public void Lex(String input) {
+    public ArrayList<Token> Lex(String input) {
         count=1;
         error=false;
         tokens = new ArrayList();
@@ -473,7 +473,7 @@ public class LexicalAnalysis {
         if (input == null) {
             error = true;
             tokens.add(new Token(-1, "词法分析检测到错误，停止分析", count));
-            return;
+            return null;
         }
         //start为当前读取字符串的开头位置
         int start = 0;
@@ -517,10 +517,7 @@ public class LexicalAnalysis {
                 continue;
             }
         }
-    }
-
-    public ArrayList<Token> getTokens() {
-        return this.tokens;
+        return tokens;
     }
 
     public boolean getError() {

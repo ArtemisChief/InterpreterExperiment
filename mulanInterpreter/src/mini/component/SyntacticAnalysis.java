@@ -45,19 +45,21 @@ public class SyntacticAnalysis {
         Node terminalNode;
 
         //'paragraph',因为遇到'paragraph'才进入此函数，所以第一个不需要判断
+        Node statement = new Node("statement");
         terminalNode = new Node("paragraph","paragraph");
-        paragraph.addChild(terminalNode);
+        statement.addChild(terminalNode);
         index++;
 
         //identifier(段落名)
         if(tokens.get(index).getSyn()!=100){
             nextLine();
-            paragraph.addChild(new Node("Error", "缺少标识符"));
+            statement.addChild(new Node("Error", "缺少标识符"));
         }else{
             terminalNode = new Node("identifier",tokens.get(index).getContent());
-            paragraph.addChild(terminalNode);
+            statement.addChild(terminalNode);
             index++;
         }
+        paragraph.addChild(statement);
 
         //speed & tone
         Node speed,tone;
@@ -179,7 +181,7 @@ public class SyntacticAnalysis {
 
     //melody -> { NotesInEight }
     public Node parseMelody(){
-        Node melody;
+        Node melody =new Node("melody");
 
         //一整句存在melody节点的content中
         String notes = "";
@@ -241,9 +243,6 @@ public class SyntacticAnalysis {
             notes += note.getContent();
 
 
-
-
-
 //            Node notesInEight = parseNotesInEight();
 //            if(sentenceError){
 //                melody = new Node("melody");
@@ -260,8 +259,8 @@ public class SyntacticAnalysis {
 //                }
 //
 //            }
+
         }
-        melody = new Node("melody",notes);
 
 //每个音符作为一个节点保存
 //        while(tokens.get(index).getSyn()!=13){
@@ -270,6 +269,8 @@ public class SyntacticAnalysis {
 //            Node notesInEight = parseNotesInEight();
 //            melody.addChild(notesInEight);
 //        }
+
+        melody.addChild(new Node("melodyValue",notes));
 
         return melody;
     }

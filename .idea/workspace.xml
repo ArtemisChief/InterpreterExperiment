@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="05247413-5469-4fbd-8143-7008cc2c83b4" name="Default" comment="M ui微调" />
+    <list default="true" id="05247413-5469-4fbd-8143-7008cc2c83b4" name="Default" comment="一个低（高）八度括号内多个音符可用。&#10;整个旋律or节奏保存在同一节点中。">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mulanInterpreter/src/mini/component/SyntacticAnalysis.java" beforeDir="false" afterPath="$PROJECT_DIR$/mulanInterpreter/src/mini/component/SyntacticAnalysis.java" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -79,43 +82,52 @@
         </counts>
       </usages-collector>
     </session>
+    <session id="-534069086">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="3" />
+          <entry key="project.open.time.18" value="1" />
+          <entry key="project.open.time.19" value="2" />
+          <entry key="project.open.time.7" value="1" />
+          <entry key="project.opened" value="4" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="java" value="26" />
+          <entry key="jfd" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="JAVA" value="26" />
+          <entry key="JFormDesigner_form" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="java" value="2210" />
+          <entry key="txt" value="54" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="JAVA" value="2210" />
+          <entry key="PLAIN_TEXT" value="54" />
+        </counts>
+      </usages-collector>
+    </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/ui/MiniGUI.jfd">
-          <provider selected="true" editor-type-id="JFormDesigner">
-            <state propertiesWidth="269" />
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/ui/MiniGUI.java">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/component/SyntacticAnalysis.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="226">
-              <caret line="126" column="62" selection-start-line="126" selection-start-column="62" selection-end-line="126" selection-end-column="62" />
+            <state relative-caret-position="198">
+              <caret line="47" column="36" selection-start-line="47" selection-start-column="36" selection-end-line="47" selection-end-column="36" />
               <folding>
-                <element signature="class#2692:3631" />
-                <element signature="class#3714:4128" />
-                <element signature="e#3811#3812#0" expanded="true" />
-                <element signature="e#3860#3861#0" expanded="true" />
-                <element signature="e#3939#3940#0" expanded="true" />
-                <element signature="e#3988#3989#0" expanded="true" />
-                <element signature="e#4068#4069#0" expanded="true" />
-                <element signature="e#4117#4118#0" expanded="true" />
-                <element signature="e#4822#5416#0" />
-                <element signature="e#5422#6204#0" />
-                <element signature="e#6210#7751#0" />
-                <element signature="e#7757#9757#0" />
-                <element signature="e#9763#10065#0" />
-                <element signature="e#10071#11468#0" />
-                <element signature="e#11474#12106#0" />
-                <element signature="e#12112#13214#0" />
-                <element signature="e#13220#13663#0" />
-                <element signature="e#14019#14574#0" />
-                <element signature="e#14580#15549#0" />
-                <marker date="1542447001482" expanded="false" signature="15602:21740" ph="// JFormDesigner - Component initialization - DO NOT MODIFY" />
-                <marker date="1542447001482" expanded="false" signature="21752:22656" ph="// JFormDesigner - Variables declaration - DO NOT MODIFY" />
+                <element signature="imports" expanded="true" />
+                <element signature="method#parseNotesInEight#0;class#SyntacticAnalysis#0" />
               </folding>
             </state>
           </provider>
@@ -124,29 +136,49 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/entity/Token.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="393">
-              <caret line="112" column="37" selection-start-line="112" selection-start-column="37" selection-end-line="112" selection-end-column="37" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/Mini.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="15" column="106" selection-start-line="15" selection-start-column="106" selection-end-line="15" selection-end-column="106" />
+            <state relative-caret-position="254">
+              <caret line="56" column="30" lean-forward="true" selection-start-line="56" selection-start-column="30" selection-end-line="56" selection-end-column="30" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#2657#2658#0" expanded="true" />
+                <element signature="e#2683#2684#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/component/SemanticAnalysis.java">
+        <entry file="file://$PROJECT_DIR$/calculator/src/calculator/Calculator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="13" selection-start-line="13" selection-end-line="13" />
+            <state relative-caret-position="380">
+              <caret line="30" column="2" selection-start-line="30" selection-start-column="2" selection-end-line="30" selection-end-column="2" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/ui/MiniGUI.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="7391">
+              <caret line="416" column="34" selection-start-line="416" selection-start-column="34" selection-end-line="416" selection-end-column="34" />
+              <folding>
+                <element signature="e#4540#4541#0" expanded="true" />
+                <element signature="e#4588#4589#0" expanded="true" />
+                <element signature="e#4667#4668#0" expanded="true" />
+                <element signature="e#4715#4716#0" expanded="true" />
+                <element signature="e#4795#4796#0" expanded="true" />
+                <element signature="e#4843#4844#0" expanded="true" />
+                <marker date="1542698848219" expanded="false" signature="18208:24357" ph="// JFormDesigner - Component initialization - DO NOT MODIFY" />
+                <marker date="1542698848219" expanded="false" signature="24369:25273" ph="// JFormDesigner - Variables declaration - DO NOT MODIFY" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/Mini.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="437">
+              <caret line="23" selection-start-line="23" selection-end-line="23" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -168,6 +200,11 @@
     <findStrings>
       <find>musicTone</find>
       <find>tone</find>
+      <find>terminalNode =</find>
+      <find>nextLine</find>
+      <find>alto</find>
+      <find>缺少</find>
+      <find>缺少右括号</find>
     </findStrings>
     <replaceStrings>
       <replace>pitch</replace>
@@ -204,18 +241,19 @@
         <option value="$PROJECT_DIR$/calculator/src/calculator/component/LexicalAnalysis.java" />
         <option value="$PROJECT_DIR$/calculator/src/calculator/component/Executer.java" />
         <option value="$PROJECT_DIR$/calculator/src/calculator/component/SemanticAnalysis.java" />
-        <option value="$PROJECT_DIR$/calculator/src/calculator/Calculator.java" />
         <option value="$PROJECT_DIR$/calculator/src/calculator/component/SyntacticAnalysis.java" />
         <option value="$PROJECT_DIR$/calculator/src/calculator/ui/CalculatorGUI.java" />
         <option value="$PROJECT_DIR$/mulanInterpreter/src/test.txt" />
         <option value="$PROJECT_DIR$/mulanInterpreter/src/mini/component/LexicalAnalysis.java" />
-        <option value="$PROJECT_DIR$/mulanInterpreter/src/mini/entity/Node.java" />
         <option value="$PROJECT_DIR$/mulanInterpreter/src/mini/entity/Note.java" />
         <option value="$PROJECT_DIR$/mulanInterpreter/src/mini/component/SemanticAnalysis.java" />
-        <option value="$PROJECT_DIR$/mulanInterpreter/src/mini/Mini.java" />
         <option value="$PROJECT_DIR$/mulanInterpreter/src/mini/ui/MiniGUI.jfd" />
-        <option value="$PROJECT_DIR$/mulanInterpreter/src/mini/ui/MiniGUI.java" />
         <option value="$PROJECT_DIR$/mulanInterpreter/src/mini/entity/Token.java" />
+        <option value="$PROJECT_DIR$/mulanInterpreter/src/mini/ui/MiniGUI.java" />
+        <option value="$PROJECT_DIR$/mulanInterpreter/src/mini/Mini.java" />
+        <option value="$PROJECT_DIR$/calculator/src/calculator/Calculator.java" />
+        <option value="$PROJECT_DIR$/mulanInterpreter/src/mini/entity/Node.java" />
+        <option value="$PROJECT_DIR$/mulanInterpreter/src/mini/component/SyntacticAnalysis.java" />
       </list>
     </option>
   </component>
@@ -231,11 +269,11 @@
       <select />
     </treeState>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="89" />
-    <option name="y" value="14" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="85" />
+    <option name="y" value="10" />
     <option name="width" value="1695" />
-    <option name="height" value="1059" />
+    <option name="height" value="1060" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -243,7 +281,49 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="InterpreterExperiment" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mulanInterpreter" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="InterpreterExperiment" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mulanInterpreter" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="InterpreterExperiment" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mulanInterpreter" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="mini" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="InterpreterExperiment" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mulanInterpreter" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="mini" type="462c0819:PsiDirectoryNode" />
+              <item name="component" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="InterpreterExperiment" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mulanInterpreter" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="mini" type="462c0819:PsiDirectoryNode" />
+              <item name="entity" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="InterpreterExperiment" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mulanInterpreter" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="mini" type="462c0819:PsiDirectoryNode" />
+              <item name="ui" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
       <pane id="Scope">
         <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
           <expand>
@@ -255,17 +335,7 @@
           <select />
         </subPane>
       </pane>
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="InterpreterExperiment" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mulanInterpreter" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -303,6 +373,20 @@
     </option>
   </component>
   <component name="RunManager" selected="Application.Mini">
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="TestNG" factoryName="TestNG">
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <properties />
+      <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="Applet" factoryName="Applet">
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <method v="2">
@@ -339,20 +423,6 @@
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="JUnit" factoryName="JUnit">
-      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="TestNG" factoryName="TestNG">
-      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
-      <properties />
-      <listeners />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -701,10 +771,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="89" y="14" width="1695" height="1059" extended-state="0" />
+    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18715596" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17158177" />
       <window_info id="Structure" order="1" weight="0.24983649" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -713,17 +783,17 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.22598253" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.48397645" weight="0.2054054" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.48920864" weight="0.29333332" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.48397645" visible="true" weight="0.2751773" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.48920864" weight="0.44397163" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32864866" />
-      <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49296635" weight="0.21513514" />
+      <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49296635" weight="0.2141844" />
       <window_info anchor="bottom" id="Tool Output" order="8" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32992035" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50703365" side_tool="true" weight="0.34486488" />
       <window_info anchor="bottom" id="ANTLR Preview" order="11" />
-      <window_info anchor="bottom" id="Messages" order="12" sideWeight="0.49967298" weight="0.32756758" />
+      <window_info anchor="bottom" id="Messages" order="12" sideWeight="0.49967298" weight="0.32624114" />
       <window_info anchor="bottom" id="Database Changes" order="13" show_stripe_button="false" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -779,8 +849,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="M mini语言输出对齐" />
-    <MESSAGE value="M gui" />
     <MESSAGE value="A gui" />
     <MESSAGE value="M 重写括号匹配，修复括号的bug" />
     <MESSAGE value="A 计算器语法分析" />
@@ -804,7 +872,27 @@
     <MESSAGE value="A 一点语义分析的说明，这部分就全都交给睿哥了" />
     <MESSAGE value="A miniUI增加行号显示，且ui进行了微调" />
     <MESSAGE value="M ui微调" />
-    <option name="LAST_COMMIT_MESSAGE" value="M ui微调" />
+    <MESSAGE value="语法分析可用，一个低（高）八度括号内多个音符未处理。" />
+    <MESSAGE value="一个低（高）八度括号内多个音符可用。&#10;整个旋律or节奏保存在同一节点中。" />
+    <option name="LAST_COMMIT_MESSAGE" value="一个低（高）八度括号内多个音符可用。&#10;整个旋律or节奏保存在同一节点中。" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/mulanInterpreter/src/mini/component/SyntacticAnalysis.java</url>
+          <line>279</line>
+          <properties />
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="Application">
+        <watch expression="notesInEight.childNodes.get(0)" />
+        <watch expression="notesInEight.childNodes.get(0)" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/InterpreterExperiment.iml" />
@@ -814,114 +902,20 @@
     <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/Main.java" />
     <entry file="file://$PROJECT_DIR$/calculator/src/calculator/test.java" />
     <entry file="file://$PROJECT_DIR$/calculator/src/calculator/test.jfd" />
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor />
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/entity/Node.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="26" selection-start-line="26" selection-end-line="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_151/src.zip!/java/math/BigDecimal.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="1689" selection-start-line="1689" selection-end-line="1689" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/component/SyntacticAnalysis.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="343">
-          <caret line="100" column="22" selection-start-line="100" selection-start-column="22" selection-end-line="100" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md" />
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_151/src.zip!/java/math/BigDecimal.java" />
     <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/LexicalAnalysisGUI.java" />
-    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/component/Executer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="442">
-          <caret line="31" selection-start-line="31" selection-end-line="31" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/component/Executer.java" />
     <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/test.txt" />
     <entry file="file://$PROJECT_DIR$/mulanInterpreter/mulanInterpreter.iml">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/ui/CalculatorGUI.jfd">
-      <provider selected="true" editor-type-id="JFormDesigner">
-        <state paletteWidth="211" />
-      </provider>
-      <provider editor-type-id="text-editor" />
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_151/jre/lib/rt.jar!/sun/misc/Unsafe.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="194">
-          <caret line="353" column="23" selection-start-line="353" selection-start-column="23" selection-end-line="353" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/component/LexicalAnalysis.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-225">
-          <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_151/src.zip!/java/awt/event/KeyAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="419">
-          <caret line="67" column="16" selection-start-line="67" selection-start-column="16" selection-end-line="67" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/ui/CalculatorGUI.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="424">
-          <caret line="127" column="22" selection-start-line="127" selection-start-column="8" selection-end-line="127" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/Calculator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_151/jre/lib/rt.jar!/sun/misc/Unsafe.class" />
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_151/src.zip!/java/awt/event/KeyAdapter.java" />
     <entry file="jar://$PROJECT_DIR$/lib/beautyeye_lnf.jar!/org/jb2011/lnf/beautyeye/BeautyEyeLNFHelper.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1802">
           <caret line="125" column="23" selection-start-line="125" selection-start-column="23" selection-end-line="125" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/component/LexicalAnalysis.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="371">
-          <caret line="461" column="52" selection-start-line="461" selection-start-column="52" selection-end-line="461" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/component/SemanticAnalysis.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="18" column="74" lean-forward="true" selection-start-line="18" selection-start-column="51" selection-end-line="18" selection-end-column="74" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/entity/Token.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="21" column="5" selection-start-line="21" selection-start-column="5" selection-end-line="21" selection-end-column="5" />
         </state>
       </provider>
     </entry>
@@ -932,39 +926,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/entity/Node.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="11" selection-start-line="7" selection-start-column="11" selection-end-line="7" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/utils/LineNumberHeaderView.java" />
     <entry file="file://$PROJECT_DIR$/calculator/calculator.iml">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/component/SyntacticAnalysis.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="36" lean-forward="true" selection-start-line="10" selection-start-column="36" selection-end-line="10" selection-end-column="36" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_151/src.zip!/java/awt/event/AdjustmentListener.java" />
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/entity/Note.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="714">
-          <caret line="54" column="5" selection-start-line="54" selection-start-column="5" selection-end-line="54" selection-end-column="5" />
-        </state>
+    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/ui/CalculatorGUI.jfd">
+      <provider selected="true" editor-type-id="JFormDesigner">
+        <state paletteWidth="211" />
       </provider>
+      <provider editor-type-id="text-editor" />
     </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_151/src.zip!/java/awt/event/AdjustmentListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="40" column="16" selection-start-line="40" selection-start-column="16" selection-end-line="40" selection-end-column="16" />
-        </state>
+    <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/ui/MiniGUI.jfd">
+      <provider selected="true" editor-type-id="JFormDesigner">
+        <state propertiesWidth="269" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/component/SemanticAnalysis.java">
@@ -977,57 +955,135 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/entity/Node.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-40">
+          <caret line="26" selection-start-line="26" selection-end-line="26" />
+          <folding>
+            <element signature="e#569#570#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/entity/Token.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="8" column="25" lean-forward="true" selection-start-line="8" selection-start-column="25" selection-end-line="8" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/component/SyntacticAnalysis.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-864">
+          <caret line="100" column="22" selection-start-line="100" selection-start-column="22" selection-end-line="100" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/component/SemanticAnalysis.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="18" column="74" lean-forward="true" selection-start-line="18" selection-start-column="51" selection-end-line="18" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/component/Executer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-294">
+          <caret line="31" selection-start-line="31" selection-end-line="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/component/LexicalAnalysis.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="7128">
+          <caret line="461" column="33" lean-forward="true" selection-start-line="461" selection-start-column="33" selection-end-line="461" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/component/LexicalAnalysis.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="112" column="36" selection-start-line="112" selection-start-column="33" selection-end-line="112" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/ui/CalculatorGUI.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="169">
+          <caret line="527" column="35" selection-start-line="527" selection-start-column="19" selection-end-line="527" selection-end-column="35" />
+          <folding>
+            <marker date="1542458989487" expanded="false" signature="19962:33172" ph="// JFormDesigner - Component initialization - DO NOT MODIFY" />
+            <marker date="1542458989487" expanded="false" signature="33184:34064" ph="// JFormDesigner - Variables declaration - DO NOT MODIFY" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/ui/MiniGUI.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="226">
-          <caret line="126" column="62" selection-start-line="126" selection-start-column="62" selection-end-line="126" selection-end-column="62" />
+        <state relative-caret-position="7391">
+          <caret line="416" column="34" selection-start-line="416" selection-start-column="34" selection-end-line="416" selection-end-column="34" />
           <folding>
-            <element signature="class#2692:3631" />
-            <element signature="class#3714:4128" />
-            <element signature="e#3811#3812#0" expanded="true" />
-            <element signature="e#3860#3861#0" expanded="true" />
-            <element signature="e#3939#3940#0" expanded="true" />
-            <element signature="e#3988#3989#0" expanded="true" />
-            <element signature="e#4068#4069#0" expanded="true" />
-            <element signature="e#4117#4118#0" expanded="true" />
-            <element signature="e#4822#5416#0" />
-            <element signature="e#5422#6204#0" />
-            <element signature="e#6210#7751#0" />
-            <element signature="e#7757#9757#0" />
-            <element signature="e#9763#10065#0" />
-            <element signature="e#10071#11468#0" />
-            <element signature="e#11474#12106#0" />
-            <element signature="e#12112#13214#0" />
-            <element signature="e#13220#13663#0" />
-            <element signature="e#14019#14574#0" />
-            <element signature="e#14580#15549#0" />
-            <marker date="1542447001482" expanded="false" signature="15602:21740" ph="// JFormDesigner - Component initialization - DO NOT MODIFY" />
-            <marker date="1542447001482" expanded="false" signature="21752:22656" ph="// JFormDesigner - Variables declaration - DO NOT MODIFY" />
+            <element signature="e#4540#4541#0" expanded="true" />
+            <element signature="e#4588#4589#0" expanded="true" />
+            <element signature="e#4667#4668#0" expanded="true" />
+            <element signature="e#4715#4716#0" expanded="true" />
+            <element signature="e#4795#4796#0" expanded="true" />
+            <element signature="e#4843#4844#0" expanded="true" />
+            <marker date="1542698848219" expanded="false" signature="18208:24357" ph="// JFormDesigner - Component initialization - DO NOT MODIFY" />
+            <marker date="1542698848219" expanded="false" signature="24369:25273" ph="// JFormDesigner - Variables declaration - DO NOT MODIFY" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/calculator/src/calculator/Calculator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="30" column="2" selection-start-line="30" selection-start-column="2" selection-end-line="30" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/Mini.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="437">
+          <caret line="23" selection-start-line="23" selection-end-line="23" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/entity/Note.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="30" column="22" lean-forward="true" selection-start-line="30" selection-start-column="22" selection-end-line="34" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/entity/Node.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="83">
+          <caret line="51" column="5" lean-forward="true" selection-start-line="51" selection-start-column="5" selection-end-line="51" selection-end-column="5" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/entity/Token.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="393">
-          <caret line="112" column="37" selection-start-line="112" selection-start-column="37" selection-end-line="112" selection-end-column="37" />
+        <state relative-caret-position="254">
+          <caret line="56" column="30" lean-forward="true" selection-start-line="56" selection-start-column="30" selection-end-line="56" selection-end-column="30" />
+          <folding>
+            <element signature="e#2657#2658#0" expanded="true" />
+            <element signature="e#2683#2684#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/ui/MiniGUI.jfd">
-      <provider selected="true" editor-type-id="JFormDesigner">
-        <state propertiesWidth="269" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/Mini.java">
+    <entry file="file://$PROJECT_DIR$/mulanInterpreter/src/mini/component/SyntacticAnalysis.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" column="106" selection-start-line="15" selection-start-column="106" selection-end-line="15" selection-end-column="106" />
+        <state relative-caret-position="198">
+          <caret line="47" column="36" selection-start-line="47" selection-start-column="36" selection-end-line="47" selection-end-column="36" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#parseNotesInEight#0;class#SyntacticAnalysis#0" />
           </folding>
         </state>
       </provider>

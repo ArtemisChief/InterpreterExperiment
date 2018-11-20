@@ -482,7 +482,7 @@ public class MiniGUI extends JFrame {
         inputTextPane.setText(str);
         refreshColor();
         hasChanged=false;
-        this.setTitle("Music Interpreter - Demo (Unsaved)");
+        this.setTitle("Music Interpreter - Demo");
     }
 
     private void initComponents() {

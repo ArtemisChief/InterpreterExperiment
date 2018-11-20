@@ -47,10 +47,6 @@ public class Node {
         return null;
     }
 
-    private boolean isTerminal(){
-        return content==null;
-    }
-
     public String toString() {
         return String.format("%s\n", type);
     }

@@ -384,8 +384,8 @@ public class SyntacticAnalysis {
     //rhythm -> '<' length '>'
     public Node parseRhythm() {
         Node rhythm = new Node("rhythm");
-//        Node terminalNode;
-        String rhythmContent = "";
+        Node terminalNode;
+        //String rhythmContent = "";
 
         //'<'
         if (tokens.get(index).getSyn() != 13) {
@@ -394,8 +394,8 @@ public class SyntacticAnalysis {
             isError=true;
             return new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  缺少节奏");
         }
-//        terminalNode = new Node("left Angle brackets","<");
-//        rhythm.addChild(terminalNode);
+        terminalNode = new Node("left Angle brackets","<");
+        rhythm.addChild(terminalNode);
         index++;
 
         //length
@@ -411,9 +411,9 @@ public class SyntacticAnalysis {
                     return new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  连音括号中出现连音括号");
                 }
                 inCurlyBraces = true;
-                //terminalNode = new Node("leftCurlyBrace","{");
-                //rhythm.addChild(terminalNode);
-                rhythmContent += "{";
+                terminalNode = new Node("leftCurlyBrace","{");
+                rhythm.addChild(terminalNode);
+                //rhythmContent += "{";
                 index++;
             }
 
@@ -426,9 +426,9 @@ public class SyntacticAnalysis {
                     return new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  缺少连音左括号");
                 }
                 inCurlyBraces = false;
-                //terminalNode = new Node("rightCurlyBrace","}");
-                //rhythm.addChild(terminalNode);
-                rhythmContent += "}";
+                terminalNode = new Node("rightCurlyBrace","}");
+                rhythm.addChild(terminalNode);
+                //rhythmContent += "}";
                 index++;
             }
 
@@ -441,16 +441,21 @@ public class SyntacticAnalysis {
             }
             //terminalNode = new Node("length",tokens.get(index).getContent());
             //rhythm.addChild(terminalNode);
-            rhythmContent += tokens.get(index).getContent();
+            //rhythmContent += tokens.get(index).getContent();
+            String len = "";
+            len += tokens.get(index).getContent();
             index++;
 
             //附点
             if (tokens.get(index).getSyn() == 15) {
                 //terminalNode = new Node("Dot.","*");
                 //rhythm.addChild(terminalNode);
-                rhythmContent += "*";
+                //rhythmContent += "*";
+                len += "*";
                 index++;
             }
+            terminalNode = new Node("length",len);
+            rhythm.addChild(terminalNode);
         }
         if(inCurlyBraces){
             sentenceError = true;
@@ -460,7 +465,7 @@ public class SyntacticAnalysis {
         }
 
 
-        rhythm.addChild(new Node("rhythmValue", rhythmContent));
+        //rhythm.addChild(new Node("rhythmValue", rhythmContent));
 
 
         //'>'
@@ -470,8 +475,8 @@ public class SyntacticAnalysis {
             isError=true;
             return new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  缺少右尖括号");
         }
-//        terminalNode = new Node("left Angle brackets",">");
-//        rhythm.addChild(terminalNode);
+        terminalNode = new Node("left Angle brackets",">");
+        rhythm.addChild(terminalNode);
         index++;
 
         return rhythm;

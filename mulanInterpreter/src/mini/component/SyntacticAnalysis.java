@@ -345,8 +345,9 @@ public class SyntacticAnalysis {
 
     //Notes -> ([#|b] notesValue) | notesValue | 0
     public Node parseNotes() {
-        Node notes;
-        String notesValue = "";
+        Node notes = new Node("Notes");
+        Node terminalNode;
+        //String notesValue = "";
 
         //'0',休止符
         if (tokens.get(index).getSyn() == 94) {
@@ -359,9 +360,9 @@ public class SyntacticAnalysis {
 
         //#|b
         if (tokens.get(index).getSyn() == 18 | tokens.get(index).getSyn() == 19) {
-            //terminalNode = new Node("lift mark",tokens.get(index).getContent());
-            //notes.addChild(terminalNode);
-            notesValue += tokens.get(index).getContent();
+            terminalNode = new Node("lift mark",tokens.get(index).getContent());
+            notes.addChild(terminalNode);
+            //notesValue += tokens.get(index).getContent();
             index++;
         }
 
@@ -372,12 +373,12 @@ public class SyntacticAnalysis {
             isError=true;
             return new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  音符不正确");
         }
-        //terminalNode = new Node("notes value",tokens.get(index).getContent());
-        //notes.addChild(terminalNode);
-        notesValue += tokens.get(index).getContent();
+        terminalNode = new Node("notes value",tokens.get(index).getContent());
+        notes.addChild(terminalNode);
+        //notesValue += tokens.get(index).getContent();
         index++;
 
-        notes = new Node("Notes", notesValue);
+        //notes = new Node("Notes", notesValue);
         return notes;
     }
 

@@ -48,7 +48,9 @@ public class SyntacticAnalysis {
 
         //identifier(段落名)
         if (tokens.get(index).getSyn() != 100) {
-            nextLine();
+            int syn=tokens.get(index).getSyn();
+            if(syn!=3&&syn!=4&&syn!=7&&syn!=9&&syn!=98)
+                nextLine();
             statement.addChild(new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  缺少标识符"));
             isError = true;
         } else {
@@ -246,7 +248,7 @@ public class SyntacticAnalysis {
             Node note = parseNotes();
             if (sentenceError) {
                 isError = true;
-                return new Node("Error","Line: " + tokens.get(index).getCount() +"  "+ note.getContent());
+                return new Node("Error",note.getContent());
             }
             notes += note.getContent();
 

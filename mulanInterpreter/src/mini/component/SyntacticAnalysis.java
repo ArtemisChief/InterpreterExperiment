@@ -188,7 +188,7 @@ public class SyntacticAnalysis {
         Node melody = new Node("melody");
 
         //一整句存在melody节点的content中
-        String notes = "";
+        //String notes = "";
         int group = 0;
         while (tokens.get(index).getSyn() != 13) {
             //'(',低八度左括号
@@ -200,7 +200,8 @@ public class SyntacticAnalysis {
                     return new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  八度转换错误");
                 }
                 group--;
-                notes += "(";
+//                notes += "(";
+                melody.addChild(new Node("lower left parentheses","("));
                 index++;
                 continue;
             }
@@ -213,7 +214,8 @@ public class SyntacticAnalysis {
                     return new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  八度转换错误");
                 }
                 group++;
-                notes += ")";
+//                notes += ")";
+                melody.addChild(new Node("lower right parentheses",")"));
                 index++;
                 continue;
             }
@@ -226,7 +228,8 @@ public class SyntacticAnalysis {
                     return new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  八度转换错误");
                 }
                 group++;
-                notes += "[";
+//                notes += "[";
+                melody.addChild(new Node("higher left parentheses","["));
                 index++;
                 continue;
             }
@@ -239,7 +242,8 @@ public class SyntacticAnalysis {
                     return new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  八度转换错误");
                 }
                 group--;
-                notes += "]";
+//                notes += "]";
+                melody.addChild(new Node("higher right parentheses","]"));
                 index++;
                 continue;
             }
@@ -250,7 +254,8 @@ public class SyntacticAnalysis {
                 isError = true;
                 return new Node("Error",note.getContent());
             }
-            notes += note.getContent();
+//            notes += note.getContent();
+            melody.addChild(note);
 
 //            Node notesInEight = parseNotesInEight();
 //            if(sentenceError){
@@ -285,7 +290,7 @@ public class SyntacticAnalysis {
 //            melody.addChild(notesInEight);
 //        }
 
-        melody.addChild(new Node("melodyValue", notes));
+        //melody.addChild(new Node("melodyValue", notes));
 
         return melody;
     }

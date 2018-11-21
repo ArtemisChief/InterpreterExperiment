@@ -10,8 +10,9 @@ public class SemanticAnalysis {
     private Node AbstractSyntaxTree;
 
     private StringBuilder code;
-    private String errorInfo;
+    private StringBuilder errorInfo;
     private int count;
+    private int scoreLength;
 
     public SemanticAnalysis() {
 
@@ -21,7 +22,7 @@ public class SemanticAnalysis {
         AbstractSyntaxTree = abstractSyntaxTree;
 
         code = new StringBuilder();
-        errorInfo = "";
+        errorInfo = new StringBuilder();
 
         count = 0;
 
@@ -56,25 +57,27 @@ public class SemanticAnalysis {
 
     private void DFS(Node curNode) {
         double speedFactor;
-        int noteCount=0;
-        int rhythmCount=0;
+        int noteCount = 0;
+        int rhythmCount = 0;
         for (Node child : curNode.getChildren()) {
             switch (child.getType()) {
                 case "score":
                     count++;
-                    code.append("const int len" + count + ";\n\n" +
+                    scoreLength=0;
+                    code.append("const int length" + count + ";\n\n" +
                             "double speedFactor" + count + ";\n\n" +
                             "double tonalityFactor" + count + ";\n\n");
                     DFS(child);
                     break;
 
                 case "execution":
+//                    code.append("defineTaskLoop(Task1){}");
                     DFS(child);
                     break;
 
                 case "statement":
-                    code.append("int *" + child.getChild(0).getContent() + "=new int[len" + count + "]{};//Notes\n\n");
-                    code.append("int *" + child.getChild(0).getContent() + "Duration=new int[len" + count + "]{};//Duration\n\n");
+                    code.append("int *" + child.getChild(0).getContent() + "=new int[len" + count + "]\n{};//Notes\n\n");
+                    code.append("int *" + child.getChild(0).getContent() + "Duration=new int[len" + count + "]\n{};//Duration\n\n");
                     break;
 
                 case "speed":
@@ -83,8 +86,8 @@ public class SemanticAnalysis {
                     break;
 
                 case "tonality":
-                    for(Node tonality:child.getChildren()) {
-                        double halfTone=1;
+                    for (Node tonality : child.getChildren()) {
+                        double halfTone = 1;
                         switch (tonality.getContent()) {
                             case "#":
                                 halfTone = 1.059463;
@@ -122,83 +125,152 @@ public class SemanticAnalysis {
                     break;
 
                 case "end paragraph":
-                    code.delete(code.indexOf("};//Notes")-2,code.indexOf("};//Notes"));
-                    code.delete(code.indexOf("};//Duration")-2,code.indexOf("};//Duration"));
-                    code.delete(code.indexOf("//Notes"),code.indexOf("//Notes")+7);
-                    code.delete(code.indexOf("//Duration"),code.indexOf("//Duration")+10);
+                    code.insert(code.indexOf("length"+count)+("length"+count).length(),"="+scoreLength);
+                    code.delete(code.indexOf("};//Notes") - 3, code.indexOf("};//Notes"));
+                    code.delete(code.indexOf("};//Duration") - 3, code.indexOf("};//Duration"));
+                    code.delete(code.indexOf("//Notes"), code.indexOf("//Notes") + 7);
+                    code.delete(code.indexOf("//Duration"), code.indexOf("//Duration") + 10);
                     break;
 
                 case "melody":
-                    double pitchFactor=1;
-                    double halfTone=1;
+                    double pitchFactor = 1;
+                    double halfTone = 1;
                     Integer pitch;
 
-                    for(Node tone: child.getChildren()){
-                        noteCount++;
+                    for (Node tone : child.getChildren()) {
                         switch (tone.getContent()) {
                             case "(":
-                                pitchFactor = 0.5;
+                                pitchFactor *= 0.5;
                                 break;
                             case ")":
-                                pitchFactor = 1;
+                                pitchFactor *= 2;
                                 break;
                             case "[":
-                                pitchFactor = 2;
+                                pitchFactor *= 2;
                                 break;
                             case "]":
-                                pitchFactor = 1;
+                                pitchFactor *= 0.5;
                                 break;
                             case "#":
-                                halfTone=1.059463;
+                                halfTone *= 1.059463;
                                 break;
                             case "b":
-                                halfTone=0.943874;
+                                halfTone *= 0.943874;
                                 break;
                             case "0":
-                                pitch= 0;
-                                code.insert(code.indexOf("};//Notes"),pitch+", ");
+                                noteCount++;
+                                pitch = 0;
+                                code.insert(code.indexOf("};//Notes"), pitch + ", ");
                                 break;
                             case "1":
-                                pitch = (int)((Double.parseDouble(Note.Pitch.C) * pitchFactor * halfTone));
-                                code.insert(code.indexOf("};//Notes"),pitch+", ");
+                                noteCount++;
+                                pitch = (int) ((Double.parseDouble(Note.Pitch.C) * pitchFactor * halfTone));
+                                code.insert(code.indexOf("};//Notes"), pitch + ", ");
                                 halfTone = 1;
                                 break;
                             case "2":
-                                pitch = (int)((Double.parseDouble(Note.Pitch.D) * pitchFactor * halfTone));
-                                code.insert(code.indexOf("};//Notes"),pitch+", ");
-                                halfTone=1;
+                                noteCount++;
+                                pitch = (int) ((Double.parseDouble(Note.Pitch.D) * pitchFactor * halfTone));
+                                code.insert(code.indexOf("};//Notes"), pitch + ", ");
+                                halfTone = 1;
                                 break;
                             case "3":
-                                pitch = (int)((Double.parseDouble(Note.Pitch.E) * pitchFactor * halfTone));
-                                code.insert(code.indexOf("};//Notes"),pitch+", ");
-                                halfTone=1;
+                                noteCount++;
+                                pitch = (int) ((Double.parseDouble(Note.Pitch.E) * pitchFactor * halfTone));
+                                code.insert(code.indexOf("};//Notes"), pitch + ", ");
+                                halfTone = 1;
                                 break;
                             case "4":
-                                pitch = (int)((Double.parseDouble(Note.Pitch.F) * pitchFactor * halfTone));
-                                code.insert(code.indexOf("};//Notes"),pitch+", ");
-                                halfTone=1;
+                                noteCount++;
+                                pitch = (int) ((Double.parseDouble(Note.Pitch.F) * pitchFactor * halfTone));
+                                code.insert(code.indexOf("};//Notes"), pitch + ", ");
+                                halfTone = 1;
                                 break;
                             case "5":
-                                pitch = (int)((Double.parseDouble(Note.Pitch.G) * pitchFactor * halfTone));
-                                code.insert(code.indexOf("};//Notes"),pitch+", ");
-                                halfTone=1;
+                                noteCount++;
+                                pitch = (int) ((Double.parseDouble(Note.Pitch.G) * pitchFactor * halfTone));
+                                code.insert(code.indexOf("};//Notes"), pitch + ", ");
+                                halfTone = 1;
                                 break;
                             case "6":
-                                pitch = (int)((Double.parseDouble(Note.Pitch.A) * pitchFactor * halfTone));
-                                code.insert(code.indexOf("};//Notes"),pitch+", ");
-                                halfTone=1;
+                                noteCount++;
+                                pitch = (int) ((Double.parseDouble(Note.Pitch.A) * pitchFactor * halfTone));
+                                code.insert(code.indexOf("};//Notes"), pitch + ", ");
+                                halfTone = 1;
                                 break;
                             case "7":
-                                pitch = (int)((Double.parseDouble(Note.Pitch.B) * pitchFactor * halfTone));
-                                code.insert(code.indexOf("};//Notes"),pitch+", ");
-                                halfTone=1;
+                                noteCount++;
+                                pitch = (int) ((Double.parseDouble(Note.Pitch.B) * pitchFactor * halfTone));
+                                code.insert(code.indexOf("};//Notes"), pitch + ", ");
+                                halfTone = 1;
                                 break;
                         }
                     }
-                    code.insert(code.indexOf("};//Notes"),"\n");
+                    code.insert(code.indexOf("};//Notes"), "\n");
                     break;
 
                 case "rhythm":
+                    Integer legato = 1;
+
+                    for (Node rhythm : child.getChildren()) {
+                        switch (rhythm.getContent()) {
+                            case "{":
+                                legato = -1;
+                                break;
+                            case "}":
+                                //todo 连音处理
+                                legato = 1;
+                                break;
+                            case "1":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 16 * legato + ", ");
+                                break;
+                            case "1*":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 24 * legato + ", ");
+                                break;
+                            case "2":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 8 * legato + ", ");
+                                break;
+                            case "2*":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 12 * legato + ", ");
+                                break;
+                            case "4":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 4 * legato + ", ");
+                                break;
+                            case "4*":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 6 * legato + ", ");
+                                break;
+                            case "8":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 2 * legato + ", ");
+                                break;
+                            case "8*":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 3 * legato + ", ");
+                                break;
+                            case "g":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 1 * legato + ", ");
+                                break;
+                            case "g*":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), "Error: 不支持32分音符");
+                                errorInfo.append("Error: 不支持32分音符\n");
+                                break;
+                        }
+                    }
+                    code.insert(code.indexOf("};//Duration"), "\n");
+
+                    if(noteCount!=rhythmCount) {
+                        code.insert(code.indexOf("};//Duration"),"Error: 上一行中音符与时值数量不相同\n");
+                        errorInfo.append("Error: 该句音符与时值数量不相同\n");
+                    }
+                    scoreLength+=noteCount;
                     break;
 
                 case "playlist":

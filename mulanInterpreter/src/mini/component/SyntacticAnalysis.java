@@ -13,6 +13,7 @@ public class SyntacticAnalysis {
     private boolean isError;
     private boolean sentenceError;
 
+
     //Start
     public Node Parse(ArrayList<Token> tokens) {
         index = 0;
@@ -346,7 +347,6 @@ public class SyntacticAnalysis {
     //Notes -> ([#|b] notesValue) | notesValue | 0
     public Node parseNotes() {
         Node notes = new Node("Notes");
-        Node terminalNode;
         //String notesValue = "";
 
         //'0',休止符
@@ -360,10 +360,12 @@ public class SyntacticAnalysis {
 
         //#|b
         if (tokens.get(index).getSyn() == 18 | tokens.get(index).getSyn() == 19) {
-            terminalNode = new Node("lift mark",tokens.get(index).getContent());
-            notes.addChild(terminalNode);
+            notes = new Node("lift mark",tokens.get(index).getContent());
+            //notes.addChild(terminalNode);
             //notesValue += tokens.get(index).getContent();
             index++;
+
+            return notes;
         }
 
         //notesValue
@@ -373,8 +375,8 @@ public class SyntacticAnalysis {
             isError=true;
             return new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  音符不正确");
         }
-        terminalNode = new Node("notes value",tokens.get(index).getContent());
-        notes.addChild(terminalNode);
+        notes = new Node("notes value",tokens.get(index).getContent());
+        //notes.addChild(terminalNode);
         //notesValue += tokens.get(index).getContent();
         index++;
 

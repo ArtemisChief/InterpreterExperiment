@@ -431,7 +431,10 @@ public class LexicalAnalysis {
                         tokens.add(new Token(-1, "时长中出现非法字符：" + inputWord.charAt(i), count));
                         return;
                     }
-                    tokens.add(new Token(99, String.valueOf(inputWord.charAt(i)), count));
+                    if(inputWord.charAt(i)=='*')
+                        tokens.add(new Token(15, String.valueOf(inputWord.charAt(i)), count));
+                    else
+                        tokens.add(new Token(99, String.valueOf(inputWord.charAt(i)), count));
                 }
                 tokens.add(new Token(14, ">", count));
             } else {

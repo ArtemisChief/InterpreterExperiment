@@ -35,6 +35,7 @@ public class LexicalAnalysis {
     private ArrayList<Token> tokens;
     private int count;
     private int skipLine;
+    private  ArrayList<Integer> errorLine;
 
     private int searchReserve(String s) {
         switch (s) {
@@ -194,6 +195,7 @@ public class LexicalAnalysis {
                     if (!inputWord.endsWith(")") || inputWord.length() == 5) {
                         error = true;
                         skipLine=count;
+                        errorLine.add(skipLine);
                         tokens.add(new Token(-1, "播放语句格式有误", count));
                         return;
                     }
@@ -243,6 +245,7 @@ public class LexicalAnalysis {
                     if (inputWord.length() == 6) {
                         error = true;
                         skipLine=count;
+                        errorLine.add(skipLine);
                         tokens.add(new Token(-1, "\"speed=\"后缺少对应速度", count));
                         return;
                     }
@@ -251,6 +254,7 @@ public class LexicalAnalysis {
                         if (!isNumber(inputWord.charAt(i))) {
                             error = true;
                             skipLine=count;
+                            errorLine.add(skipLine);
                             tokens.add(new Token(-1, "速度中出现非法字符：" + inputWord.charAt(i), count));
                             return;
                         }
@@ -269,6 +273,7 @@ public class LexicalAnalysis {
                 if (!isLetter(inputWord.charAt(i)) && !isNumber(inputWord.charAt(i))) {
                     error = true;
                     skipLine=count;
+                    errorLine.add(skipLine);
                     tokens.add(new Token(-1, "标识符中出现非法字符：" + inputWord.charAt(i), count));
                     return;
                 }
@@ -279,6 +284,7 @@ public class LexicalAnalysis {
             if (syn == 6) {
                 error = true;
                 skipLine=count;
+                errorLine.add(skipLine);
                 tokens.add(new Token(-1, "play播放操作格式不正确", count));
                 return;
             }
@@ -294,6 +300,7 @@ public class LexicalAnalysis {
             if (isIdentifier) {
                 error = true;
                 skipLine=count;
+                errorLine.add(skipLine);
                 tokens.add(new Token(-1, "标识符不能以数字开头", count));
                 return;
             }
@@ -306,6 +313,7 @@ public class LexicalAnalysis {
                     if (!isTonality(inputWord.charAt(2))) {
                         error = true;
                         skipLine=count;
+                        errorLine.add(skipLine);
                         tokens.add(new Token(-1, "调性格式错误！", count));
                         return;
                     } else {
@@ -317,6 +325,7 @@ public class LexicalAnalysis {
                     if (inputWord.charAt(2) != 'b' && inputWord.charAt(2) != '#') {
                         error = true;
                         skipLine=count;
+                        errorLine.add(skipLine);
                         tokens.add(new Token(-1, "调性格式错误！", count));
                         return;
                     } else
@@ -325,6 +334,7 @@ public class LexicalAnalysis {
                     if (!isTonality(inputWord.charAt(3))) {
                         error = true;
                         skipLine=count;
+                        errorLine.add(skipLine);
                         tokens.add(new Token(-1, "调性格式错误！", count));
                         return;
                     } else {
@@ -334,6 +344,7 @@ public class LexicalAnalysis {
                 } else {
                     error = true;
                     skipLine=count;
+                    errorLine.add(skipLine);
                     tokens.add(new Token(-1, "调性格式错误！", count));
                     return;
                 }
@@ -357,6 +368,7 @@ public class LexicalAnalysis {
                         }
                         error = true;
                         skipLine=count;
+                        errorLine.add(skipLine);
                         tokens.add(new Token(-1, "旋律中出现非法字符：" + inputWord.charAt(i), count));
                         return;
                     }
@@ -365,6 +377,7 @@ public class LexicalAnalysis {
                 if (!isNote(inputWord.charAt(0))) {
                     error = true;
                     skipLine=count;
+                    errorLine.add(skipLine);
                     tokens.add(new Token(-1, "旋律中出现非法字符：" + inputWord.charAt(0), count));
                     return;
                 }
@@ -419,6 +432,7 @@ public class LexicalAnalysis {
                 if (inputWord.length() == 2) {
                     error = true;
                     skipLine=count;
+                    errorLine.add(skipLine);
                     tokens.add(new Token(-1, "<>间缺少时长", count));
                     return;
                 }
@@ -426,6 +440,7 @@ public class LexicalAnalysis {
                 if (inputWord.charAt(1) == '*') {
                     error = true;
                     skipLine=count;
+                    errorLine.add(skipLine);
                     tokens.add(new Token(-1, "附点*必须跟在其他音符时长之后", count));
                     return;
                 }
@@ -446,6 +461,7 @@ public class LexicalAnalysis {
                             continue;
                         error = true;
                         skipLine=count;
+                        errorLine.add(skipLine);
                         tokens.add(new Token(-1, "时长中出现非法字符：" + inputWord.charAt(i), count));
                         return;
                     }
@@ -458,6 +474,7 @@ public class LexicalAnalysis {
             } else {
                 error = true;
                 skipLine=count;
+                errorLine.add(skipLine);
                 tokens.add(new Token(-1, "时长句子格式错误", count));
                 return;
             }
@@ -477,6 +494,7 @@ public class LexicalAnalysis {
         else {
             error = true;
             skipLine=count;
+            errorLine.add(skipLine);
             tokens.add(new Token(-1, "出现非法字符：" + inputWord.charAt(0), count));
         }
     }
@@ -540,11 +558,16 @@ public class LexicalAnalysis {
                 continue;
             }
         }
+
         return tokens;
     }
 
     public boolean getError() {
         return error;
+    }
+
+    public ArrayList<Integer> getErrorLine() {
+        return errorLine;
     }
 
     public int getCount() {

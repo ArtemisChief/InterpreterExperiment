@@ -36,6 +36,7 @@ public class LexicalAnalysis {
     private int count;
     private int skipLine;
     private  ArrayList<Integer> errorLine;
+    private  int lastLine;
 
     private int searchReserve(String s) {
         switch (s) {
@@ -556,11 +557,20 @@ public class LexicalAnalysis {
                 String temp = input.substring(start, i + 1);
                 Scanner(temp, isIdentifier);
                 start = i;
-                continue;
+                lastLine=count;
             }
         }
 
         return tokens;
+    }
+
+    public String getErrorInfo(ArrayList<Token> tokens){
+        String errorInfo="";
+        for(Token temp: tokens){
+            if(temp.getSyn()==-1)
+                errorInfo+="Line"+temp.getCount()+"\tError:  "+temp.getContent()+"\n";
+        }
+        return errorInfo;
     }
 
     public boolean getError() {
@@ -573,5 +583,9 @@ public class LexicalAnalysis {
 
     public int getCount() {
         return count;
+    }
+
+    public int getLastLine() {
+        return lastLine;
     }
 }

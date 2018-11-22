@@ -399,9 +399,10 @@ public class MiniGUI extends JFrame {
         for(int i=0;i<line-1;i++){
             index=input.indexOf("\n",index+1);
         }
-        System.out.println(input.substring(index));
         return index;
     }
+
+
 
     //执行词法分析
     private void LexMenuItemActionPerformed(ActionEvent e) {
@@ -712,7 +713,7 @@ public class MiniGUI extends JFrame {
                 outputTextPane.setBorder(null);
                 scrollPane2.setViewportView(outputTextPane);
             }
-            panel1.add(scrollPane2, "cell 2 0,width 400:400:400,height 600:600:600");
+            panel1.add(scrollPane2, "cell 2 0,width 420:420:420,height 600:600:600");
         }
         contentPane.add(panel1);
         pack();

@@ -14,7 +14,7 @@ public class SemanticAnalysis {
     private boolean isError;
     private StringBuilder code;
     private StringBuilder errorInfo;
-    private ArrayList<String> paragraphs;
+    Map<String, Integer> paragraphCount;
     private int count;
     private int scoreLength;
 
@@ -30,7 +30,7 @@ public class SemanticAnalysis {
         code = new StringBuilder();
         errorInfo = new StringBuilder();
 
-        paragraphs = new ArrayList<>();
+        paragraphCount = new HashMap<>();
 
         count = 0;
 
@@ -98,9 +98,14 @@ public class SemanticAnalysis {
                     break;
 
                 case "statement":
-                    paragraphs.add(child.getChild(0).getContent());
-                    code.append("int *" + child.getChild(0).getContent() + "=new int[len" + count + "]\n{};//Notes\n\n");
-                    code.append("int *" + child.getChild(0).getContent() + "Duration=new int[len" + count + "]\n{};//Duration\n\n");
+                    if(paragraphCount.containsKey(child.getChild(0).getContent())) {
+                        errorInfo.append("Error: 重复声明的段落名" + child.getChild(0).getContent() + "\n");
+                        isError=true;
+                        count--;
+                    }
+                    paragraphCount.put(child.getChild(0).getContent(),count);
+                    code.append("int *" + child.getChild(0).getContent() + "=new int[length" + count + "]\n{};//Notes\n\n");
+                    code.append("int *" + child.getChild(0).getContent() + "Duration=new int[length" + count + "]\n{};//Duration\n\n");
                     break;
 
                 case "speed":
@@ -284,7 +289,6 @@ public class SemanticAnalysis {
                                 break;
                             case "g*":
                                 rhythmCount++;
-                                code.insert(code.indexOf("};//Duration"), "Error: 不支持32分音符，即g*");
                                 errorInfo.append("Error: 不支持32分音符，即g*\n");
                                 isError=true;
                                 break;
@@ -293,7 +297,6 @@ public class SemanticAnalysis {
                     code.insert(code.indexOf("};//Duration"), "\n");
 
                     if (noteCount != rhythmCount) {
-                        code.insert(code.indexOf("};//Duration"), "Error: 该句音符与时值数量不相同:\"+notes+\" \"+rhythms+\"\\n\"");
                         errorInfo.append("Error: 该句音符与时值数量不相同:"+notes+" "+rhythms+"\n");
                         isError=true;
                     }
@@ -303,14 +306,11 @@ public class SemanticAnalysis {
                 case "playlist":
                     String paraName = "";
                     int tonePlayed = 0;         //要使用的蜂鸣器编号
-                    int playCount = 0;          //一个段落名对应一个Count值
-                    Map<String, Integer> countMap = new HashMap<>();
                     boolean andOp = false;
                     for (Node playList : child.getChildren()) {
                         switch (playList.getContent()) {
                             case "&":
                                 if (tonePlayed > 1) {
-                                    code.append("Error: 不支持两个以上蜂鸣器同时播放，请减少play中同时播放的数量\n");
                                     errorInfo.append("Error: 不支持两个以上蜂鸣器同时播放，请减少play中同时播放的数量\n");
                                     isError=true;
                                 }
@@ -318,33 +318,28 @@ public class SemanticAnalysis {
                                 break;
                             case ",":
                                 if (tonePlayed == 1) {
-                                    code.insert(code.indexOf("};//task2"), "\n  play(" + paraName + ", " + paraName + "Duration, length" + countMap.get(paraName) + ",tone2, tonalityFactor" + countMap.get(paraName) + "*0.5, speedFactor" + countMap.get(paraName) + ");\n");
+                                    code.insert(code.indexOf("};//task2"), "\n  play(" + paraName + ", " + paraName + "Duration, length" + paragraphCount.get(paraName) + ",tone2, tonalityFactor" + paragraphCount.get(paraName) + "*0.5, speedFactor" + paragraphCount.get(paraName) + ");\n");
                                 }
                                 tonePlayed = 0;
                                 andOp = false;
                                 break;
                             default:
                                 paraName = playList.getContent();
-                                if (!paragraphs.contains(paraName)) {
-                                    code.insert(code.indexOf("};//task1"), "Error: 未声明的段落名" + paraName);
+                                if (!paragraphCount.containsKey(paraName)) {
                                     errorInfo.append("Error: 未声明的段落名" + paraName + "\n");
                                     isError=true;
                                 }
                                 tonePlayed++;
-                                if (!countMap.containsKey(paraName)) {
-                                    playCount++;
-                                    countMap.put(paraName, playCount);
-                                }
                                 if (!andOp) {
-                                    code.insert(code.indexOf("};//task1"), "\n  play(" + paraName + ", " + paraName + "Duration, length" + countMap.get(paraName) + ",tone1, tonalityFactor" + countMap.get(paraName) + ", speedFactor" + countMap.get(paraName) + ");\n");
+                                    code.insert(code.indexOf("};//task1"), "\n  play(" + paraName + ", " + paraName + "Duration, length" + paragraphCount.get(paraName) + ",tone1, tonalityFactor" + paragraphCount.get(paraName) + ", speedFactor" + paragraphCount.get(paraName) + ");\n");
                                 } else {
-                                    code.insert(code.indexOf("};//task2"), "\n  play(" + paraName + ", " + paraName + "Duration, length" + countMap.get(paraName) + ",tone2, tonalityFactor" + countMap.get(paraName) + ", speedFactor" + countMap.get(paraName) + ");\n");
+                                    code.insert(code.indexOf("};//task2"), "\n  play(" + paraName + ", " + paraName + "Duration, length" + paragraphCount.get(paraName) + ",tone2, tonalityFactor" + paragraphCount.get(paraName) + ", speedFactor" + paragraphCount.get(paraName) + ");\n");
                                 }
                                 break;
                         }
                     }
                     if (tonePlayed == 1) {
-                        code.insert(code.indexOf("};//task2"), "\n  play(" + paraName + ", " + paraName + "Duration, length" + countMap.get(paraName) + ",tone2, tonalityFactor*0.5" + countMap.get(paraName) + ", speedFactor" + countMap.get(paraName) + ");\n");
+                        code.insert(code.indexOf("};//task2"), "\n  play(" + paraName + ", " + paraName + "Duration, length" + paragraphCount.get(paraName) + ",tone2, tonalityFactor" + paragraphCount.get(paraName) + "*0.5, speedFactor" + paragraphCount.get(paraName) + ");\n");
                     }
                     code.delete(code.indexOf("//task1"), code.indexOf("//task1") + 7);
                     code.delete(code.indexOf("//task2"), code.indexOf("//task2") + 7);

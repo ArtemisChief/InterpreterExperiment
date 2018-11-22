@@ -505,6 +505,7 @@ public class LexicalAnalysis {
         count=1;
         error=false;
         tokens = new ArrayList();
+        errorLine=new ArrayList<>();
         //初始化行号
         count = 1;
         //预处理注释、空格

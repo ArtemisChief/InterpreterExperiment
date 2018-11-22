@@ -391,6 +391,18 @@ public class MiniGUI extends JFrame {
         }
     }
 
+    //通过行号找到改行第一个字符在输入字符串中的位置
+    private int getIndexByLine(int line){
+        int index=0;
+        String input = inputTextPane.getText().replace("\r", "");
+
+        for(int i=0;i<line-1;i++){
+            index=input.indexOf("\n",index+1);
+        }
+        System.out.println(input.substring(index));
+        return index;
+    }
+
     //执行词法分析
     private void LexMenuItemActionPerformed(ActionEvent e) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -404,6 +416,14 @@ public class MiniGUI extends JFrame {
         if (lexicalAnalysis.getError()) {
             stringBuilder.append("检测到词法错误，分析停止");
             outputTextPane.setText(stringBuilder.toString());
+            for(int line:lexicalAnalysis.getErrorLine()){
+                inputStyledDocument.setCharacterAttributes(
+                        getIndexByLine(line),
+                        //todo 最后一行越界问题
+                        getIndexByLine(line+1)-getIndexByLine(line),
+                        attributeSet, true
+                );
+            }
             return;
         }
 

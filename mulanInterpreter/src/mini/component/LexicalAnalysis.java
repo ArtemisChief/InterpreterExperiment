@@ -34,6 +34,7 @@ public class LexicalAnalysis {
     private boolean error;
     private ArrayList<Token> tokens;
     private int count;
+    private int skipLine;
 
     private int searchReserve(String s) {
         switch (s) {
@@ -161,6 +162,8 @@ public class LexicalAnalysis {
 
     //分析单个词 isIdentifier表示传入字符串当前是否可能为标识符
     public void Scanner(String inputWord, boolean isIdentifier) {
+        if(count==skipLine)
+            return;
         //如果字符串为空，直接返回
         if (inputWord.length() == 0)
             return;
@@ -190,6 +193,7 @@ public class LexicalAnalysis {
                     //如果以play(但不以)结尾
                     if (!inputWord.endsWith(")") || inputWord.length() == 5) {
                         error = true;
+                        skipLine=count;
                         tokens.add(new Token(-1, "播放语句格式有误", count));
                         return;
                     }
@@ -238,6 +242,7 @@ public class LexicalAnalysis {
                     //若speed后未加速度常数，报错
                     if (inputWord.length() == 6) {
                         error = true;
+                        skipLine=count;
                         tokens.add(new Token(-1, "\"speed=\"后缺少对应速度", count));
                         return;
                     }
@@ -245,6 +250,7 @@ public class LexicalAnalysis {
                     for (int i = 6; i < inputWord.length(); i++) {
                         if (!isNumber(inputWord.charAt(i))) {
                             error = true;
+                            skipLine=count;
                             tokens.add(new Token(-1, "速度中出现非法字符：" + inputWord.charAt(i), count));
                             return;
                         }
@@ -262,6 +268,7 @@ public class LexicalAnalysis {
             for (int i = 1; i < inputWord.length(); i++) {
                 if (!isLetter(inputWord.charAt(i)) && !isNumber(inputWord.charAt(i))) {
                     error = true;
+                    skipLine=count;
                     tokens.add(new Token(-1, "标识符中出现非法字符：" + inputWord.charAt(i), count));
                     return;
                 }
@@ -271,6 +278,7 @@ public class LexicalAnalysis {
             //若字符串为单独一个play，报错
             if (syn == 6) {
                 error = true;
+                skipLine=count;
                 tokens.add(new Token(-1, "play播放操作格式不正确", count));
                 return;
             }
@@ -285,6 +293,7 @@ public class LexicalAnalysis {
             //当该处应为标识符时，以数字开头则报错
             if (isIdentifier) {
                 error = true;
+                skipLine=count;
                 tokens.add(new Token(-1, "标识符不能以数字开头", count));
                 return;
             }
@@ -296,6 +305,7 @@ public class LexicalAnalysis {
                 if (inputWord.length() == 3) {
                     if (!isTonality(inputWord.charAt(2))) {
                         error = true;
+                        skipLine=count;
                         tokens.add(new Token(-1, "调性格式错误！", count));
                         return;
                     } else {
@@ -306,6 +316,7 @@ public class LexicalAnalysis {
                 if (inputWord.length() == 4) {
                     if (inputWord.charAt(2) != 'b' && inputWord.charAt(2) != '#') {
                         error = true;
+                        skipLine=count;
                         tokens.add(new Token(-1, "调性格式错误！", count));
                         return;
                     } else
@@ -313,6 +324,7 @@ public class LexicalAnalysis {
 
                     if (!isTonality(inputWord.charAt(3))) {
                         error = true;
+                        skipLine=count;
                         tokens.add(new Token(-1, "调性格式错误！", count));
                         return;
                     } else {
@@ -321,6 +333,7 @@ public class LexicalAnalysis {
                     }
                 } else {
                     error = true;
+                    skipLine=count;
                     tokens.add(new Token(-1, "调性格式错误！", count));
                     return;
                 }
@@ -343,6 +356,7 @@ public class LexicalAnalysis {
                             Scanner(String.valueOf(inputWord.charAt(j)), false);
                         }
                         error = true;
+                        skipLine=count;
                         tokens.add(new Token(-1, "旋律中出现非法字符：" + inputWord.charAt(i), count));
                         return;
                     }
@@ -350,6 +364,7 @@ public class LexicalAnalysis {
                 //如果输入不属于01234567，则报错
                 if (!isNote(inputWord.charAt(0))) {
                     error = true;
+                    skipLine=count;
                     tokens.add(new Token(-1, "旋律中出现非法字符：" + inputWord.charAt(0), count));
                     return;
                 }
@@ -403,12 +418,14 @@ public class LexicalAnalysis {
                 //若输入仅为<>，报错
                 if (inputWord.length() == 2) {
                     error = true;
+                    skipLine=count;
                     tokens.add(new Token(-1, "<>间缺少时长", count));
                     return;
                 }
                 //若<后以附点开头，报错
                 if (inputWord.charAt(1) == '*') {
                     error = true;
+                    skipLine=count;
                     tokens.add(new Token(-1, "附点*必须跟在其他音符时长之后", count));
                     return;
                 }
@@ -428,6 +445,7 @@ public class LexicalAnalysis {
                         if (inputWord.charAt(i) == ' ')
                             continue;
                         error = true;
+                        skipLine=count;
                         tokens.add(new Token(-1, "时长中出现非法字符：" + inputWord.charAt(i), count));
                         return;
                     }
@@ -439,6 +457,7 @@ public class LexicalAnalysis {
                 tokens.add(new Token(14, ">", count));
             } else {
                 error = true;
+                skipLine=count;
                 tokens.add(new Token(-1, "时长句子格式错误", count));
                 return;
             }
@@ -457,12 +476,14 @@ public class LexicalAnalysis {
             //其他非法字符开头则报错
         else {
             error = true;
+            skipLine=count;
             tokens.add(new Token(-1, "出现非法字符：" + inputWord.charAt(0), count));
         }
     }
 
 
     public ArrayList<Token> Lex(String input) {
+        skipLine=-1;
         count=1;
         error=false;
         tokens = new ArrayList();
@@ -480,7 +501,7 @@ public class LexicalAnalysis {
         }
         //start为当前读取字符串的开头位置
         int start = 0;
-        for (int i = 0; i < input.length() && !error; i++) {
+        for (int i = 0; i < input.length(); i++) {
             //start==i且当前字符为空格时继续以略过连续空格
             if (i<input.length()&&input.charAt(i) == ' ' && start == i) {
                 while (i<input.length()&&input.charAt(i) == ' ' && start == i){
@@ -501,13 +522,12 @@ public class LexicalAnalysis {
                 start = i + 1;
                 continue;
             }
-            //扫描到换行符时，将start到换行处的字符串分析，分析完后不出错则添加换行token
+            //扫描到换行符时，将start到换行处的字符串分析
             if (input.charAt(i) == '\n') {
                 String temp = input.substring(start, i);
                 if (!temp.equals(""))
                     Scanner(temp, isIdentifier);
-                if (!error)
-                    count++;
+                count++;
                 isIdentifier = false;
                 start = i + 1;
                 continue;

@@ -235,7 +235,7 @@ public class SyntacticAnalysis {
                 continue;
             }
             //']',高八度右括号
-            if (tokens.get(index).getSyn() == 9) {
+            if (tokens.get(index).getSyn() == 10) {
                 if (group <= 0) {
                     nextLine();
                     sentenceError = true;

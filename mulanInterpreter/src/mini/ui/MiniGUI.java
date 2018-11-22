@@ -410,9 +410,14 @@ public class MiniGUI extends JFrame {
 
         ArrayList<Token> tokens = lexicalAnalysis.Lex(inputTextPane.getText());
 
-        for (Token token : tokens) {
-            stringBuilder.append(token);
-        }
+
+        if(!lexicalAnalysis.getError())
+            for (Token token : tokens) {
+                stringBuilder.append(token);
+            }
+
+         else
+             stringBuilder.append(lexicalAnalysis.getErrorInfo(tokens));
 
         if (lexicalAnalysis.getError()) {
             stringBuilder.append("检测到词法错误，分析停止");

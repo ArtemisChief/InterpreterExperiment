@@ -3,14 +3,18 @@ package mini.component;
 import mini.entity.Node;
 import mini.entity.Note;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class SemanticAnalysis {
 
     private Node AbstractSyntaxTree;
 
+    private boolean isError;
     private StringBuilder code;
     private StringBuilder errorInfo;
+    private ArrayList<String> paragraphs;
     private int count;
     private int scoreLength;
 
@@ -21,8 +25,12 @@ public class SemanticAnalysis {
     public String ConvertToArduino(Node abstractSyntaxTree) {
         AbstractSyntaxTree = abstractSyntaxTree;
 
+        isError=false;
+
         code = new StringBuilder();
         errorInfo = new StringBuilder();
+
+        paragraphs = new ArrayList<>();
 
         count = 0;
 
@@ -33,24 +41,12 @@ public class SemanticAnalysis {
                 "int tonePin1=2;\n" +
                 "int tonePin2=3;\n\n" +
                 "Tone tone1;\n" +
-                "Tone tone2;\n\n");
+                "Tone tone2;\n\n\n");
 
         DFS(AbstractSyntaxTree);
 
-        /**
-         * 关于速度
-         * 如果 speed=120，即每分钟120拍，即每拍持续0.5秒
-         * 默认四分音符为一拍，而四分音符时值为4，
-         * 则可以计算出Arduino中的时值因子为
-         * speedFactor=60/120/4*1000=125
-         * 其中只有120是变量，60为每分钟60秒，4为四分音符的时值，1000为秒转换成毫秒
-         */
-
-        /**
-         * 查表得到频率与时值，如
-         * String frequency = Note.Pitch.C;     (值为523)
-         * String duration = Note.Duration._g;  (值为1)
-         */
+        if(isError)
+            return errorInfo.toString();
 
         return code.toString();
     }
@@ -59,11 +55,13 @@ public class SemanticAnalysis {
         double speedFactor;
         int noteCount = 0;
         int rhythmCount = 0;
+        String notes="";
+        String rhythms="";
         for (Node child : curNode.getChildren()) {
             switch (child.getType()) {
                 case "score":
                     count++;
-                    scoreLength=0;
+                    scoreLength = 0;
                     code.append("const int length" + count + ";\n\n" +
                             "double speedFactor" + count + ";\n\n" +
                             "double tonalityFactor" + count + ";\n\n");
@@ -71,11 +69,36 @@ public class SemanticAnalysis {
                     break;
 
                 case "execution":
-//                    code.append("defineTaskLoop(Task1){}");
+                    code.append("void play(int *paragragh, int *duration, int paragraphLength, Tone tonePlayer, double tonalityFactor, double speedFactor){\n" +
+                            "  for(int i=0;i<paragraphLength;i++){\n" +
+                            "    if(paragragh[i]!=0)\n" +
+                            "      tonePlayer.play(paragragh[i] * tonalityFactor);\n" +
+                            "    if(duration[i]>0){\n" +
+                            "      delay(duration[i] * speedFactor);\n" +
+                            "      tonePlayer.stop();\n" +
+                            "      delay(10);\n" +
+                            "    }else{\n" +
+                            "      delay(-duration[i] * speedFactor);\n" +
+                            "      delay(10);\n" +
+                            "      tonePlayer.stop();\n" +
+                            "    }\n" +
+                            "  }\n" +
+                            "}\n\n" +
+                            "defineTaskLoop(Task1){};//task1\n\n" +
+                            "defineTaskLoop(Task2){};//task2\n\n" + "" +
+                            "void setup() {\n" +
+                            "  tone1.begin(tonePin1);\n" +
+                            "  tone2.begin(tonePin2);\n" +
+                            "  mySCoop.start();\n" +
+                            "}\n\n" +
+                            "void loop() {\n" +
+                            "  yield();\n" +
+                            "}");
                     DFS(child);
                     break;
 
                 case "statement":
+                    paragraphs.add(child.getChild(0).getContent());
                     code.append("int *" + child.getChild(0).getContent() + "=new int[len" + count + "]\n{};//Notes\n\n");
                     code.append("int *" + child.getChild(0).getContent() + "Duration=new int[len" + count + "]\n{};//Duration\n\n");
                     break;
@@ -125,7 +148,7 @@ public class SemanticAnalysis {
                     break;
 
                 case "end paragraph":
-                    code.insert(code.indexOf("length"+count)+("length"+count).length(),"="+scoreLength);
+                    code.insert(code.indexOf("length" + count) + ("length" + count).length(), "=" + scoreLength);
                     code.delete(code.indexOf("};//Notes") - 3, code.indexOf("};//Notes"));
                     code.delete(code.indexOf("};//Duration") - 3, code.indexOf("};//Duration"));
                     code.delete(code.indexOf("//Notes"), code.indexOf("//Notes") + 7);
@@ -138,6 +161,7 @@ public class SemanticAnalysis {
                     Integer pitch;
 
                     for (Node tone : child.getChildren()) {
+                        notes+=tone.getContent();
                         switch (tone.getContent()) {
                             case "(":
                                 pitchFactor *= 0.5;
@@ -213,12 +237,13 @@ public class SemanticAnalysis {
                     Integer legato = 1;
 
                     for (Node rhythm : child.getChildren()) {
+                        rhythms+=rhythm.getContent();
                         switch (rhythm.getContent()) {
                             case "{":
                                 legato = -1;
                                 break;
                             case "}":
-                                //todo 连音处理
+                                code.deleteCharAt(code.lastIndexOf("-"));
                                 legato = 1;
                                 break;
                             case "1":
@@ -259,21 +284,70 @@ public class SemanticAnalysis {
                                 break;
                             case "g*":
                                 rhythmCount++;
-                                code.insert(code.indexOf("};//Duration"), "Error: 不支持32分音符");
-                                errorInfo.append("Error: 不支持32分音符\n");
+                                code.insert(code.indexOf("};//Duration"), "Error: 不支持32分音符，即g*");
+                                errorInfo.append("Error: 不支持32分音符，即g*\n");
+                                isError=true;
                                 break;
                         }
                     }
                     code.insert(code.indexOf("};//Duration"), "\n");
 
-                    if(noteCount!=rhythmCount) {
-                        code.insert(code.indexOf("};//Duration"),"Error: 上一行中音符与时值数量不相同\n");
-                        errorInfo.append("Error: 该句音符与时值数量不相同\n");
+                    if (noteCount != rhythmCount) {
+                        code.insert(code.indexOf("};//Duration"), "Error: 该句音符与时值数量不相同:\"+notes+\" \"+rhythms+\"\\n\"");
+                        errorInfo.append("Error: 该句音符与时值数量不相同:"+notes+" "+rhythms+"\n");
+                        isError=true;
                     }
-                    scoreLength+=noteCount;
+                    scoreLength += noteCount;
                     break;
 
                 case "playlist":
+                    String paraName = "";
+                    int tonePlayed = 0;         //要使用的蜂鸣器编号
+                    int playCount = 0;          //一个段落名对应一个Count值
+                    Map<String, Integer> countMap = new HashMap<>();
+                    boolean andOp = false;
+                    for (Node playList : child.getChildren()) {
+                        switch (playList.getContent()) {
+                            case "&":
+                                if (tonePlayed > 1) {
+                                    code.append("Error: 不支持两个以上蜂鸣器同时播放，请减少play中同时播放的数量\n");
+                                    errorInfo.append("Error: 不支持两个以上蜂鸣器同时播放，请减少play中同时播放的数量\n");
+                                    isError=true;
+                                }
+                                andOp = true;
+                                break;
+                            case ",":
+                                if (tonePlayed == 1) {
+                                    code.insert(code.indexOf("};//task2"), "\n  play(" + paraName + ", " + paraName + "Duration, length" + countMap.get(paraName) + ",tone2, tonalityFactor" + countMap.get(paraName) + "*0.5, speedFactor" + countMap.get(paraName) + ");\n");
+                                }
+                                tonePlayed = 0;
+                                andOp = false;
+                                break;
+                            default:
+                                paraName = playList.getContent();
+                                if (!paragraphs.contains(paraName)) {
+                                    code.insert(code.indexOf("};//task1"), "Error: 未声明的段落名" + paraName);
+                                    errorInfo.append("Error: 未声明的段落名" + paraName + "\n");
+                                    isError=true;
+                                }
+                                tonePlayed++;
+                                if (!countMap.containsKey(paraName)) {
+                                    playCount++;
+                                    countMap.put(paraName, playCount);
+                                }
+                                if (!andOp) {
+                                    code.insert(code.indexOf("};//task1"), "\n  play(" + paraName + ", " + paraName + "Duration, length" + countMap.get(paraName) + ",tone1, tonalityFactor" + countMap.get(paraName) + ", speedFactor" + countMap.get(paraName) + ");\n");
+                                } else {
+                                    code.insert(code.indexOf("};//task2"), "\n  play(" + paraName + ", " + paraName + "Duration, length" + countMap.get(paraName) + ",tone2, tonalityFactor" + countMap.get(paraName) + ", speedFactor" + countMap.get(paraName) + ");\n");
+                                }
+                                break;
+                        }
+                    }
+                    if (tonePlayed == 1) {
+                        code.insert(code.indexOf("};//task2"), "\n  play(" + paraName + ", " + paraName + "Duration, length" + countMap.get(paraName) + ",tone2, tonalityFactor*0.5" + countMap.get(paraName) + ", speedFactor" + countMap.get(paraName) + ");\n");
+                    }
+                    code.delete(code.indexOf("//task1"), code.indexOf("//task1") + 7);
+                    code.delete(code.indexOf("//task2"), code.indexOf("//task2") + 7);
                     break;
             }
         }

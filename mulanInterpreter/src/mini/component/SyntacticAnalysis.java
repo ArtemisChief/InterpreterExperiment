@@ -490,8 +490,8 @@ public class SyntacticAnalysis {
         Node speed = new Node("speed");
         Node terminalNode;
 
-        terminalNode = new Node("speed mark", "speed=");
-        speed.addChild(terminalNode);
+//        terminalNode = new Node("speed mark", "speed=");
+//        speed.addChild(terminalNode);
         terminalNode = new Node("speed value", "90");
         speed.addChild(terminalNode);
 
@@ -500,7 +500,7 @@ public class SyntacticAnalysis {
 
     //get default tone if never set
     public Node getTone() {
-        Node tone = new Node("tone");
+        Node tone = new Node("tonality");
         Node terminalNode;
 
 //        terminalNode = new Node("tone mark","1=");

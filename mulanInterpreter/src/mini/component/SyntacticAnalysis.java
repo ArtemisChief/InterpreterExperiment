@@ -214,6 +214,12 @@ public class SyntacticAnalysis {
                     isError=true;
                     return new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  八度转换错误");
                 }
+                if(tokens.get(index-1).getSyn()==7){
+                    nextLine();
+                    sentenceError = true;
+                    isError=true;
+                    return new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  括号内不能为空");
+                }
                 group++;
 //                notes += ")";
                 melody.addChild(new Node("lower right parentheses",")"));
@@ -241,6 +247,12 @@ public class SyntacticAnalysis {
                     sentenceError = true;
                     isError=true;
                     return new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  八度转换错误");
+                }
+                if(tokens.get(index-1).getSyn()==9){
+                    nextLine();
+                    sentenceError = true;
+                    isError=true;
+                    return new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  括号内不能为空");
                 }
                 group--;
 //                notes += "]";
@@ -427,6 +439,12 @@ public class SyntacticAnalysis {
                     sentenceError = true;
                     isError=true;
                     return new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  缺少连音左括号");
+                }
+                if(tokens.get(index-1).getSyn()==11){
+                    nextLine();
+                    sentenceError = true;
+                    isError=true;
+                    return new Node("Error", "Line: " + (tokens.get(index).getCount() - 1) +"  连音括号内不能为空");
                 }
                 inCurlyBraces = false;
                 terminalNode = new Node("rightCurlyBrace","}");

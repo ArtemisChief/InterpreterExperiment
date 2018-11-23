@@ -68,12 +68,12 @@ public class SemanticAnalysis {
                             "    if(paragragh[i]!=0)\n" +
                             "      tonePlayer.play(paragragh[i] * tonalityFactor);\n" +
                             "    if(duration[i]>0){\n" +
-                            "      delay(duration[i] * speedFactor);\n" +
+                            "      delay(duration[i] * speedFactor-1);\n" +
                             "      tonePlayer.stop();\n" +
-                            "      delay(10);\n" +
+                            "      delay(1);\n" +
                             "    }else{\n" +
-                            "      delay(-duration[i] * speedFactor);\n" +
-                            "      delay(10);\n" +
+                            "      delay(-duration[i] * speedFactor-1);\n" +
+                            "      delay(1);\n" +
                             "      tonePlayer.stop();\n" +
                             "    }\n" +
                             "  }\n" +

@@ -12,6 +12,7 @@ public class Node {
     private ArrayList<Node> childNodes;
     private String content;
     private String type;
+    private int count;
 
     public Node(String type) {
         childNodes = new ArrayList<>();
@@ -25,6 +26,13 @@ public class Node {
         this.content = content;
     }
 
+    public Node(String type, String content, int count) {
+        childNodes = new ArrayList<>();
+        this.type = type;
+        this.content = content;
+        this.count = count;
+    }
+
     public String getType(){
         return type;
     }
@@ -32,6 +40,8 @@ public class Node {
     public String getContent() {
         return content;
     }
+
+    public int getCount(){ return count;}
 
     public void addChild(Node node) {
         childNodes.add(node);

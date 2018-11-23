@@ -11,21 +11,17 @@ public class SemanticAnalysis {
 
     private Node AbstractSyntaxTree;
 
-    private boolean isError;
+    private ArrayList<Integer> errorLines;
     private StringBuilder code;
     private StringBuilder errorInfo;
     Map<String, Integer> paragraphCount;
     private int count;
     private int scoreLength;
 
-    public SemanticAnalysis() {
-
-    }
-
     public String ConvertToArduino(Node abstractSyntaxTree) {
         AbstractSyntaxTree = abstractSyntaxTree;
 
-        isError=false;
+        errorLines = new ArrayList<>();
 
         code = new StringBuilder();
         errorInfo = new StringBuilder();
@@ -33,8 +29,6 @@ public class SemanticAnalysis {
         paragraphCount = new HashMap<>();
 
         count = 0;
-
-        //TODO 分析语法树转换成Arduino代码
 
         code.append("#include <Tone.h>\n" +
                 "#include <SCoop.h>\n\n" +
@@ -45,9 +39,6 @@ public class SemanticAnalysis {
 
         DFS(AbstractSyntaxTree);
 
-        if(isError)
-            return errorInfo.toString();
-
         return code.toString();
     }
 
@@ -55,8 +46,8 @@ public class SemanticAnalysis {
         double speedFactor;
         int noteCount = 0;
         int rhythmCount = 0;
-        String notes="";
-        String rhythms="";
+        String notes = "";
+        String rhythms = "";
         for (Node child : curNode.getChildren()) {
             switch (child.getType()) {
                 case "score":
@@ -98,12 +89,12 @@ public class SemanticAnalysis {
                     break;
 
                 case "statement":
-                    if(paragraphCount.containsKey(child.getChild(0).getContent())) {
-                        errorInfo.append("Error: 重复声明的段落名" + child.getChild(0).getContent() + "\n");
-                        isError=true;
+                    if (paragraphCount.containsKey(child.getChild(0).getContent())) {
+                        errorInfo.append("Line: " + child.getChild(0).getCount() + "\t重复声明的段落名" + child.getChild(0).getContent() + "\n");
+                        errorLines.add(child.getChild(0).getCount());
                         count--;
                     }
-                    paragraphCount.put(child.getChild(0).getContent(),count);
+                    paragraphCount.put(child.getChild(0).getContent(), count);
                     code.append("int *" + child.getChild(0).getContent() + "=new int[length" + count + "]\n{};//Notes\n\n");
                     code.append("int *" + child.getChild(0).getContent() + "Duration=new int[length" + count + "]\n{};//Duration\n\n");
                     break;
@@ -166,7 +157,7 @@ public class SemanticAnalysis {
                     Integer pitch;
 
                     for (Node tone : child.getChildren()) {
-                        notes+=tone.getContent();
+                        notes += tone.getContent();
                         switch (tone.getContent()) {
                             case "(":
                                 pitchFactor *= 0.5;
@@ -240,9 +231,9 @@ public class SemanticAnalysis {
 
                 case "rhythm":
                     Integer legato = 1;
-
+                    Integer line = child.getChild(0).getCount();
                     for (Node rhythm : child.getChildren()) {
-                        rhythms+=rhythm.getContent();
+                        rhythms += rhythm.getContent();
                         switch (rhythm.getContent()) {
                             case "{":
                                 legato = -1;
@@ -289,16 +280,16 @@ public class SemanticAnalysis {
                                 break;
                             case "g*":
                                 rhythmCount++;
-                                errorInfo.append("Error: 不支持32分音符，即g*\n");
-                                isError=true;
+                                errorInfo.append("Line: " + line + "\t不支持32分音符，即g*\n");
+                                errorLines.add(line);
                                 break;
                         }
                     }
                     code.insert(code.indexOf("};//Duration"), "\n");
 
                     if (noteCount != rhythmCount) {
-                        errorInfo.append("Error: 该句音符与时值数量不相同:"+notes+" "+rhythms+"\n");
-                        isError=true;
+                        errorInfo.append("Line: " + line + "\t该句音符与时值数量不相同\n");
+                        errorLines.add(line);
                     }
                     scoreLength += noteCount;
                     break;
@@ -311,8 +302,8 @@ public class SemanticAnalysis {
                         switch (playList.getContent()) {
                             case "&":
                                 if (tonePlayed > 1) {
-                                    errorInfo.append("Error: 不支持两个以上蜂鸣器同时播放，请减少play中同时播放的数量\n");
-                                    isError=true;
+                                    errorInfo.append("Line: " + playList.getCount() + "\t不支持两个以上蜂鸣器同时播放，请减少play中同时播放的数量\n");
+                                    errorLines.add(playList.getCount());
                                 }
                                 andOp = true;
                                 break;
@@ -326,8 +317,8 @@ public class SemanticAnalysis {
                             default:
                                 paraName = playList.getContent();
                                 if (!paragraphCount.containsKey(paraName)) {
-                                    errorInfo.append("Error: 未声明的段落名" + paraName + "\n");
-                                    isError=true;
+                                    errorInfo.append("Line: " + playList.getCount() + "\t未声明的段落名" + paraName + "\n");
+                                    errorLines.add(playList.getCount());
                                 }
                                 tonePlayed++;
                                 if (!andOp) {
@@ -346,5 +337,17 @@ public class SemanticAnalysis {
                     break;
             }
         }
+    }
+
+    public boolean getIsError() {
+        return !errorLines.isEmpty();
+    }
+
+    public ArrayList<Integer> getErrorLines() {
+        return errorLines;
+    }
+
+    public String getErrors() {
+        return errorInfo.toString();
     }
 }

@@ -39,6 +39,7 @@ public class MiniGUI extends JFrame {
     private SimpleAttributeSet durationAttributeSet;
     private SimpleAttributeSet normalAttributeSet;
     private SimpleAttributeSet commentAttributeSet;
+    private SimpleAttributeSet errorAttributeSet;
     private StyledDocument inputStyledDocument;
     //todo 输出内容高亮
     private StyledDocument outputStyledDocument;
@@ -59,10 +60,12 @@ public class MiniGUI extends JFrame {
         durationAttributeSet = new SimpleAttributeSet();
         normalAttributeSet = new SimpleAttributeSet();
         commentAttributeSet = new SimpleAttributeSet();
+        errorAttributeSet=new SimpleAttributeSet();
         StyleConstants.setForeground(attributeSet, new Color(30, 80, 180));
         StyleConstants.setBold(attributeSet, true);
         StyleConstants.setForeground(durationAttributeSet, new Color(54, 163, 240));
         StyleConstants.setForeground(commentAttributeSet, new Color(128, 128, 128));
+        StyleConstants.setForeground(errorAttributeSet, new Color(238, 0, 1));
         inputStyledDocument = inputTextPane.getStyledDocument();
         outputStyledDocument = outputTextPane.getStyledDocument();
         keywordPattern = Pattern.compile("\\bparagraph\\b|\\bspeed=|\\b1=|\\bend\\b|\\bplay");
@@ -394,7 +397,7 @@ public class MiniGUI extends JFrame {
     //通过行号找到改行第一个字符在输入字符串中的位置
     private int getIndexByLine(int line){
         int index=0;
-        String input = inputTextPane.getText().replace("\r", "");
+        String input = inputTextPane.getText().replace("\r", "")+"\n";
 
         for(int i=0;i<line-1;i++){
             index=input.indexOf("\n",index+1);
@@ -402,36 +405,82 @@ public class MiniGUI extends JFrame {
         return index;
     }
 
+    //词法分析
+    private ArrayList<Token> runLex(String input, StringBuilder output) {
+        ArrayList<Token> tokens = lexicalAnalysis.Lex(input);
 
+        if (lexicalAnalysis.getError()) {
+            output.append(lexicalAnalysis.getErrorInfo(tokens));
+            output.append("检测到词法错误，分析停止");
+            outputTextPane.setText(output.toString());
+            for (int line : lexicalAnalysis.getErrorLine()) {
+                System.out.println(line);
+                inputStyledDocument.setCharacterAttributes(
+                        getIndexByLine(line),
+                        getIndexByLine(line + 1) - getIndexByLine(line),
+                        errorAttributeSet, true
+                );
+            }
+            return null;
+        } else
+            for (Token token : tokens)
+                output.append(token);
+
+        return tokens;
+    }
+
+    //语法分析
+    private Node runSyn(ArrayList<Token> tokens,StringBuilder output) {
+        Node AbstractSyntaxTree = syntacticAnalysis.Parse(tokens);
+
+        if (syntacticAnalysis.getIsError()) {
+            output.append(syntacticAnalysis.getErrors(AbstractSyntaxTree));
+            output.append("\n检测到语法错误，分析停止\n");
+            outputTextPane.setText(output.toString());
+            for (int line : syntacticAnalysis.getErrorList()) {
+                System.out.println(line);
+                inputStyledDocument.setCharacterAttributes(
+                        getIndexByLine(line),
+                        getIndexByLine(line + 1) - getIndexByLine(line),
+                        errorAttributeSet, true
+                );
+            }
+            return null;
+        } else
+            output.append(AbstractSyntaxTree.print(0));
+
+        return AbstractSyntaxTree;
+    }
+
+    //语义分析
+    private String runSem(Node abstractSyntaxTree,StringBuilder output) {
+        String code = semanticAnalysis.ConvertToArduino(abstractSyntaxTree);
+
+        if (semanticAnalysis.getIsError()) {
+            output.append(semanticAnalysis.getErrors());
+            output.append("\n检测到语义错误，分析停止\n");
+            outputTextPane.setText(output.toString());
+            for (int line : semanticAnalysis.getErrorLines()) {
+                System.out.println(line);
+                inputStyledDocument.setCharacterAttributes(
+                        getIndexByLine(line),
+                        getIndexByLine(line + 1) - getIndexByLine(line),
+                        errorAttributeSet, true
+                );
+            }
+            return null;
+        } else {
+            output.append(code);
+        }
+
+        return code;
+    }
 
     //执行词法分析
     private void LexMenuItemActionPerformed(ActionEvent e) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        ArrayList<Token> tokens = lexicalAnalysis.Lex(inputTextPane.getText());
-
-
-        if(!lexicalAnalysis.getError())
-            for (Token token : tokens) {
-                stringBuilder.append(token);
-            }
-
-         else
-             stringBuilder.append(lexicalAnalysis.getErrorInfo(tokens));
-
-        if (lexicalAnalysis.getError()) {
-            stringBuilder.append("检测到词法错误，分析停止");
-            outputTextPane.setText(stringBuilder.toString());
-            for(int line:lexicalAnalysis.getErrorLine()){
-                inputStyledDocument.setCharacterAttributes(
-                        getIndexByLine(line),
-                        //todo 最后一行越界问题
-                        getIndexByLine(line+1)-getIndexByLine(line),
-                        attributeSet, true
-                );
-            }
-            return;
-        }
+        runLex(inputTextPane.getText(),stringBuilder);
 
         outputTextPane.setText(stringBuilder.toString());
     }
@@ -440,28 +489,12 @@ public class MiniGUI extends JFrame {
     private void synMenuItemActionPerformed(ActionEvent e) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        ArrayList<Token> tokens = lexicalAnalysis.Lex(inputTextPane.getText());
-        for (Token token : tokens) {
-            stringBuilder.append(token);
-        }
-
-        if (lexicalAnalysis.getError()) {
-            stringBuilder.append("\n检测到词法错误，分析停止\n");
-            outputTextPane.setText(stringBuilder.toString());
-            return;
-        }
+        ArrayList<Token> tokens = runLex(inputTextPane.getText(), stringBuilder);
 
         stringBuilder.append("\n=======词法分析结束======开始语法分析=======\n\n");
 
-        Node AbstractSyntaxTree = syntacticAnalysis.Parse(tokens);
-        stringBuilder.append(AbstractSyntaxTree.print(0));
+        runSyn(tokens, stringBuilder);
 
-        if (syntacticAnalysis.getIsError()) {
-            stringBuilder.append(syntacticAnalysis.getErrors(AbstractSyntaxTree));
-            stringBuilder.append("\n检测到语法错误，分析停止\n");
-            outputTextPane.setText(stringBuilder.toString());
-            return;
-        }
         outputTextPane.setText(stringBuilder.toString());
     }
 
@@ -469,33 +502,15 @@ public class MiniGUI extends JFrame {
     private void semMenuItemActionPerformed(ActionEvent e) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        ArrayList<Token> tokens = lexicalAnalysis.Lex(inputTextPane.getText());
-        for (Token token : tokens) {
-            stringBuilder.append(token);
-        }
-
-        if (lexicalAnalysis.getError()) {
-            stringBuilder.append("\n检测到词法错误，分析停止\n");
-            outputTextPane.setText(stringBuilder.toString());
-            return;
-        }
+        ArrayList<Token> tokens = runLex(inputTextPane.getText(), stringBuilder);
 
         stringBuilder.append("\n=======词法分析结束======开始语法分析=======\n\n");
 
-        Node AbstractSyntaxTree = syntacticAnalysis.Parse(tokens);
-        stringBuilder.append(AbstractSyntaxTree.print(0));
+        Node AbstractSyntaxTree = runSyn(tokens, stringBuilder);
 
-        if (syntacticAnalysis.getIsError()) {
-            stringBuilder.append(syntacticAnalysis.getErrors(AbstractSyntaxTree));
-            stringBuilder.append("\n检测到语法错误，分析停止\n");
-            outputTextPane.setText(stringBuilder.toString());
-            return;
-        }
         stringBuilder.append("\n=======语法分析结束======开始语义分析=======\n\n");
 
-        String code = semanticAnalysis.ConvertToArduino(AbstractSyntaxTree);
-        stringBuilder.append(code);
-
+        runSem(AbstractSyntaxTree, stringBuilder);
 
         outputTextPane.setText(stringBuilder.toString());
     }

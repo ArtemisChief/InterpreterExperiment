@@ -448,6 +448,7 @@ public class SyntacticAnalysis {
                 rhythm.addChild(terminalNode);
                 //rhythmContent += "{";
                 index++;
+                continue;
             }
 
             //'}',连音右括号
@@ -471,6 +472,7 @@ public class SyntacticAnalysis {
                 rhythm.addChild(terminalNode);
                 //rhythmContent += "}";
                 index++;
+                continue;
             }
 
             //音符长度
@@ -648,7 +650,7 @@ public class SyntacticAnalysis {
     //换到下一行
     public void nextLine() {
 
-        while (tokens.get(index).getCount() == tokens.get(++index).getCount()) {
+        while (index<tokens.size()-1&&tokens.get(index).getCount() == tokens.get(++index).getCount()) {
 
         }
     }

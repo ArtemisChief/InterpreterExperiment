@@ -4,6 +4,7 @@
 
 package mini.ui;
 
+import mini.component.ArduinoCmd;
 import mini.component.LexicalAnalysis;
 import mini.component.SemanticAnalysis;
 import mini.component.SyntacticAnalysis;
@@ -30,6 +31,7 @@ import java.util.regex.Pattern;
  */
 public class MiniGUI extends JFrame {
 
+    private File inoFile;
     private File file;
     private boolean hasSaved = false;
     private boolean hasChanged=false;
@@ -49,6 +51,10 @@ public class MiniGUI extends JFrame {
     private LexicalAnalysis lexicalAnalysis;
     private SyntacticAnalysis syntacticAnalysis;
     private SemanticAnalysis semanticAnalysis;
+    private ArduinoCmd arduinoCmd;
+    private boolean cmdComplete;
+
+    private String cmdOutput;
 
     public MiniGUI() {
         initComponents();
@@ -75,8 +81,14 @@ public class MiniGUI extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                if (showSaveComfirm("Exist unsaved content, save before exit?"))
+                //删除临时ino文件
+                if (showSaveComfirm("Exist unsaved content, save before exit?")) {
+                    File tempFile=new File("C:\\Users\\Chief\\Documents\\Arduino\\temp.ino");
+                    if(tempFile.exists())
+                        tempFile.delete();
+
                     System.exit(0);
+                }
             }
         });
 
@@ -150,6 +162,10 @@ public class MiniGUI extends JFrame {
         lexicalAnalysis = new LexicalAnalysis();
         syntacticAnalysis = new SyntacticAnalysis();
         semanticAnalysis = new SemanticAnalysis();
+        arduinoCmd=new ArduinoCmd();
+
+        cmdOutput="";
+        cmdComplete=false;
 
         //行号与滚动条
         scrollPane3.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
@@ -414,7 +430,6 @@ public class MiniGUI extends JFrame {
             output.append("检测到词法错误，分析停止");
             outputTextPane.setText(output.toString());
             for (int line : lexicalAnalysis.getErrorLine()) {
-                System.out.println(line);
                 inputStyledDocument.setCharacterAttributes(
                         getIndexByLine(line),
                         getIndexByLine(line + 1) - getIndexByLine(line),
@@ -438,7 +453,6 @@ public class MiniGUI extends JFrame {
             output.append("\n检测到语法错误，分析停止\n");
             outputTextPane.setText(output.toString());
             for (int line : syntacticAnalysis.getErrorList()) {
-                System.out.println(line);
                 inputStyledDocument.setCharacterAttributes(
                         getIndexByLine(line),
                         getIndexByLine(line + 1) - getIndexByLine(line),
@@ -461,7 +475,6 @@ public class MiniGUI extends JFrame {
             output.append("\n检测到语义错误，分析停止\n");
             outputTextPane.setText(output.toString());
             for (int line : semanticAnalysis.getErrorLines()) {
-                System.out.println(line);
                 inputStyledDocument.setCharacterAttributes(
                         getIndexByLine(line),
                         getIndexByLine(line + 1) - getIndexByLine(line),
@@ -480,7 +493,10 @@ public class MiniGUI extends JFrame {
     private void LexMenuItemActionPerformed(ActionEvent e) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        runLex(inputTextPane.getText(),stringBuilder);
+        if (inputTextPane.getText().isEmpty())
+            return;
+
+        runLex(inputTextPane.getText(), stringBuilder);
 
         outputTextPane.setText(stringBuilder.toString());
     }
@@ -489,7 +505,14 @@ public class MiniGUI extends JFrame {
     private void synMenuItemActionPerformed(ActionEvent e) {
         StringBuilder stringBuilder = new StringBuilder();
 
+
+        if (inputTextPane.getText().isEmpty())
+            return;
+
         ArrayList<Token> tokens = runLex(inputTextPane.getText(), stringBuilder);
+
+        if (tokens == null)
+            return;
 
         stringBuilder.append("\n=======词法分析结束======开始语法分析=======\n\n");
 
@@ -502,11 +525,20 @@ public class MiniGUI extends JFrame {
     private void semMenuItemActionPerformed(ActionEvent e) {
         StringBuilder stringBuilder = new StringBuilder();
 
+        if (inputTextPane.getText().isEmpty())
+            return;
+
         ArrayList<Token> tokens = runLex(inputTextPane.getText(), stringBuilder);
+
+        if (tokens == null)
+            return;
 
         stringBuilder.append("\n=======词法分析结束======开始语法分析=======\n\n");
 
         Node AbstractSyntaxTree = runSyn(tokens, stringBuilder);
+
+        if(AbstractSyntaxTree==null)
+            return;
 
         stringBuilder.append("\n=======语法分析结束======开始语义分析=======\n\n");
 
@@ -517,7 +549,198 @@ public class MiniGUI extends JFrame {
 
     //保存执行文件
     private void buildMenuItemActionPerformed(ActionEvent e) {
-        // TODO add your code here
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (inputTextPane.getText().isEmpty())
+            return;
+
+        ArrayList<Token> tokens = runLex(inputTextPane.getText(), stringBuilder);
+
+        if (tokens == null)
+            return;
+
+        stringBuilder.append("\n=======词法分析结束======开始语法分析=======\n\n");
+
+        Node AbstractSyntaxTree = runSyn(tokens, stringBuilder);
+
+        if (AbstractSyntaxTree == null)
+            return;
+
+        stringBuilder.append("\n=======语法分析结束======开始语义分析=======\n\n");
+
+        String code = runSem(AbstractSyntaxTree, stringBuilder);
+
+        if (code == null)
+            return;
+
+        outputTextPane.setText(code);
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Arduino File", "ino");
+        fileChooser.setFileFilter(filter);
+        fileChooser.showSaveDialog(this);
+        if (fileChooser.getSelectedFile() == null)
+            return;
+        String fileStr = fileChooser.getSelectedFile().getAbsoluteFile().toString();
+        if (fileStr.lastIndexOf(".ino") == -1)
+            fileStr += ".ino";
+        inoFile = new File(fileStr);
+        try {
+            if (!inoFile.exists())
+                inoFile.createNewFile();
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(inoFile), "UTF-8"));
+            bufferedWriter.write(code);
+            bufferedWriter.close();
+        } catch (FileNotFoundException e1) {
+//            e1.printStackTrace();
+        } catch (IOException e1) {
+//            e1.printStackTrace();
+        }
+
+    }
+
+    //读取CMD数据流
+    private void readCmd(){
+        compileMenuItem.setEnabled(false);
+        uploadMenuItem.setEnabled(false);
+        progressBar.setIndeterminate(true);
+        cmdOutput="";
+
+        //处理输出的线程
+        new Thread(() -> {
+            int count=0;
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(ArduinoCmd.output, "GBK"));
+                String tempStr;
+                while ((tempStr = bufferedReader.readLine()) != null) {
+                    count++;
+                    if(count>12) {
+                        cmdOutput += tempStr + "\n";
+                        outputTextPane.setText(cmdOutput);
+                    }
+                }
+                progressBar.setIndeterminate(false);
+                progressBar.setValue(100);
+                compileMenuItem.setEnabled(true);
+                uploadMenuItem.setEnabled(true);
+            } catch (IOException IOE) {
+                IOE.printStackTrace();
+            } finally {
+                try {
+                    ArduinoCmd.output.close();
+                } catch (IOException IOE) {
+                    IOE.printStackTrace();
+                }
+            }
+        }).start();
+
+        //处理错误信息的线程
+        new Thread(() -> {
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(ArduinoCmd.error, "GBK"));
+                String tempStr;
+                while ((tempStr = bufferedReader.readLine()) != null) {
+                    cmdOutput += tempStr + "\n";
+                    outputTextPane.setText(cmdOutput);
+                }
+            } catch (IOException IOE) {
+                IOE.printStackTrace();
+            } finally {
+                try {
+                    ArduinoCmd.error.close();
+                } catch (IOException IOE) {
+                    IOE.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    //编译成十六进制文件
+    private void compileMenuItemActionPerformed(ActionEvent e) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (inputTextPane.getText().isEmpty())
+            return;
+
+        ArrayList<Token> tokens = runLex(inputTextPane.getText(), stringBuilder);
+
+        if (tokens == null)
+            return;
+
+        stringBuilder.append("\n=======词法分析结束======开始语法分析=======\n\n");
+
+        Node AbstractSyntaxTree = runSyn(tokens, stringBuilder);
+
+        if (AbstractSyntaxTree == null)
+            return;
+
+        stringBuilder.append("\n=======语法分析结束======开始语义分析=======\n\n");
+
+        String code = runSem(AbstractSyntaxTree, stringBuilder);
+
+        if (code == null)
+            return;
+
+        File tempFile;
+
+        try {
+            tempFile=new File("C:\\Users\\Chief\\Documents\\Arduino\\temp.ino");
+            if (!tempFile.exists())
+                tempFile.createNewFile();
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tempFile), "UTF-8"));
+            bufferedWriter.write(code);
+            bufferedWriter.close();
+
+            arduinoCmd.compile(tempFile.getAbsolutePath());
+            readCmd();
+
+        } catch (IOException e1) {
+//                e1.printStackTrace();
+        }
+    }
+
+    //上传到Arduino
+    private void uploadMenuItemActionPerformed(ActionEvent e) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (inputTextPane.getText().isEmpty())
+            return;
+
+        ArrayList<Token> tokens = runLex(inputTextPane.getText(), stringBuilder);
+
+        if (tokens == null)
+            return;
+
+        stringBuilder.append("\n=======词法分析结束======开始语法分析=======\n\n");
+
+        Node AbstractSyntaxTree = runSyn(tokens, stringBuilder);
+
+        if (AbstractSyntaxTree == null)
+            return;
+
+        stringBuilder.append("\n=======语法分析结束======开始语义分析=======\n\n");
+
+        String code = runSem(AbstractSyntaxTree, stringBuilder);
+
+        if (code == null)
+            return;
+
+        File tempFile;
+
+        try {
+            tempFile=new File("C:\\Users\\Chief\\Documents\\Arduino\\temp.ino");
+            if (!tempFile.exists())
+                tempFile.createNewFile();
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tempFile), "UTF-8"));
+            bufferedWriter.write(code);
+            bufferedWriter.close();
+
+            arduinoCmd.upload(tempFile.getAbsolutePath());
+            readCmd();
+        } catch (IOException e1) {
+//                e1.printStackTrace();
+        }
     }
 
     //关于
@@ -572,10 +795,13 @@ public class MiniGUI extends JFrame {
                 "//双声部同时播放\n" +
                 "play(soprano&alto)";
         inputTextPane.setText(str);
+        outputTextPane.setText("");
         refreshColor();
         hasChanged=false;
         this.setTitle("Music Interpreter - Demo");
     }
+
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -591,9 +817,13 @@ public class MiniGUI extends JFrame {
         semMenuItem = new JMenuItem();
         buildMenu = new JMenu();
         buildMenuItem = new JMenuItem();
+        compileMenuItem = new JMenuItem();
+        uploadMenuItem = new JMenuItem();
         helpMenu = new JMenu();
         demoMenuItem = new JMenuItem();
         aboutMenuItem = new JMenuItem();
+        hSpacer1 = new JPanel(null);
+        progressBar = new JProgressBar();
         panel1 = new JPanel();
         scrollPane3 = new JScrollPane();
         lineTextArea = new JTextArea();
@@ -667,6 +897,16 @@ public class MiniGUI extends JFrame {
                 buildMenuItem.setText("Generate .ino file");
                 buildMenuItem.addActionListener(e -> buildMenuItemActionPerformed(e));
                 buildMenu.add(buildMenuItem);
+
+                //---- compileMenuItem ----
+                compileMenuItem.setText("Compile to hex");
+                compileMenuItem.addActionListener(e -> compileMenuItemActionPerformed(e));
+                buildMenu.add(compileMenuItem);
+
+                //---- uploadMenuItem ----
+                uploadMenuItem.setText("Upload to Arduino");
+                uploadMenuItem.addActionListener(e -> uploadMenuItemActionPerformed(e));
+                buildMenu.add(uploadMenuItem);
             }
             menuBar1.add(buildMenu);
 
@@ -685,6 +925,18 @@ public class MiniGUI extends JFrame {
                 helpMenu.add(aboutMenuItem);
             }
             menuBar1.add(helpMenu);
+
+            //---- hSpacer1 ----
+            hSpacer1.setMaximumSize(new Dimension(550, 32767));
+            menuBar1.add(hSpacer1);
+
+            //---- progressBar ----
+            progressBar.setMaximumSize(new Dimension(150, 20));
+            progressBar.setMinimumSize(new Dimension(150, 20));
+            progressBar.setPreferredSize(new Dimension(150, 20));
+            progressBar.setFocusable(false);
+            progressBar.setRequestFocusEnabled(false);
+            menuBar1.add(progressBar);
         }
         setJMenuBar(menuBar1);
 
@@ -754,9 +1006,13 @@ public class MiniGUI extends JFrame {
     private JMenuItem semMenuItem;
     private JMenu buildMenu;
     private JMenuItem buildMenuItem;
+    private JMenuItem compileMenuItem;
+    private JMenuItem uploadMenuItem;
     private JMenu helpMenu;
     private JMenuItem demoMenuItem;
     private JMenuItem aboutMenuItem;
+    private JPanel hSpacer1;
+    private JProgressBar progressBar;
     private JPanel panel1;
     private JScrollPane scrollPane3;
     private JTextArea lineTextArea;

@@ -39,6 +39,9 @@ public class SemanticAnalysis {
 
         DFS(AbstractSyntaxTree);
 
+        if(getIsError())
+            return null;
+
         return code.toString();
     }
 

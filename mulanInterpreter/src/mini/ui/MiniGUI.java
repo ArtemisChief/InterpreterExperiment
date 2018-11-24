@@ -4,10 +4,7 @@
 
 package mini.ui;
 
-import mini.component.ArduinoCmd;
-import mini.component.LexicalAnalysis;
-import mini.component.SemanticAnalysis;
-import mini.component.SyntacticAnalysis;
+import mini.component.*;
 import mini.entity.Node;
 import mini.entity.Token;
 import net.miginfocom.swing.MigLayout;
@@ -32,11 +29,12 @@ import java.util.regex.Pattern;
 public class MiniGUI extends JFrame {
 
     private File inoFile;
+    private File midiFile;
     private File file;
     private boolean hasSaved = false;
-    private boolean hasChanged=false;
-    private boolean ctrlPressed=false;
-    private boolean sPressed=false;
+    private boolean hasChanged = false;
+    private boolean ctrlPressed = false;
+    private boolean sPressed = false;
     private SimpleAttributeSet attributeSet;
     private SimpleAttributeSet durationAttributeSet;
     private SimpleAttributeSet normalAttributeSet;
@@ -50,7 +48,8 @@ public class MiniGUI extends JFrame {
 
     private LexicalAnalysis lexicalAnalysis;
     private SyntacticAnalysis syntacticAnalysis;
-    private SemanticAnalysis semanticAnalysis;
+    private SemanticAnalysisArduino semanticAnalysisArduino;
+    private SemanticAnalysisMidi semanticAnalysisMidi;
     private ArduinoCmd arduinoCmd;
     private boolean cmdComplete;
 
@@ -66,7 +65,7 @@ public class MiniGUI extends JFrame {
         durationAttributeSet = new SimpleAttributeSet();
         normalAttributeSet = new SimpleAttributeSet();
         commentAttributeSet = new SimpleAttributeSet();
-        errorAttributeSet=new SimpleAttributeSet();
+        errorAttributeSet = new SimpleAttributeSet();
         StyleConstants.setForeground(attributeSet, new Color(30, 80, 180));
         StyleConstants.setBold(attributeSet, true);
         StyleConstants.setForeground(durationAttributeSet, new Color(54, 163, 240));
@@ -83,8 +82,8 @@ public class MiniGUI extends JFrame {
             public void windowClosing(WindowEvent e) {
                 //删除临时ino文件
                 if (showSaveComfirm("Exist unsaved content, save before exit?")) {
-                    File tempFile=new File("C:\\Users\\Chief\\Documents\\Arduino\\temp.ino");
-                    if(tempFile.exists())
+                    File tempFile = new File("C:\\Users\\Chief\\Documents\\Arduino\\temp.ino");
+                    if (tempFile.exists())
                         tempFile.delete();
 
                     System.exit(0);
@@ -105,12 +104,12 @@ public class MiniGUI extends JFrame {
                         e.getKeyCode() == KeyEvent.VK_ALT)
                     return;
 
-                if(e.getKeyCode()==KeyEvent.VK_CONTROL){
-                    ctrlPressed=false;
+                if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+                    ctrlPressed = false;
                     return;
                 }
 
-                if(e.getKeyCode()==KeyEvent.VK_S) {
+                if (e.getKeyCode() == KeyEvent.VK_S) {
                     sPressed = false;
                     return;
                 }
@@ -126,13 +125,13 @@ public class MiniGUI extends JFrame {
                     refreshColor();
                 }
 
-                if(e.getKeyCode()==KeyEvent.VK_CONTROL)
-                    ctrlPressed=true;
+                if (e.getKeyCode() == KeyEvent.VK_CONTROL)
+                    ctrlPressed = true;
 
-                if(e.getKeyCode()==KeyEvent.VK_S)
-                    sPressed=true;
+                if (e.getKeyCode() == KeyEvent.VK_S)
+                    sPressed = true;
 
-                if(ctrlPressed&&sPressed) {
+                if (ctrlPressed && sPressed) {
                     sPressed = false;
                     ctrlPressed = false;
                     saveMenuItemActionPerformed(null);
@@ -161,11 +160,12 @@ public class MiniGUI extends JFrame {
         //组件实例化
         lexicalAnalysis = new LexicalAnalysis();
         syntacticAnalysis = new SyntacticAnalysis();
-        semanticAnalysis = new SemanticAnalysis();
-        arduinoCmd=new ArduinoCmd();
+        semanticAnalysisArduino = new SemanticAnalysisArduino();
+        semanticAnalysisMidi = new SemanticAnalysisMidi();
+        arduinoCmd = new ArduinoCmd();
 
-        cmdOutput="";
-        cmdComplete=false;
+        cmdOutput = "";
+        cmdComplete = false;
 
         //行号与滚动条
         scrollPane3.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
@@ -178,17 +178,17 @@ public class MiniGUI extends JFrame {
     }
 
     //内容变动调用的函数
-    private void contentChanged(){
-        if(hasChanged)
+    private void contentChanged() {
+        if (hasChanged)
             return;
 
-        hasChanged=true;
-        if(this.getTitle().lastIndexOf("(Unsaved)")==-1)
-            this.setTitle(this.getTitle()+" (Unsaved)");
+        hasChanged = true;
+        if (this.getTitle().lastIndexOf("(Unsaved)") == -1)
+            this.setTitle(this.getTitle() + " (Unsaved)");
     }
 
     //内容变动之后是否保存
-    private boolean showSaveComfirm(String confirm){
+    private boolean showSaveComfirm(String confirm) {
         if (hasChanged) {
             int exit = JOptionPane.showConfirmDialog(null, confirm, "Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
             switch (exit) {
@@ -226,7 +226,7 @@ public class MiniGUI extends JFrame {
         StringBuilder input = new StringBuilder(inputTextPane.getText().replace("\r", ""));
         int pos = inputTextPane.getCaretPosition();
         if (pos > 0) {
-            if (pos < input.length() && (input.substring(pos, pos + 1).equals(" ")||input.substring(pos, pos + 1).equals("\n")) || pos == input.length())
+            if (pos < input.length() && (input.substring(pos, pos + 1).equals(" ") || input.substring(pos, pos + 1).equals("\n")) || pos == input.length())
                 switch (input.charAt(pos - 1)) {
                     case '(':
                         input.insert(pos, ')');
@@ -318,7 +318,7 @@ public class MiniGUI extends JFrame {
 
     //新建文件
     private void newMenuItemActionPerformed(ActionEvent e) {
-        if(showSaveComfirm("Exist unsaved content, save before new file?")) {
+        if (showSaveComfirm("Exist unsaved content, save before new file?")) {
             hasSaved = false;
             inputTextPane.setText("");
             outputTextPane.setText("");
@@ -354,7 +354,7 @@ public class MiniGUI extends JFrame {
             refreshColor();
             hasSaved = true;
             hasChanged = false;
-            this.setTitle("Music Interpreter - "+file.getName());
+            this.setTitle("Music Interpreter - " + file.getName());
         } catch (FileNotFoundException e1) {
 //            e1.printStackTrace();
         } catch (IOException e1) {
@@ -411,12 +411,12 @@ public class MiniGUI extends JFrame {
     }
 
     //通过行号找到改行第一个字符在输入字符串中的位置
-    private int getIndexByLine(int line){
-        int index=0;
-        String input = inputTextPane.getText().replace("\r", "")+"\n";
+    private int getIndexByLine(int line) {
+        int index = 0;
+        String input = inputTextPane.getText().replace("\r", "") + "\n";
 
-        for(int i=0;i<line-1;i++){
-            index=input.indexOf("\n",index+1);
+        for (int i = 0; i < line - 1; i++) {
+            index = input.indexOf("\n", index + 1);
         }
         return index;
     }
@@ -445,7 +445,7 @@ public class MiniGUI extends JFrame {
     }
 
     //语法分析
-    private Node runSyn(ArrayList<Token> tokens,StringBuilder output) {
+    private Node runSyn(ArrayList<Token> tokens, StringBuilder output) {
         Node AbstractSyntaxTree = syntacticAnalysis.Parse(tokens);
 
         if (syntacticAnalysis.getIsError()) {
@@ -466,15 +466,38 @@ public class MiniGUI extends JFrame {
         return AbstractSyntaxTree;
     }
 
-    //语义分析
-    private String runSem(Node abstractSyntaxTree,StringBuilder output) {
-        String code = semanticAnalysis.ConvertToArduino(abstractSyntaxTree);
+    //Arduino语义分析
+    private String runArduinoSem(Node abstractSyntaxTree, StringBuilder output) {
+        String code = semanticAnalysisArduino.ConvertToArduino(abstractSyntaxTree);
 
-        if (semanticAnalysis.getIsError()) {
-            output.append(semanticAnalysis.getErrors());
+        if (semanticAnalysisArduino.getIsError()) {
+            output.append(semanticAnalysisArduino.getErrors());
             output.append("\n检测到语义错误，分析停止\n");
             outputTextPane.setText(output.toString());
-            for (int line : semanticAnalysis.getErrorLines()) {
+            for (int line : semanticAnalysisArduino.getErrorLines()) {
+                inputStyledDocument.setCharacterAttributes(
+                        getIndexByLine(line),
+                        getIndexByLine(line + 1) - getIndexByLine(line),
+                        errorAttributeSet, true
+                );
+            }
+            return null;
+        } else {
+            output.append(code);
+        }
+
+        return code;
+    }
+
+    //Midi语义分析
+    private String runMidiSem(Node abstractSyntaxTree, StringBuilder output) {
+        String code = semanticAnalysisMidi.ConvertToMidi(abstractSyntaxTree);
+
+        if (semanticAnalysisMidi.getIsError()) {
+            output.append(semanticAnalysisMidi.getErrors());
+            output.append("\n检测到语义错误，分析停止\n");
+            outputTextPane.setText(output.toString());
+            for (int line : semanticAnalysisMidi.getErrorLines()) {
                 inputStyledDocument.setCharacterAttributes(
                         getIndexByLine(line),
                         getIndexByLine(line + 1) - getIndexByLine(line),
@@ -537,24 +560,84 @@ public class MiniGUI extends JFrame {
 
         Node AbstractSyntaxTree = runSyn(tokens, stringBuilder);
 
-        if(AbstractSyntaxTree==null)
+        if (AbstractSyntaxTree == null)
             return;
 
         stringBuilder.append("\n=======语法分析结束======开始语义分析=======\n\n");
 
-        runSem(AbstractSyntaxTree, stringBuilder);
+        runArduinoSem(AbstractSyntaxTree, stringBuilder);
 
         outputTextPane.setText(stringBuilder.toString());
     }
 
     //执行Midi语义分析
     private void sem2MenuItemActionPerformed(ActionEvent e) {
-        // TODO add your code here
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (inputTextPane.getText().isEmpty())
+            return;
+
+        ArrayList<Token> tokens = runLex(inputTextPane.getText(), stringBuilder);
+
+        if (tokens == null)
+            return;
+
+        stringBuilder.append("\n=======词法分析结束======开始语法分析=======\n\n");
+
+        Node AbstractSyntaxTree = runSyn(tokens, stringBuilder);
+
+        if (AbstractSyntaxTree == null)
+            return;
+
+        stringBuilder.append("\n=======语法分析结束======开始语义分析=======\n\n");
+
+        runMidiSem(AbstractSyntaxTree, stringBuilder);
+
+        outputTextPane.setText(stringBuilder.toString());
     }
 
     //生成Midi文件
     private void generateMidiMenuItemActionPerformed(ActionEvent e) {
-        // TODO add your code here
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (inputTextPane.getText().isEmpty())
+            return;
+
+        ArrayList<Token> tokens = runLex(inputTextPane.getText(), stringBuilder);
+
+        if (tokens == null)
+            return;
+
+        stringBuilder.append("\n=======词法分析结束======开始语法分析=======\n\n");
+
+        Node AbstractSyntaxTree = runSyn(tokens, stringBuilder);
+
+        if (AbstractSyntaxTree == null)
+            return;
+
+        stringBuilder.append("\n=======语法分析结束======开始语义分析=======\n\n");
+
+        String code = runMidiSem(AbstractSyntaxTree, stringBuilder);
+
+        if (code == null)
+            return;
+
+        outputTextPane.setText(code);
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Midi File", "mid");
+        fileChooser.setFileFilter(filter);
+        fileChooser.showSaveDialog(this);
+        if (fileChooser.getSelectedFile() == null)
+            return;
+        String fileStr = fileChooser.getSelectedFile().getAbsoluteFile().toString();
+        if (fileStr.lastIndexOf(".mid") == -1)
+            fileStr += ".mid";
+        midiFile = new File(fileStr);
+
+        semanticAnalysisMidi.getMidiFile().writeToFile(midiFile);
+
     }
 
     //保存Arduino执行文件
@@ -578,7 +661,7 @@ public class MiniGUI extends JFrame {
 
         stringBuilder.append("\n=======语法分析结束======开始语义分析=======\n\n");
 
-        String code = runSem(AbstractSyntaxTree, stringBuilder);
+        String code = runArduinoSem(AbstractSyntaxTree, stringBuilder);
 
         if (code == null)
             return;
@@ -611,21 +694,21 @@ public class MiniGUI extends JFrame {
     }
 
     //读取Arduino CMD数据流
-    private void readCmd(){
+    private void readCmd() {
         compileMenuItem.setEnabled(false);
         uploadMenuItem.setEnabled(false);
         progressBar.setIndeterminate(true);
-        cmdOutput="";
+        cmdOutput = "";
 
         //处理输出的线程
         new Thread(() -> {
-            int count=0;
+            int count = 0;
             try {
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(ArduinoCmd.output, "GBK"));
                 String tempStr;
                 while ((tempStr = bufferedReader.readLine()) != null) {
                     count++;
-                    if(count>12) {
+                    if (count > 12) {
                         cmdOutput += tempStr + "\n";
                         outputTextPane.setText(cmdOutput);
                     }
@@ -687,7 +770,7 @@ public class MiniGUI extends JFrame {
 
         stringBuilder.append("\n=======语法分析结束======开始语义分析=======\n\n");
 
-        String code = runSem(AbstractSyntaxTree, stringBuilder);
+        String code = runArduinoSem(AbstractSyntaxTree, stringBuilder);
 
         if (code == null)
             return;
@@ -695,7 +778,7 @@ public class MiniGUI extends JFrame {
         File tempFile;
 
         try {
-            tempFile=new File("C:\\Users\\Chief\\Documents\\Arduino\\temp.ino");
+            tempFile = new File("C:\\Users\\Chief\\Documents\\Arduino\\temp.ino");
             if (!tempFile.exists())
                 tempFile.createNewFile();
             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tempFile), "UTF-8"));
@@ -731,7 +814,7 @@ public class MiniGUI extends JFrame {
 
         stringBuilder.append("\n=======语法分析结束======开始语义分析=======\n\n");
 
-        String code = runSem(AbstractSyntaxTree, stringBuilder);
+        String code = runArduinoSem(AbstractSyntaxTree, stringBuilder);
 
         if (code == null)
             return;
@@ -739,7 +822,7 @@ public class MiniGUI extends JFrame {
         File tempFile;
 
         try {
-            tempFile=new File("C:\\Users\\Chief\\Documents\\Arduino\\temp.ino");
+            tempFile = new File("C:\\Users\\Chief\\Documents\\Arduino\\temp.ino");
             if (!tempFile.exists())
                 tempFile.createNewFile();
             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tempFile), "UTF-8"));
@@ -765,10 +848,10 @@ public class MiniGUI extends JFrame {
 
     //展示Demo
     private void demoMenuItemActionPerformed(ActionEvent e) {
-        if(!showSaveComfirm("Exist unsaved content, save before open the demo?"))
+        if (!showSaveComfirm("Exist unsaved content, save before open the demo?"))
             return;
 
-        String str="/*\n" +
+        String str = "/*\n" +
                 " 欢乐颂\n" +
                 " 女高音 + 女中音\n" +
                 " 双声部 Version\n" +
@@ -776,7 +859,7 @@ public class MiniGUI extends JFrame {
                 "\n" +
                 "//女高音\n" +
                 "paragraph soprano\n" +
-                "speed= 100\n" +
+                "speed= 140\n" +
                 "1= D\n" +
                 "3345 5432 <4444 4444>\n" +
                 "1123 322 <4444 4*82>\n" +
@@ -790,7 +873,7 @@ public class MiniGUI extends JFrame {
                 "\n" +
                 "//女中音\n" +
                 "paragraph alto\n" +
-                "speed= 100\n" +
+                "speed= 140\n" +
                 "1= D\n" +
                 "1123 321(5) <4444 4444>\n" +
                 "(3555) 1(77) <4444 4*82>\n" +
@@ -807,7 +890,7 @@ public class MiniGUI extends JFrame {
         inputTextPane.setText(str);
         outputTextPane.setText("");
         refreshColor();
-        hasChanged=false;
+        hasChanged = false;
         this.setTitle("Music Interpreter - Demo");
     }
 
@@ -970,13 +1053,13 @@ public class MiniGUI extends JFrame {
         //======== panel1 ========
         {
             panel1.setLayout(new MigLayout(
-                "insets 0,hidemode 3",
-                // columns
-                "[fill]0" +
-                "[fill]0" +
-                "[fill]",
-                // rows
-                "[fill]"));
+                    "insets 0,hidemode 3",
+                    // columns
+                    "[fill]0" +
+                            "[fill]0" +
+                            "[fill]",
+                    // rows
+                    "[fill]"));
 
             //======== scrollPane3 ========
             {

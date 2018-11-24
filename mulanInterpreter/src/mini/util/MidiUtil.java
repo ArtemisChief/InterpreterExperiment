@@ -46,4 +46,42 @@ public class MidiUtil {
         }
         return sb.toString();
     }
+
+    public static byte[] buildBytes(int mValue)
+    {
+        byte[] mBytes;
+        int mSizeInBytes;
+
+        if(mValue == 0)
+        {
+            mBytes = new byte[1];
+            mBytes[0] = 0x00;
+            mSizeInBytes = 1;
+            return mBytes;
+        }
+
+        mSizeInBytes = 0;
+        int[] vals = new int[4];
+        int tmpVal = mValue;
+
+        while(mSizeInBytes < 4 && tmpVal > 0)
+        {
+            vals[mSizeInBytes] = tmpVal & 0x7F;
+
+            mSizeInBytes++;
+            tmpVal = tmpVal >> 7;
+        }
+
+        for(int i = 1; i < mSizeInBytes; i++)
+        {
+            vals[i] |= 0x80;
+        }
+
+        mBytes = new byte[mSizeInBytes];
+        for(int i = 0; i < mSizeInBytes; i++)
+        {
+            mBytes[i] = (byte) vals[mSizeInBytes - i - 1];
+        }
+        return mBytes;
+    }
 }

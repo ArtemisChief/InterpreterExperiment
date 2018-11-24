@@ -46,15 +46,9 @@ public class MidiTrack {
         byte[] noteOff;
 
         if (pitch != 0) {
-            if (Channel == channel) {
-                noteOn = new byte[]{0x00, pitch.byteValue(), 0x64};
+            noteOn = new byte[]{0x00, ((Integer) (144 + channel)).byteValue(), pitch.byteValue(), 0x64};
 
-                ByteCount += 3;
-            } else {
-                noteOn = new byte[]{0x00, ((Integer) (144 + channel)).byteValue(), pitch.byteValue(), 0x64};
-
-                ByteCount += 4;
-            }
+            ByteCount += 4;
 
             MidiTrackContentData = MidiUtil.mergeByte(MidiTrackContentData, noteOn);
 
@@ -66,19 +60,25 @@ public class MidiTrack {
 
             MidiTrackContentData = MidiUtil.mergeByte(MidiTrackContentData, noteOff);
 
-            noteOff = new byte[]{pitch.byteValue(), 0x00};
+            noteOff = new byte[]{((Integer) (128 + channel)).byteValue(),pitch.byteValue(), 0x00};
 
-            ByteCount += 2;
+            ByteCount += 3;
 
             MidiTrackContentData = MidiUtil.mergeByte(MidiTrackContentData, noteOff);
         } else {
+            noteOn = new byte[]{0x00, ((Integer) (144 + channel)).byteValue(), 0X00, 0x00};
+
+            ByteCount += 4;
+
+            MidiTrackContentData = MidiUtil.mergeByte(MidiTrackContentData, noteOn);
+
             noteOff = MidiUtil.buildBytes(ticks);
 
             ByteCount += noteOff.length;
 
             MidiTrackContentData = MidiUtil.mergeByte(MidiTrackContentData, noteOff);
 
-            noteOff = new byte[]{(byte)0x9F,pitch.byteValue(), 0x00};
+            noteOff = new byte[]{((Integer) (128 + channel)).byteValue(),0X00, 0x00};
 
             ByteCount += 3;
 

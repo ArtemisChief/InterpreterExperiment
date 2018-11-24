@@ -14,12 +14,9 @@ public class MidiTrack {
 
     private int ByteCount;
 
-    private int Channel;
-
     public MidiTrack() {
         MidiTrackData = TRACK_HEADER;
         MidiTrackContentData = new byte[0];
-        Channel = -1;
         ByteCount = 0;
     }
 
@@ -51,8 +48,6 @@ public class MidiTrack {
             ByteCount += 4;
 
             MidiTrackContentData = MidiUtil.mergeByte(MidiTrackContentData, noteOn);
-
-            Channel = channel;
 
             noteOff = MidiUtil.buildBytes(ticks);
 

@@ -145,7 +145,7 @@ new FormModel {
 				} )
 				add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
 					name: "hSpacer1"
-					"maximumSize": new java.awt.Dimension( 550, 32767 )
+					"maximumSize": new java.awt.Dimension( 400, 32767 )
 				} )
 				add( new FormComponent( "javax.swing.JProgressBar" ) {
 					name: "progressBar"

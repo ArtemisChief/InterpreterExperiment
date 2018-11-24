@@ -954,7 +954,7 @@ public class MiniGUI extends JFrame {
             menuBar1.add(helpMenu);
 
             //---- hSpacer1 ----
-            hSpacer1.setMaximumSize(new Dimension(550, 32767));
+            hSpacer1.setMaximumSize(new Dimension(400, 32767));
             menuBar1.add(hSpacer1);
 
             //---- progressBar ----

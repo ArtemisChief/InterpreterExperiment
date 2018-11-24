@@ -1,22 +1,28 @@
 package mini.component;
 
+import mini.entity.MidiFile;
+import mini.entity.MidiTrack;
 import mini.entity.Node;
 import mini.entity.Note;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SemanticAnalysis {
 
     private Node AbstractSyntaxTree;
 
-    private ArrayList<Integer> errorLines;
+    private List<Integer> errorLines;
     private StringBuilder code;
     private StringBuilder errorInfo;
     Map<String, Integer> paragraphCount;
     private int count;
     private int scoreLength;
+
+    private MidiFile midiFile;
+    private List<MidiTrack> midiTracks;
 
     //针对Arduino进行语义分析
     public String ConvertToArduino(Node abstractSyntaxTree) {
@@ -348,19 +354,330 @@ public class SemanticAnalysis {
 
     //针对Midi进行语义分析
     public String ConvertToMidi(Node abstractSyntaxTree){
-        return null;
+        AbstractSyntaxTree = abstractSyntaxTree;
+
+        errorLines = new ArrayList<>();
+        errorInfo = new StringBuilder();
+
+        paragraphCount = new HashMap<>();
+
+        count = 0;
+
+        DFS_Midi(AbstractSyntaxTree);
+
+        midiFile=new MidiFile(midiTracks);
+        midiFile.construct();
+
+        if(getIsError())
+            return null;
+
+        return midiFile.toString();
     }
 
     //针对Midi的深度优先遍历
     private void DFS_Midi(Node curNode){
+        double speedFactor;
+        int noteCount = 0;
+        int rhythmCount = 0;
+        String notes = "";
+        String rhythms = "";
 
+        for (Node child : curNode.getChildren()) {
+            switch (child.getType()) {
+                case "score":
+                    count++;
+                    scoreLength = 0;
+                    code.append("const int length" + count + ";\n\n" +
+                            "double speedFactor" + count + ";\n\n" +
+                            "double tonalityFactor" + count + ";\n\n");
+                    DFS_Arduino(child);
+                    break;
+
+                case "execution":
+                    code.append("void play(int *paragragh, int *duration, int paragraphLength, Tone tonePlayer, double tonalityFactor, double speedFactor){\n" +
+                            "  for(int i=0;i<paragraphLength;i++){\n" +
+                            "    if(paragragh[i]!=0)\n" +
+                            "      tonePlayer.play(paragragh[i] * tonalityFactor);\n" +
+                            "    if(duration[i]>0){\n" +
+                            "      delay(duration[i] * speedFactor-1);\n" +
+                            "      tonePlayer.stop();\n" +
+                            "      delay(1);\n" +
+                            "    }else{\n" +
+                            "      delay(-duration[i] * speedFactor-1);\n" +
+                            "      delay(1);\n" +
+                            "      tonePlayer.stop();\n" +
+                            "    }\n" +
+                            "  }\n" +
+                            "}\n\n" +
+                            "defineTaskLoop(Task1){};//task1\n\n" +
+                            "defineTaskLoop(Task2){};//task2\n\n" + "" +
+                            "void setup() {\n" +
+                            "  tone1.begin(tonePin1);\n" +
+                            "  tone2.begin(tonePin2);\n" +
+                            "  mySCoop.start();\n" +
+                            "}\n\n" +
+                            "void loop() {\n" +
+                            "  yield();\n" +
+                            "}");
+                    DFS_Arduino(child);
+                    break;
+
+                case "statement":
+                    if (paragraphCount.containsKey(child.getChild(0).getContent())) {
+                        errorInfo.append("Line: " + child.getChild(0).getCount() + "\t重复声明的段落名" + child.getChild(0).getContent() + "\n");
+                        errorLines.add(child.getChild(0).getCount());
+                        count--;
+                    }
+                    paragraphCount.put(child.getChild(0).getContent(), count);
+                    code.append("int *" + child.getChild(0).getContent() + "=new int[length" + count + "]\n{};//Notes\n\n");
+                    code.append("int *" + child.getChild(0).getContent() + "Duration=new int[length" + count + "]\n{};//Duration\n\n");
+                    break;
+
+                case "speed":
+                    speedFactor = 60 / Double.parseDouble(child.getChild(0).getContent()) / 4 * 1000;
+                    code.insert(code.indexOf("speedFactor" + count) + ("speedFactor" + count).length(), "=" + speedFactor);
+                    break;
+
+                case "tonality":
+                    for (Node tonality : child.getChildren()) {
+                        double halfTone = 1;
+                        switch (tonality.getContent()) {
+                            case "#":
+                                halfTone = 1.059463;
+                                break;
+                            case "b":
+                                halfTone = 0.943874;
+                                break;
+                            case "C":
+                                code.insert(code.indexOf("tonalityFactor" + count) + ("tonalityFactor" + count).length(), "=" + Double.parseDouble(Note.Tonality.C) * halfTone);
+                                break;
+                            case "D":
+                                code.insert(code.indexOf("tonalityFactor" + count) + ("tonalityFactor" + count).length(), "=" + Double.parseDouble(Note.Tonality.D) * halfTone);
+                                break;
+                            case "E":
+                                code.insert(code.indexOf("tonalityFactor" + count) + ("tonalityFactor" + count).length(), "=" + Double.parseDouble(Note.Tonality.E) * halfTone);
+                                break;
+                            case "F":
+                                code.insert(code.indexOf("tonalityFactor" + count) + ("tonalityFactor" + count).length(), "=" + Double.parseDouble(Note.Tonality.F) * halfTone);
+                                break;
+                            case "G":
+                                code.insert(code.indexOf("tonalityFactor" + count) + ("tonalityFactor" + count).length(), "=" + Double.parseDouble(Note.Tonality.G) * halfTone);
+                                break;
+                            case "A":
+                                code.insert(code.indexOf("tonalityFactor" + count) + ("tonalityFactor" + count).length(), "=" + Double.parseDouble(Note.Tonality.A) * halfTone);
+                                break;
+                            case "B":
+                                code.insert(code.indexOf("tonalityFactor" + count) + ("tonalityFactor" + count).length(), "=" + Double.parseDouble(Note.Tonality.B) * halfTone);
+                                break;
+                        }
+                    }
+                    break;
+
+                case "sentence":
+                    DFS_Arduino(child);
+                    break;
+
+                case "end paragraph":
+                    code.insert(code.indexOf("length" + count) + ("length" + count).length(), "=" + scoreLength);
+                    code.delete(code.indexOf("};//Notes") - 3, code.indexOf("};//Notes"));
+                    code.delete(code.indexOf("};//Duration") - 3, code.indexOf("};//Duration"));
+                    code.delete(code.indexOf("//Notes"), code.indexOf("//Notes") + 7);
+                    code.delete(code.indexOf("//Duration"), code.indexOf("//Duration") + 10);
+                    break;
+
+                case "melody":
+                    double pitchFactor = 1;
+                    double halfTone = 1;
+                    Integer pitch;
+
+                    for (Node tone : child.getChildren()) {
+                        notes += tone.getContent();
+                        switch (tone.getContent()) {
+                            case "(":
+                                pitchFactor *= 0.5;
+                                break;
+                            case ")":
+                                pitchFactor *= 2;
+                                break;
+                            case "[":
+                                pitchFactor *= 2;
+                                break;
+                            case "]":
+                                pitchFactor *= 0.5;
+                                break;
+                            case "#":
+                                halfTone *= 1.059463;
+                                break;
+                            case "b":
+                                halfTone *= 0.943874;
+                                break;
+                            case "0":
+                                noteCount++;
+                                pitch = 0;
+                                code.insert(code.indexOf("};//Notes"), pitch + ", ");
+                                break;
+                            case "1":
+                                noteCount++;
+                                pitch = (int) ((Double.parseDouble(Note.Pitch.C) * pitchFactor * halfTone));
+                                code.insert(code.indexOf("};//Notes"), pitch + ", ");
+                                halfTone = 1;
+                                break;
+                            case "2":
+                                noteCount++;
+                                pitch = (int) ((Double.parseDouble(Note.Pitch.D) * pitchFactor * halfTone));
+                                code.insert(code.indexOf("};//Notes"), pitch + ", ");
+                                halfTone = 1;
+                                break;
+                            case "3":
+                                noteCount++;
+                                pitch = (int) ((Double.parseDouble(Note.Pitch.E) * pitchFactor * halfTone));
+                                code.insert(code.indexOf("};//Notes"), pitch + ", ");
+                                halfTone = 1;
+                                break;
+                            case "4":
+                                noteCount++;
+                                pitch = (int) ((Double.parseDouble(Note.Pitch.F) * pitchFactor * halfTone));
+                                code.insert(code.indexOf("};//Notes"), pitch + ", ");
+                                halfTone = 1;
+                                break;
+                            case "5":
+                                noteCount++;
+                                pitch = (int) ((Double.parseDouble(Note.Pitch.G) * pitchFactor * halfTone));
+                                code.insert(code.indexOf("};//Notes"), pitch + ", ");
+                                halfTone = 1;
+                                break;
+                            case "6":
+                                noteCount++;
+                                pitch = (int) ((Double.parseDouble(Note.Pitch.A) * pitchFactor * halfTone));
+                                code.insert(code.indexOf("};//Notes"), pitch + ", ");
+                                halfTone = 1;
+                                break;
+                            case "7":
+                                noteCount++;
+                                pitch = (int) ((Double.parseDouble(Note.Pitch.B) * pitchFactor * halfTone));
+                                code.insert(code.indexOf("};//Notes"), pitch + ", ");
+                                halfTone = 1;
+                                break;
+                        }
+                    }
+                    code.insert(code.indexOf("};//Notes"), "\n");
+                    break;
+
+                case "rhythm":
+                    Integer legato = 1;
+                    Integer line = child.getChild(0).getCount();
+                    for (Node rhythm : child.getChildren()) {
+                        rhythms += rhythm.getContent();
+                        switch (rhythm.getContent()) {
+                            case "{":
+                                legato = -1;
+                                break;
+                            case "}":
+                                code.deleteCharAt(code.lastIndexOf("-"));
+                                legato = 1;
+                                break;
+                            case "1":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 16 * legato + ", ");
+                                break;
+                            case "1*":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 24 * legato + ", ");
+                                break;
+                            case "2":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 8 * legato + ", ");
+                                break;
+                            case "2*":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 12 * legato + ", ");
+                                break;
+                            case "4":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 4 * legato + ", ");
+                                break;
+                            case "4*":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 6 * legato + ", ");
+                                break;
+                            case "8":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 2 * legato + ", ");
+                                break;
+                            case "8*":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 3 * legato + ", ");
+                                break;
+                            case "g":
+                                rhythmCount++;
+                                code.insert(code.indexOf("};//Duration"), 1 * legato + ", ");
+                                break;
+                            case "g*":
+                                rhythmCount++;
+                                errorInfo.append("Line: " + line + "\t不支持32分音符，即g*\n");
+                                errorLines.add(line);
+                                break;
+                        }
+                    }
+                    code.insert(code.indexOf("};//Duration"), "\n");
+
+                    if (noteCount != rhythmCount) {
+                        errorInfo.append("Line: " + line + "\t该句音符与时值数量不相同\n");
+                        errorLines.add(line);
+                    }
+                    scoreLength += noteCount;
+                    break;
+
+                case "playlist":
+                    String paraName = "";
+                    int tonePlayed = 0;         //要使用的蜂鸣器编号
+                    boolean andOp = false;
+                    for (Node playList : child.getChildren()) {
+                        switch (playList.getContent()) {
+                            case "&":
+                                if (tonePlayed > 1) {
+                                    errorInfo.append("Line: " + playList.getCount() + "\t不支持两个以上蜂鸣器同时播放，请减少play中同时播放的数量\n");
+                                    errorLines.add(playList.getCount());
+                                }
+                                andOp = true;
+                                break;
+                            case ",":
+                                if (tonePlayed == 1) {
+                                    code.insert(code.indexOf("};//task2"), "\n  play(" + paraName + ", " + paraName + "Duration, length" + paragraphCount.get(paraName) + ",tone2, tonalityFactor" + paragraphCount.get(paraName) + "*0.5, speedFactor" + paragraphCount.get(paraName) + ");\n");
+                                }
+                                tonePlayed = 0;
+                                andOp = false;
+                                break;
+                            default:
+                                paraName = playList.getContent();
+                                if (!paragraphCount.containsKey(paraName)) {
+                                    errorInfo.append("Line: " + playList.getCount() + "\t未声明的段落名" + paraName + "\n");
+                                    errorLines.add(playList.getCount());
+                                }
+                                tonePlayed++;
+                                if (!andOp) {
+                                    code.insert(code.indexOf("};//task1"), "\n  play(" + paraName + ", " + paraName + "Duration, length" + paragraphCount.get(paraName) + ",tone1, tonalityFactor" + paragraphCount.get(paraName) + ", speedFactor" + paragraphCount.get(paraName) + ");\n");
+                                } else {
+                                    code.insert(code.indexOf("};//task2"), "\n  play(" + paraName + ", " + paraName + "Duration, length" + paragraphCount.get(paraName) + ",tone2, tonalityFactor" + paragraphCount.get(paraName) + ", speedFactor" + paragraphCount.get(paraName) + ");\n");
+                                }
+                                break;
+                        }
+                    }
+                    if (tonePlayed == 1) {
+                        code.insert(code.indexOf("};//task2"), "\n  play(" + paraName + ", " + paraName + "Duration, length" + paragraphCount.get(paraName) + ",tone2, tonalityFactor" + paragraphCount.get(paraName) + "*0.5, speedFactor" + paragraphCount.get(paraName) + ");\n");
+                    }
+                    code.delete(code.indexOf("//task1"), code.indexOf("//task1") + 7);
+                    code.delete(code.indexOf("//task2"), code.indexOf("//task2") + 7);
+                    break;
+            }
+        }
     }
 
     public boolean getIsError() {
         return !errorLines.isEmpty();
     }
 
-    public ArrayList<Integer> getErrorLines() {
+    public List<Integer> getErrorLines() {
         return errorLines;
     }
 

@@ -521,7 +521,7 @@ public class MiniGUI extends JFrame {
         outputTextPane.setText(stringBuilder.toString());
     }
 
-    //执行语义分析
+    //执行Arduino语义分析
     private void semMenuItemActionPerformed(ActionEvent e) {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -547,7 +547,17 @@ public class MiniGUI extends JFrame {
         outputTextPane.setText(stringBuilder.toString());
     }
 
-    //保存执行文件
+    //执行Midi语义分析
+    private void sem2MenuItemActionPerformed(ActionEvent e) {
+        // TODO add your code here
+    }
+
+    //生成Midi文件
+    private void generateMidiMenuItemActionPerformed(ActionEvent e) {
+        // TODO add your code here
+    }
+
+    //保存Arduino执行文件
     private void buildMenuItemActionPerformed(ActionEvent e) {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -600,7 +610,7 @@ public class MiniGUI extends JFrame {
 
     }
 
-    //读取CMD数据流
+    //读取Arduino CMD数据流
     private void readCmd(){
         compileMenuItem.setEnabled(false);
         uploadMenuItem.setEnabled(false);
@@ -656,7 +666,7 @@ public class MiniGUI extends JFrame {
         }).start();
     }
 
-    //编译成十六进制文件
+    //编译Arduino的十六进制文件
     private void compileMenuItemActionPerformed(ActionEvent e) {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -801,8 +811,6 @@ public class MiniGUI extends JFrame {
         this.setTitle("Music Interpreter - Demo");
     }
 
-
-
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         menuBar1 = new JMenuBar();
@@ -815,10 +823,13 @@ public class MiniGUI extends JFrame {
         LexMenuItem = new JMenuItem();
         synMenuItem = new JMenuItem();
         semMenuItem = new JMenuItem();
+        sem2MenuItem = new JMenuItem();
         buildMenu = new JMenu();
         buildMenuItem = new JMenuItem();
         compileMenuItem = new JMenuItem();
         uploadMenuItem = new JMenuItem();
+        buildMidiMenu = new JMenu();
+        generateMidiMenuItem = new JMenuItem();
         helpMenu = new JMenu();
         demoMenuItem = new JMenuItem();
         aboutMenuItem = new JMenuItem();
@@ -883,15 +894,20 @@ public class MiniGUI extends JFrame {
                 runMenu.add(synMenuItem);
 
                 //---- semMenuItem ----
-                semMenuItem.setText("Semantic Analysis");
+                semMenuItem.setText("Semantic Analysis - Arduino");
                 semMenuItem.addActionListener(e -> semMenuItemActionPerformed(e));
                 runMenu.add(semMenuItem);
+
+                //---- sem2MenuItem ----
+                sem2MenuItem.setText("Semantic Analysis - Midi");
+                sem2MenuItem.addActionListener(e -> sem2MenuItemActionPerformed(e));
+                runMenu.add(sem2MenuItem);
             }
             menuBar1.add(runMenu);
 
             //======== buildMenu ========
             {
-                buildMenu.setText("Build");
+                buildMenu.setText("Build - Arduino");
 
                 //---- buildMenuItem ----
                 buildMenuItem.setText("Generate .ino file");
@@ -899,7 +915,7 @@ public class MiniGUI extends JFrame {
                 buildMenu.add(buildMenuItem);
 
                 //---- compileMenuItem ----
-                compileMenuItem.setText("Compile to hex");
+                compileMenuItem.setText("Compile / Verify");
                 compileMenuItem.addActionListener(e -> compileMenuItemActionPerformed(e));
                 buildMenu.add(compileMenuItem);
 
@@ -909,6 +925,17 @@ public class MiniGUI extends JFrame {
                 buildMenu.add(uploadMenuItem);
             }
             menuBar1.add(buildMenu);
+
+            //======== buildMidiMenu ========
+            {
+                buildMidiMenu.setText("Build - Midi");
+
+                //---- generateMidiMenuItem ----
+                generateMidiMenuItem.setText("Generate Midi File");
+                generateMidiMenuItem.addActionListener(e -> generateMidiMenuItemActionPerformed(e));
+                buildMidiMenu.add(generateMidiMenuItem);
+            }
+            menuBar1.add(buildMidiMenu);
 
             //======== helpMenu ========
             {
@@ -1004,10 +1031,13 @@ public class MiniGUI extends JFrame {
     private JMenuItem LexMenuItem;
     private JMenuItem synMenuItem;
     private JMenuItem semMenuItem;
+    private JMenuItem sem2MenuItem;
     private JMenu buildMenu;
     private JMenuItem buildMenuItem;
     private JMenuItem compileMenuItem;
     private JMenuItem uploadMenuItem;
+    private JMenu buildMidiMenu;
+    private JMenuItem generateMidiMenuItem;
     private JMenu helpMenu;
     private JMenuItem demoMenuItem;
     private JMenuItem aboutMenuItem;

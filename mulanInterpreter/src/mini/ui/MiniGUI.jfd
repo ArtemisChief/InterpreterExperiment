@@ -92,13 +92,18 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "semMenuItem"
-						"text": "Semantic Analysis"
+						"text": "Semantic Analysis - Arduino"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "semMenuItemActionPerformed", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "sem2MenuItem"
+						"text": "Semantic Analysis - Midi"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "sem2MenuItemActionPerformed", true ) )
 					} )
 				} )
 				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
 					name: "buildMenu"
-					"text": "Build"
+					"text": "Build - Arduino"
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "buildMenuItem"
 						"text": "Generate .ino file"
@@ -106,13 +111,22 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "compileMenuItem"
-						"text": "Compile to hex"
+						"text": "Compile / Verify"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "compileMenuItemActionPerformed", true ) )
 					} )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "uploadMenuItem"
 						"text": "Upload to Arduino"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "uploadMenuItemActionPerformed", true ) )
+					} )
+				} )
+				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+					name: "buildMidiMenu"
+					"text": "Build - Midi"
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "generateMidiMenuItem"
+						"text": "Generate Midi File"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "generateMidiMenuItemActionPerformed", true ) )
 					} )
 				} )
 				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {

@@ -18,6 +18,7 @@ public class SemanticAnalysis {
     private int count;
     private int scoreLength;
 
+    //针对Arduino进行语义分析
     public String ConvertToArduino(Node abstractSyntaxTree) {
         AbstractSyntaxTree = abstractSyntaxTree;
 
@@ -37,7 +38,7 @@ public class SemanticAnalysis {
                 "Tone tone1;\n" +
                 "Tone tone2;\n\n\n");
 
-        DFS(AbstractSyntaxTree);
+        DFS_Arduino(AbstractSyntaxTree);
 
         if(getIsError())
             return null;
@@ -45,12 +46,14 @@ public class SemanticAnalysis {
         return code.toString();
     }
 
-    private void DFS(Node curNode) {
+    //针对Arduino的深度优先遍历
+    private void DFS_Arduino(Node curNode) {
         double speedFactor;
         int noteCount = 0;
         int rhythmCount = 0;
         String notes = "";
         String rhythms = "";
+
         for (Node child : curNode.getChildren()) {
             switch (child.getType()) {
                 case "score":
@@ -59,7 +62,7 @@ public class SemanticAnalysis {
                     code.append("const int length" + count + ";\n\n" +
                             "double speedFactor" + count + ";\n\n" +
                             "double tonalityFactor" + count + ";\n\n");
-                    DFS(child);
+                    DFS_Arduino(child);
                     break;
 
                 case "execution":
@@ -88,7 +91,7 @@ public class SemanticAnalysis {
                             "void loop() {\n" +
                             "  yield();\n" +
                             "}");
-                    DFS(child);
+                    DFS_Arduino(child);
                     break;
 
                 case "statement":
@@ -143,7 +146,7 @@ public class SemanticAnalysis {
                     break;
 
                 case "sentence":
-                    DFS(child);
+                    DFS_Arduino(child);
                     break;
 
                 case "end paragraph":
@@ -340,6 +343,17 @@ public class SemanticAnalysis {
                     break;
             }
         }
+    }
+
+
+    //针对Midi进行语义分析
+    public String ConvertToMidi(Node abstractSyntaxTree){
+        return null;
+    }
+
+    //针对Midi的深度优先遍历
+    private void DFS_Midi(Node curNode){
+
     }
 
     public boolean getIsError() {

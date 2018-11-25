@@ -86,6 +86,12 @@ public class Token {
             case 19:
                 type="降号";
                 break;
+            case 20:
+                type="乐器符号";
+                break;
+            case 21:
+                type="音量符号";
+                break;
             case 94:
                 type="休止符";
                 break;
@@ -93,7 +99,7 @@ public class Token {
                 type="调性";
                 break;
             case 96:
-                type="速度常数";
+                type="常数";
                 break;
             case 97:
                 type="换行符";

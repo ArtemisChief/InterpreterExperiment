@@ -234,6 +234,78 @@ public class LexicalAnalysis {
                 }
             }
 
+
+            //判断是否是乐器标识
+            if (inputWord.length() >= 11) {
+                //当输入字符串以instrument=开头时
+                if (inputWord.substring(0, 11).equals("instrument=")) {
+                    //若instrument=后未加常数，报错
+                    if (inputWord.length() == 11) {
+                        skipLine=count;
+                        errorLine.add(skipLine);
+                        tokens.add(new Token(-1, "\"instrument=\"后缺少对应乐器编号", count));
+                        return;
+                    }
+                    //扫描instrument=后的字符，出现非数字则报错
+                    for (int i = 11; i < inputWord.length(); i++) {
+                        if (!isNumber(inputWord.charAt(i))) {
+                            skipLine=count;
+                            errorLine.add(skipLine);
+                            tokens.add(new Token(-1, "乐器编号中出现非法字符：" + inputWord.charAt(i), count));
+                            return;
+                        }
+                    }
+                    syn = 20;
+                    //将乐器标识及乐器编号加入tokens中
+                    tokens.add(new Token(syn, "instrument=", count));
+                    //乐器编号不在0-127间则报错
+                    if(Integer.valueOf(inputWord.substring(11))>127||Integer.valueOf(inputWord.substring(11))<0){
+                        skipLine=count;
+                        errorLine.add(skipLine);
+                        tokens.add(new Token(-1, inputWord.substring(11)+"不是合法的乐器编号（0-127）" , count));
+                        return;
+                    }
+                    tokens.add(new Token(96, inputWord.substring(11), count));
+                    return;
+                }
+            }
+
+            //判断是否是音量标识
+            if (inputWord.length() >= 7) {
+                //当输入字符串以instrument=开头时
+                if (inputWord.substring(0, 7).equals("volume=")) {
+                    //若volume=后未加常数，报错
+                    if (inputWord.length() == 7) {
+                        skipLine=count;
+                        errorLine.add(skipLine);
+                        tokens.add(new Token(-1, "\"volume=\"后缺少对应音量大小", count));
+                        return;
+                    }
+                    //扫描volume=后的字符，出现非数字则报错
+                    for (int i = 7; i < inputWord.length(); i++) {
+                        if (!isNumber(inputWord.charAt(i))) {
+                            skipLine=count;
+                            errorLine.add(skipLine);
+                            tokens.add(new Token(-1, "音量中出现非法字符：" + inputWord.charAt(i), count));
+                            return;
+                        }
+                    }
+                    syn = 21;
+                    //将音量标识及音量大小加入tokens中
+                    tokens.add(new Token(syn, "volume=", count));
+                    //音量大小不在0-127间则报错
+                    if(Integer.valueOf(inputWord.substring(7))>127||Integer.valueOf(inputWord.substring(7))<0){
+                        skipLine=count;
+                        errorLine.add(skipLine);
+                        tokens.add(new Token(-1, inputWord.substring(7)+"不是合法的音量大小（0-127）" , count));
+                        return;
+                    }
+                    tokens.add(new Token(96, inputWord.substring(7), count));
+                    return;
+                }
+            }
+
+
             //判断是否是速度标识
             if (inputWord.length() >= 6) {
                 //当输入字符串以speed=开头时

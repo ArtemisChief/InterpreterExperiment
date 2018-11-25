@@ -33,6 +33,7 @@ public class MiniGUI extends JFrame {
 
     private File inoFile;
     private File midiFile;
+    private File tempMidiFile;
     private File file;
 
     private boolean hasSaved = false;
@@ -91,14 +92,10 @@ public class MiniGUI extends JFrame {
             public void windowClosing(WindowEvent e) {
                 //删除临时ino文件
                 if (showSaveComfirm("Exist unsaved content, save before exit?")) {
-                    File tempFile = new File("D:\\Just For Save");
+                    File tempFile = tempMidiFile;
 
-                    if (tempFile.exists()) {
-                        File[] files = tempFile.listFiles();
-                        for (File fileToDel : files) {
-                            fileToDel.delete();
-                        }
-                    }
+                    if (tempFile != null && tempFile.exists())
+                        tempFile.delete();
 
                     tempFile = new File("C:\\Users\\Chief\\Documents\\Arduino\\temp.ino");
 
@@ -411,7 +408,7 @@ public class MiniGUI extends JFrame {
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Music Interpreter File", "mui");
         fileChooser.setFileFilter(filter);
         fileChooser.showOpenDialog(this);
-        if(fileChooser.getSelectedFile()==null)
+        if (fileChooser.getSelectedFile() == null)
             return;
         file = fileChooser.getSelectedFile();
         if (file == null)
@@ -944,18 +941,27 @@ public class MiniGUI extends JFrame {
 
         outputTextPane.setText(code);
         outputTextPane.setCaretPosition(0);
+        if (tempMidiFile == null) {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Midi File", "mid");
+            fileChooser.setFileFilter(filter);
+            fileChooser.showSaveDialog(this);
+            if (fileChooser.getSelectedFile() == null)
+                return;
+            String fileStr = fileChooser.getSelectedFile().getAbsoluteFile().toString();
+            if (fileStr.lastIndexOf(".mid") == -1)
+                fileStr += ".mid";
+            tempMidiFile = new File(fileStr);
+        }
 
-        Random random = new Random(System.currentTimeMillis());
-
-        midiFile = new File("D:\\Just For Save\\" + random.nextInt(100) + ".mid");
-
-        if (!semanticAnalysisMidi.getMidiFile().writeToFile(midiFile)) {
+        if (!semanticAnalysisMidi.getMidiFile().writeToFile(tempMidiFile)) {
             JOptionPane.showMessageDialog(this, "目标文件被占用，无法导出", "Warning", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
         try {
-            Runtime.getRuntime().exec("rundll32 url.dll FileProtocolHandler file://" + midiFile.getAbsolutePath().replace("\\", "\\\\"));
+            Runtime.getRuntime().exec("rundll32 url.dll FileProtocolHandler file://" + tempMidiFile.getAbsolutePath().replace("\\", "\\\\"));
         } catch (IOException e1) {
             e1.printStackTrace();
         }

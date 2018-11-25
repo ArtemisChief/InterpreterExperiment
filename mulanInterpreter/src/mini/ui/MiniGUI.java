@@ -92,12 +92,16 @@ public class MiniGUI extends JFrame {
                 //删除临时ino文件
                 if (showSaveComfirm("Exist unsaved content, save before exit?")) {
                     File tempFile = new File("D:\\Just For Save");
-                    File[] files = tempFile.listFiles();
-                    for (File fileToDel : files) {
-                        fileToDel.delete();
+
+                    if (tempFile.exists()) {
+                        File[] files = tempFile.listFiles();
+                        for (File fileToDel : files) {
+                            fileToDel.delete();
+                        }
                     }
 
                     tempFile = new File("C:\\Users\\Chief\\Documents\\Arduino\\temp.ino");
+
                     if (tempFile.exists())
                         tempFile.delete();
 
@@ -1043,13 +1047,13 @@ public class MiniGUI extends JFrame {
                 "\t5）声部调性：CDEFGAB加上b（降号）与#（升号）\n" +
                 "\t6）“( )”内为低八度，可叠加“[ ]”内为高八度，同上\n" +
                 "\t7）“< >”内为全、二、四、八、十六分音符与附点\n" +
+                "\t（Arduino可以使用{ }表示连音，Midi暂不支持）\n" +
                 "\t8）声明结束：须用end结束声明，对应paragraph\n" +
                 "\n" +
                 "3. 播放乐谱的方法：\n" +
-                "\t1）通过“play( )”进行播放\n" +
-                "\t2）“( )”内为声部的标识符\n" +
-                "\t3）“&”左右的声部将同时播放，\n" +
-                "\t4）“ , ”左右的声部将先后播放";
+                "\t1）通过“play( )”进行播放，( )”内为声部的标识符\n" +
+                "\t2）“&”左右的声部将同时播放，\n" +
+                "\t3）“ , ”左右的声部将先后播放";
         outputTextPane.setText(str);
         outputTextPane.setCaretPosition(0);
     }

@@ -52,6 +52,8 @@ public class SemanticAnalysisMidi {
         Paragraph paragraph = para;
         List<Integer> noteList = null;
         List<Integer> durationList = null;
+        int lineNoteCount=0;
+        int lineRhythmCount=0;
 
         for (Node child : curNode.getChildren()) {
             switch (child.getType()) {
@@ -148,33 +150,41 @@ public class SemanticAnalysisMidi {
                                 haftToneOffset = -1;
                                 break;
                             case "0":
+                                lineNoteCount++;
                                 noteList.add(0);
                                 break;
                             case "1":
+                                lineNoteCount++;
                                 noteList.add(60 + haftToneOffset + toneOffset);
                                 haftToneOffset = 0;
                                 break;
                             case "2":
+                                lineNoteCount++;
                                 noteList.add(62 + haftToneOffset + toneOffset);
                                 haftToneOffset = 0;
                                 break;
                             case "3":
+                                lineNoteCount++;
                                 noteList.add(64 + haftToneOffset + toneOffset);
                                 haftToneOffset = 0;
                                 break;
                             case "4":
+                                lineNoteCount++;
                                 noteList.add(65 + haftToneOffset + toneOffset);
                                 haftToneOffset = 0;
                                 break;
                             case "5":
+                                lineNoteCount++;
                                 noteList.add(67 + haftToneOffset + toneOffset);
                                 haftToneOffset = 0;
                                 break;
                             case "6":
+                                lineNoteCount++;
                                 noteList.add(69 + haftToneOffset + toneOffset);
                                 haftToneOffset = 0;
                                 break;
                             case "7":
+                                lineNoteCount++;
                                 noteList.add(71 + haftToneOffset + toneOffset);
                                 haftToneOffset = 0;
                                 break;
@@ -192,39 +202,49 @@ public class SemanticAnalysisMidi {
                             case "}":
                                 break;
                             case "1":
+                                lineRhythmCount++;
                                 durationList.add(480);
                                 break;
                             case "1*":
+                                lineRhythmCount++;
                                 durationList.add(720);
                                 break;
                             case "2":
+                                lineRhythmCount++;
                                 durationList.add(240);
                                 break;
                             case "2*":
+                                lineRhythmCount++;
                                 durationList.add(360);
                                 break;
                             case "4":
+                                lineRhythmCount++;
                                 durationList.add(120);
                                 break;
                             case "4*":
+                                lineRhythmCount++;
                                 durationList.add(180);
                                 break;
                             case "8":
+                                lineRhythmCount++;
                                 durationList.add(60);
                                 break;
                             case "8*":
+                                lineRhythmCount++;
                                 durationList.add(90);
                                 break;
                             case "g":
+                                lineRhythmCount++;
                                 durationList.add(30);
                                 break;
                             case "g*":
+                                lineRhythmCount++;
                                 durationList.add(45);
                                 break;
                         }
                     }
 
-                    if (noteList.size() != durationList.size()) {
+                    if (lineNoteCount != lineRhythmCount) {
                         errorInfo.append("Line: " + line + "\t该句音符与时值数量不相同\n");
                         errorLines.add(line);
                     }
@@ -307,6 +327,10 @@ public class SemanticAnalysisMidi {
     }
 
     private void constuctMidiTrack(Paragraph paragraph, int duration) {
+
+        if(getIsError())
+            return;
+
         MidiTrack midiTrack = new MidiTrack();
         midiTrack.setBpm(paragraph.getSpeed());
 

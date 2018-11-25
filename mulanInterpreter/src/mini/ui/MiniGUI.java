@@ -20,6 +20,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,20 +62,20 @@ public class MiniGUI extends JFrame {
 
         //样式
         attributeSet = new SimpleAttributeSet();
-        statementAttributeSet=new SimpleAttributeSet();
+        statementAttributeSet = new SimpleAttributeSet();
         durationAttributeSet = new SimpleAttributeSet();
         normalAttributeSet = new SimpleAttributeSet();
         commentAttributeSet = new SimpleAttributeSet();
         errorAttributeSet = new SimpleAttributeSet();
         StyleConstants.setForeground(attributeSet, new Color(92, 101, 192));
-        StyleConstants.setBold(attributeSet,true);
+        StyleConstants.setBold(attributeSet, true);
         StyleConstants.setForeground(statementAttributeSet, new Color(30, 80, 180));
         StyleConstants.setBold(statementAttributeSet, true);
         StyleConstants.setForeground(durationAttributeSet, new Color(111, 150, 255));
         StyleConstants.setForeground(commentAttributeSet, new Color(128, 128, 128));
         StyleConstants.setForeground(errorAttributeSet, new Color(238, 0, 1));
         inputStyledDocument = inputTextPane.getStyledDocument();
-        statementPattern=Pattern.compile("\\bparagraph\\b|\\bend\\b");
+        statementPattern = Pattern.compile("\\bparagraph\\b|\\bend\\b");
         keywordPattern = Pattern.compile("\\bspeed=|\\binstrument=|\\bvolume=|\\b1=|\\bplay");
         parenPattern = Pattern.compile("<(\\s*\\{?\\s*(1|2|4|8|g|\\*)+\\s*\\}?\\s*)+>");
 
@@ -84,8 +85,14 @@ public class MiniGUI extends JFrame {
             public void windowClosing(WindowEvent e) {
                 //删除临时ino文件
                 if (showSaveComfirm("Exist unsaved content, save before exit?")) {
-                    File tempFile = new File("C:\\Users\\Chief\\Documents\\Arduino\\temp.ino");
-                    if (tempFile.exists())
+                    File tempFile = new File("D:\\Just For Save");
+                    File[] files = tempFile.listFiles();
+                    for (File fileToDel : files) {
+                        fileToDel.delete();
+                    }
+
+                    tempFile=new File("C:\\Users\\Chief\\Documents\\Arduino\\temp.ino");
+                    if(tempFile.exists())
                         tempFile.delete();
 
                     System.exit(0);
@@ -848,6 +855,51 @@ public class MiniGUI extends JFrame {
         }
     }
 
+    //直接播放Midi文件
+    private void playMenuItemActionPerformed(ActionEvent e) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (inputTextPane.getText().isEmpty())
+            return;
+
+        ArrayList<Token> tokens = runLex(inputTextPane.getText(), stringBuilder);
+
+        if (tokens == null)
+            return;
+
+        stringBuilder.append("\n=======词法分析结束======开始语法分析=======\n\n");
+
+        Node AbstractSyntaxTree = runSyn(tokens, stringBuilder);
+
+        if (AbstractSyntaxTree == null)
+            return;
+
+        stringBuilder.append("\n=======语法分析结束======开始语义分析=======\n\n");
+
+        String code = runMidiSem(AbstractSyntaxTree, stringBuilder);
+
+        if (code == null)
+            return;
+
+        outputTextPane.setText(code);
+
+        Random random = new Random(System.currentTimeMillis());
+
+        midiFile = new File("D:\\Just For Save\\" + random.nextInt(100) + ".mid");
+
+        if (!semanticAnalysisMidi.getMidiFile().writeToFile(midiFile)) {
+            JOptionPane.showMessageDialog(this, "目标文件被占用，无法导出", "Warning", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        try {
+            Runtime.getRuntime().exec("rundll32 url.dll FileProtocolHandler file://"+midiFile.getAbsolutePath().replace("\\","\\\\"));
+        }catch (IOException e1){
+            e1.printStackTrace();
+        }
+    }
+
+
     //关于
     private void aboutMenuItemActionPerformed(ActionEvent e) {
         String str = "-----------------------------------------------------------\n" +
@@ -871,6 +923,8 @@ public class MiniGUI extends JFrame {
                 "\n" +
                 "//女高音\n" +
                 "paragraph soprano\n" +
+                "instrument= 0\n" +
+                "volume= 127\n" +
                 "speed= 140\n" +
                 "1= D\n" +
                 "3345 5432 <4444 4444>\n" +
@@ -885,6 +939,8 @@ public class MiniGUI extends JFrame {
                 "\n" +
                 "//女中音\n" +
                 "paragraph alto\n" +
+                "instrument= 0\n" +
+                "volume= 110\n" +
                 "speed= 140\n" +
                 "1= D\n" +
                 "1123 321(5) <4444 4444>\n" +
@@ -925,6 +981,7 @@ public class MiniGUI extends JFrame {
         uploadMenuItem = new JMenuItem();
         buildMidiMenu = new JMenu();
         generateMidiMenuItem = new JMenuItem();
+        playMenuItem = new JMenuItem();
         helpMenu = new JMenu();
         demoMenuItem = new JMenuItem();
         aboutMenuItem = new JMenuItem();
@@ -1029,6 +1086,11 @@ public class MiniGUI extends JFrame {
                 generateMidiMenuItem.setText("Generate Midi File");
                 generateMidiMenuItem.addActionListener(e -> generateMidiMenuItemActionPerformed(e));
                 buildMidiMenu.add(generateMidiMenuItem);
+
+                //---- playMenuItem ----
+                playMenuItem.setText("Play Midi File");
+                playMenuItem.addActionListener(e -> playMenuItemActionPerformed(e));
+                buildMidiMenu.add(playMenuItem);
             }
             menuBar1.add(buildMidiMenu);
 
@@ -1049,7 +1111,7 @@ public class MiniGUI extends JFrame {
             menuBar1.add(helpMenu);
 
             //---- hSpacer1 ----
-            hSpacer1.setMaximumSize(new Dimension(400, 32767));
+            hSpacer1.setMaximumSize(new Dimension(430, 32767));
             menuBar1.add(hSpacer1);
 
             //---- progressBar ----
@@ -1133,6 +1195,7 @@ public class MiniGUI extends JFrame {
     private JMenuItem uploadMenuItem;
     private JMenu buildMidiMenu;
     private JMenuItem generateMidiMenuItem;
+    private JMenuItem playMenuItem;
     private JMenu helpMenu;
     private JMenuItem demoMenuItem;
     private JMenuItem aboutMenuItem;

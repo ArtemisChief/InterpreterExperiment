@@ -13,6 +13,7 @@ public class SemanticAnalysisMidi {
 
     private List<Integer> errorLines;
     private StringBuilder errorInfo;
+
     private int toneOffset;
     private int haftToneOffset;
 

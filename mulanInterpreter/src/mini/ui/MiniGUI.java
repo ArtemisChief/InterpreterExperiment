@@ -28,22 +28,27 @@ import java.util.regex.Pattern;
 /**
  * @author Chief
  */
+
 public class MiniGUI extends JFrame {
 
     private File inoFile;
     private File midiFile;
     private File file;
+
     private boolean hasSaved = false;
     private boolean hasChanged = false;
     private boolean ctrlPressed = false;
     private boolean sPressed = false;
+
     private SimpleAttributeSet attributeSet;
     private SimpleAttributeSet statementAttributeSet;
     private SimpleAttributeSet durationAttributeSet;
     private SimpleAttributeSet normalAttributeSet;
     private SimpleAttributeSet commentAttributeSet;
     private SimpleAttributeSet errorAttributeSet;
+
     private StyledDocument inputStyledDocument;
+
     private Pattern statementPattern;
     private Pattern keywordPattern;
     private Pattern parenPattern;
@@ -949,7 +954,6 @@ public class MiniGUI extends JFrame {
             e1.printStackTrace();
         }
     }
-
 
     //关于
     private void aboutMenuItemActionPerformed(ActionEvent e) {

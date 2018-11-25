@@ -64,38 +64,61 @@ public class SyntacticAnalysis {
         }
         paragraph.addChild(statement);
 
-        //instrument
-        Node instrument = parseInstrument();
-        paragraph.addChild(instrument);
+        int tempSyn = tokens.get(index).getSyn();
+        boolean hadSpeed = false, hadTone = false, hadInstrument = false, hadVolume = false;
+        while(tempSyn==3|tempSyn==4|tempSyn==20|tempSyn==21){
+            switch(tempSyn){
+                case 3:
+                    //speed
+                    Node speed = parseSpeed();
+                    paragraph.addChild(speed);
+                    hadSpeed = true;
+                    break;
+                case 4:
+                    //tone
+                    Node tone = parseTone();
+                    paragraph.addChild(tone);
+                    hadTone = true;
+                    break;
+                case 20:
+                    //instrument
+                    Node instrument = parseInstrument();
+                    paragraph.addChild(instrument);
+                    hadInstrument = true;
+                    break;
+                case 21:
+                    //volume
+                    Node volume = parseVolume();
+                    paragraph.addChild(volume);
+                    hadVolume = true;
+                    break;
+                default:
+                    break;
+            }
 
-        //volume
-        Node volume = parseVolume();
-        paragraph.addChild(volume);
-
-        //speed & tone
-        Node speed, tone;
-        switch (tokens.get(index).getSyn()) {
-            case 3:
-                speed = parseSpeed();
-                if (tokens.get(index).getSyn() != 4)
-                    tone = getTone();
-                else
-                    tone = parseTone();
-                break;
-            case 4:
-                tone = parseTone();
-                if (tokens.get(index).getSyn() != 3)
-                    speed = getSpeed();
-                else
-                    speed = parseSpeed();
-                break;
-            default:
-                speed = getSpeed();
-                tone = getTone();
+            tempSyn = tokens.get(index).getSyn();
+        }
+        if(!hadSpeed){
+            Node speed = parseSpeed();
+            paragraph.addChild(speed);
+        }
+        if(!hadTone){
+            Node tone = parseTone();
+            paragraph.addChild(tone);
+        }
+        if(!hadInstrument){
+            Node instrument = parseInstrument();
+            paragraph.addChild(instrument);
+        }
+        if(!hadVolume){
+            Node volume = parseVolume();
+            paragraph.addChild(volume);
         }
 
-        paragraph.addChild(speed);
-        paragraph.addChild(tone);
+
+
+
+
 
         //{ sentence }
         while (tokens.get(index).getSyn() != 5) {
@@ -180,20 +203,23 @@ public class SyntacticAnalysis {
     public Node parseSpeed() {
         Node speed = new Node("speed");
         Node terminalNode;
+        if(tokens.get(index).getSyn()!=3){
+//            //speed=
+//            terminalNode = new Node("speedMark","speed=");
+//            speed.addChild((terminalNode));
+            //乐器编号
+            terminalNode = new Node("speedValue","90");
+            speed.addChild(terminalNode);
 
-        //'speed='
-//        terminalNode = new Node("speed mark","speed=",tokens.get(index).getCount());
-//        speed.addChild(terminalNode);
-        index++;
-
-        //speed value
-        if (tokens.get(index).getSyn() != 96) {
-            nextLine();
-            //isError = true;
-            errorList.add(tokens.get(index - 1).getCount());
-            return new Node("Error", "Line: " + tokens.get(index - 1).getCount() +"  速度常数不正确");
+            return speed;
         }
-        terminalNode = new Node("speed value", tokens.get(index).getContent(),tokens.get(index).getCount());
+
+//        //speed=
+//        terminalNode = new Node("speedMark","speed=");
+//        speed.addChild((terminalNode));
+        index++;
+        //乐器编号
+        terminalNode = new Node("speedValue",tokens.get(index).getContent());
         speed.addChild(terminalNode);
         index++;
 
@@ -202,6 +228,9 @@ public class SyntacticAnalysis {
 
     //tone -> ([#|b] toneValue)|toneValue
     public Node parseTone() {
+        if(tokens.get(index).getSyn()!=4){
+            return getTone();
+        }
         Node tone = new Node("tonality");
         Node terminalNode;
         String tonality = "";

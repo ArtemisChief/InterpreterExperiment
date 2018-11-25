@@ -579,7 +579,8 @@ public class LexicalAnalysis {
                     i++;
                     start = i;
                 }
-                continue;
+                if(i==input.length())
+                    continue;
             }
             //出现空格时，将start到空格处的字符串分析
             if (input.charAt(i) == ' ') {

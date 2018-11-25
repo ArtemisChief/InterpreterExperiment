@@ -91,8 +91,8 @@ public class MiniGUI extends JFrame {
                         fileToDel.delete();
                     }
 
-                    tempFile=new File("C:\\Users\\Chief\\Documents\\Arduino\\temp.ino");
-                    if(tempFile.exists())
+                    tempFile = new File("C:\\Users\\Chief\\Documents\\Arduino\\temp.ino");
+                    if (tempFile.exists())
                         tempFile.delete();
 
                     System.exit(0);
@@ -338,7 +338,52 @@ public class MiniGUI extends JFrame {
     private void newMenuItemActionPerformed(ActionEvent e) {
         if (showSaveComfirm("Exist unsaved content, save before new file?")) {
             hasSaved = false;
-            inputTextPane.setText("");
+
+            String str = "/*\n" +
+                    " 数字乐谱模板\n" +
+                    " 声部1 + 声部2\n" +
+                    " 双声部 Version\n" +
+                    " */\n" +
+                    "\n" +
+                    "//声部1\n" +
+                    "paragraph Name1\n" +
+                    "instrument= 0\n" +
+                    "volume= 127\n" +
+                    "speed= 90\n" +
+                    "1= C\n" +
+                    "1234 567[1]  <4444 4444>\n" +
+                    "[1]765 4321  <4444 4444>\n" +
+                    "\n" +
+                    "1324    3546  <8888 8888>\n" +
+                    "576[1] 7[2]1  <8888 884>\n" +
+                    "\n" +
+                    "[1]675 6453  <gggg gggg>\n" +
+                    "4231   2(7)1  <gggg gg8>\n" +
+                    "end\n" +
+                    "\n" +
+                    "//声部2\n" +
+                    "paragraph Name2\n" +
+                    "instrument= 0\n" +
+                    "volume= 127\n" +
+                    "speed= 90\n" +
+                    "1= C\n" +
+                    "1234 567[1]  <4444 4444>\n" +
+                    "[1]765 4321  <4444 4444>\n" +
+                    "\n" +
+                    "1324    3546  <8888 8888>\n" +
+                    "576[1] 7[2]1  <8888 884>\n" +
+                    "\n" +
+                    "[1]675 6453  <gggg gggg>\n" +
+                    "4231   2(7)1  <gggg gg8>\n" +
+                    "end\n" +
+                    "\n" +
+                    "//添加更多声部......\n" +
+                    "\n" +
+                    "//多声部同时播放\n" +
+                    "play(Name1&Name2)";
+            inputTextPane.setText(str);
+            refreshColor();
+
             outputTextPane.setText("");
             hasChanged = false;
             this.setTitle("Music Interpreter - New File");
@@ -654,7 +699,7 @@ public class MiniGUI extends JFrame {
             fileStr += ".mid";
         midiFile = new File(fileStr);
 
-        if(!semanticAnalysisMidi.getMidiFile().writeToFile(midiFile))
+        if (!semanticAnalysisMidi.getMidiFile().writeToFile(midiFile))
             JOptionPane.showMessageDialog(this, "目标文件被占用，无法导出", "Warning", JOptionPane.INFORMATION_MESSAGE);
 
     }
@@ -893,8 +938,8 @@ public class MiniGUI extends JFrame {
         }
 
         try {
-            Runtime.getRuntime().exec("rundll32 url.dll FileProtocolHandler file://"+midiFile.getAbsolutePath().replace("\\","\\\\"));
-        }catch (IOException e1){
+            Runtime.getRuntime().exec("rundll32 url.dll FileProtocolHandler file://" + midiFile.getAbsolutePath().replace("\\", "\\\\"));
+        } catch (IOException e1) {
             e1.printStackTrace();
         }
     }
@@ -1127,13 +1172,13 @@ public class MiniGUI extends JFrame {
         //======== panel1 ========
         {
             panel1.setLayout(new MigLayout(
-                "insets 0,hidemode 3",
-                // columns
-                "[fill]0" +
-                "[fill]0" +
-                "[fill]",
-                // rows
-                "[fill]"));
+                    "insets 0,hidemode 3",
+                    // columns
+                    "[fill]0" +
+                            "[fill]0" +
+                            "[fill]",
+                    // rows
+                    "[fill]"));
 
             //======== scrollPane3 ========
             {

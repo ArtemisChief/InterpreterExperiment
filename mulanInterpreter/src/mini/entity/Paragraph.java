@@ -5,24 +5,34 @@ import java.util.List;
 
 public class Paragraph {
 
-    private String ParagraphName;
     private Float Speed;
+    private int volume;
+    private int instrument;
     private List<Integer> NoteList;
     private List<Integer> DurationList;
 
     public Paragraph() {
-        ParagraphName = "";
         Speed = 0.0F;
+        instrument=0;
+        volume=0;
         NoteList = new ArrayList<>();
         DurationList = new ArrayList<>();
     }
 
-    public String getParagraphName() {
-        return ParagraphName;
+    public int getVolume() {
+        return volume;
     }
 
-    public void setParagraphName(String paragraphName) {
-        ParagraphName = paragraphName;
+    public void setVolume(int volume) {
+        this.volume = volume;
+    }
+
+    public int getInstrument() {
+        return instrument;
+    }
+
+    public void setInstrument(int instrument) {
+        this.instrument = instrument;
     }
 
     public Float getSpeed() {

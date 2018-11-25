@@ -36,13 +36,13 @@ public class MiniGUI extends JFrame {
     private boolean ctrlPressed = false;
     private boolean sPressed = false;
     private SimpleAttributeSet attributeSet;
+    private SimpleAttributeSet statementAttributeSet;
     private SimpleAttributeSet durationAttributeSet;
     private SimpleAttributeSet normalAttributeSet;
     private SimpleAttributeSet commentAttributeSet;
     private SimpleAttributeSet errorAttributeSet;
     private StyledDocument inputStyledDocument;
-    //todo 输出内容高亮
-    private StyledDocument outputStyledDocument;
+    private Pattern statementPattern;
     private Pattern keywordPattern;
     private Pattern parenPattern;
 
@@ -51,7 +51,6 @@ public class MiniGUI extends JFrame {
     private SemanticAnalysisArduino semanticAnalysisArduino;
     private SemanticAnalysisMidi semanticAnalysisMidi;
     private ArduinoCmd arduinoCmd;
-    private boolean cmdComplete;
 
     private String cmdOutput;
 
@@ -62,18 +61,21 @@ public class MiniGUI extends JFrame {
 
         //样式
         attributeSet = new SimpleAttributeSet();
+        statementAttributeSet=new SimpleAttributeSet();
         durationAttributeSet = new SimpleAttributeSet();
         normalAttributeSet = new SimpleAttributeSet();
         commentAttributeSet = new SimpleAttributeSet();
         errorAttributeSet = new SimpleAttributeSet();
-        StyleConstants.setForeground(attributeSet, new Color(30, 80, 180));
-        StyleConstants.setBold(attributeSet, true);
-        StyleConstants.setForeground(durationAttributeSet, new Color(54, 163, 240));
+        StyleConstants.setForeground(attributeSet, new Color(92, 101, 192));
+        StyleConstants.setBold(attributeSet,true);
+        StyleConstants.setForeground(statementAttributeSet, new Color(30, 80, 180));
+        StyleConstants.setBold(statementAttributeSet, true);
+        StyleConstants.setForeground(durationAttributeSet, new Color(111, 150, 255));
         StyleConstants.setForeground(commentAttributeSet, new Color(128, 128, 128));
         StyleConstants.setForeground(errorAttributeSet, new Color(238, 0, 1));
         inputStyledDocument = inputTextPane.getStyledDocument();
-        outputStyledDocument = outputTextPane.getStyledDocument();
-        keywordPattern = Pattern.compile("\\bparagraph\\b|\\bspeed=|\\b1=|\\bend\\b|\\bplay");
+        statementPattern=Pattern.compile("\\bparagraph\\b|\\bend\\b");
+        keywordPattern = Pattern.compile("\\bspeed=|\\binstrument=|\\bvolume=|\\b1=|\\bplay");
         parenPattern = Pattern.compile("<(\\s*\\{?\\s*(1|2|4|8|g|\\*)+\\s*\\}?\\s*)+>");
 
         //关闭窗口提示
@@ -165,7 +167,6 @@ public class MiniGUI extends JFrame {
         arduinoCmd = new ArduinoCmd();
 
         cmdOutput = "";
-        cmdComplete = false;
 
         //行号与滚动条
         scrollPane3.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
@@ -268,6 +269,16 @@ public class MiniGUI extends JFrame {
                 input.length(),
                 normalAttributeSet, true
         );
+
+        //声明着色
+        Matcher statementMatcher = statementPattern.matcher(input);
+        while (statementMatcher.find()) {
+            inputStyledDocument.setCharacterAttributes(
+                    statementMatcher.start(),
+                    statementMatcher.end() - statementMatcher.start(),
+                    statementAttributeSet, true
+            );
+        }
 
         //关键字着色
         Matcher inputMatcher = keywordPattern.matcher(input);
@@ -1054,13 +1065,13 @@ public class MiniGUI extends JFrame {
         //======== panel1 ========
         {
             panel1.setLayout(new MigLayout(
-                    "insets 0,hidemode 3",
-                    // columns
-                    "[fill]0" +
-                            "[fill]0" +
-                            "[fill]",
-                    // rows
-                    "[fill]"));
+                "insets 0,hidemode 3",
+                // columns
+                "[fill]0" +
+                "[fill]0" +
+                "[fill]",
+                // rows
+                "[fill]"));
 
             //======== scrollPane3 ========
             {
@@ -1096,7 +1107,7 @@ public class MiniGUI extends JFrame {
                 outputTextPane.setBorder(null);
                 scrollPane2.setViewportView(outputTextPane);
             }
-            panel1.add(scrollPane2, "cell 2 0,width 420:420:420,height 600:600:600");
+            panel1.add(scrollPane2, "cell 2 0,width 460:460:460,height 600:600:600");
         }
         contentPane.add(panel1);
         pack();

@@ -68,8 +68,15 @@ public class SemanticAnalysisMidi {
                         errorLines.add(child.getChild(0).getCount());
                     }
                     paragraph = new Paragraph();
-                    paragraph.setParagraphName(child.getChild(0).getContent());
                     paragraphMap.put(child.getChild(0).getContent(), paragraph);
+                    break;
+
+                case "instrument":
+                    paragraph.setInstrument(Integer.parseInt(child.getChild(0).getContent()));
+                    break;
+
+                case "volume":
+                    paragraph.setVolume(Integer.parseInt(child.getChild(0).getContent()));
                     break;
 
                 case "speed":
@@ -250,7 +257,7 @@ public class SemanticAnalysisMidi {
                                         tempNotes.set(i, tempNotes.get(i) - 12);
                                     }
                                     tempPara.setNoteList(tempNotes);
-                                    constuctMidiTrack(tempPara, totalDuration,!andOp);
+                                    constuctMidiTrack(tempPara, totalDuration);
                                 }
 
                                 List<Integer> duration = paragraphMap.get(paraName).getDurationList();
@@ -270,7 +277,7 @@ public class SemanticAnalysisMidi {
                                     break;
                                 }
 
-                                constuctMidiTrack(paragraphMap.get(paraName), totalDuration,!andOp);
+                                constuctMidiTrack(paragraphMap.get(paraName), totalDuration);
                                 break;
                         }
                     }
@@ -290,7 +297,7 @@ public class SemanticAnalysisMidi {
                             tempNotes.set(i, tempNotes.get(i) - 12);
                         }
                         tempPara.setNoteList(tempNotes);
-                        constuctMidiTrack(tempPara, totalDuration,!andOp);
+                        constuctMidiTrack(tempPara, totalDuration);
                     }
 
                     break;
@@ -298,16 +305,13 @@ public class SemanticAnalysisMidi {
         }
     }
 
-    private void constuctMidiTrack(Paragraph paragraph, int duration, boolean isPrimary) {
+    private void constuctMidiTrack(Paragraph paragraph, int duration) {
         MidiTrack midiTrack = new MidiTrack();
         midiTrack.setBpm(paragraph.getSpeed());
 
-        midiTrack.setInstrument(channel,0);
+        midiTrack.setInstrument(channel, paragraph.getInstrument());
 
-        if (isPrimary)
-            midiTrack.addController(channel, 7, 120);
-        else
-            midiTrack.addController(channel, 7, 100);
+        midiTrack.addController(channel, 7, paragraph.getVolume());
 
         if (duration != 0)
             midiTrack.setDuration(duration);

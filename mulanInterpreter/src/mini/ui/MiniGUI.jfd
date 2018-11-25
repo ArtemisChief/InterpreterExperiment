@@ -48,7 +48,7 @@ new FormModel {
 						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
 					} )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 2 0,width 420:420:420,height 600:600:600"
+					"value": "cell 2 0,width 460:460:460,height 600:600:600"
 				} )
 			} )
 			menuBar: new FormContainer( "javax.swing.JMenuBar", new FormLayoutManager( class javax.swing.JMenuBar ) ) {
@@ -158,7 +158,7 @@ new FormModel {
 			}
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 5, 0 )
-			"size": new java.awt.Dimension( 860, 655 )
+			"size": new java.awt.Dimension( 905, 655 )
 		} )
 	}
 }

@@ -64,6 +64,14 @@ public class SyntacticAnalysis {
         }
         paragraph.addChild(statement);
 
+        //instrument
+        Node instrument = parseInstrument();
+        paragraph.addChild(instrument);
+
+        //volume
+        Node volume = parseVolume();
+        paragraph.addChild(volume);
+
         //speed & tone
         Node speed, tone;
         switch (tokens.get(index).getSyn()) {
@@ -112,6 +120,61 @@ public class SyntacticAnalysis {
 
         return paragraph;
     }
+
+    //instument
+    public Node parseInstrument(){
+        Node instrument = new Node("instrument");
+        Node terminalNode;
+        if(tokens.get(index).getSyn()!=20){
+//            //instrument=
+//            terminalNode = new Node("instrumentMark","instrument=");
+//            instrument.addChild((terminalNode));
+            //乐器编号
+            terminalNode = new Node("instrumentValue","0");
+            instrument.addChild(terminalNode);
+
+            return instrument;
+        }
+
+//        //instrument=
+//        terminalNode = new Node("instrumentMark","instrument=");
+//        instrument.addChild((terminalNode));
+        index++;
+        //乐器编号
+        terminalNode = new Node("instrumentValue",tokens.get(index).getContent());
+        instrument.addChild(terminalNode);
+        index++;
+
+        return instrument;
+    }
+
+    public Node parseVolume(){
+        Node volume = new Node("volume");
+        Node terminalNode;
+        if(tokens.get(index).getSyn()!=21){
+//            //volume=
+//            terminalNode = new Node("volumeMark","volume=");
+//            volume.addChild((terminalNode));
+            //乐器编号
+            terminalNode = new Node("volumeValue","127");
+            volume.addChild(terminalNode);
+
+            return volume;
+        }
+
+//        //volume=
+//        terminalNode = new Node("volumeMark","volume=");
+//        volume.addChild((terminalNode));
+        index++;
+        //乐器编号
+        terminalNode = new Node("volumeValue",tokens.get(index).getContent());
+        volume.addChild(terminalNode);
+        index++;
+
+        return volume;
+    }
+
+
 
     //speed -> 'speed=' speedNum
     public Node parseSpeed() {

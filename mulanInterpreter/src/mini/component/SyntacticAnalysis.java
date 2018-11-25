@@ -70,24 +70,48 @@ public class SyntacticAnalysis {
             switch(tempSyn){
                 case 3:
                     //speed
+                    if(hadSpeed){
+                        nextLine();
+                        errorList.add(tokens.get(index-1).getCount());
+                        paragraph.addChild(new Node("Error", "Line: " + tokens.get(index - 1).getCount() +"  重复定义速度"));
+                        break;
+                    }
                     Node speed = parseSpeed();
                     paragraph.addChild(speed);
                     hadSpeed = true;
                     break;
                 case 4:
                     //tone
+                    if(hadTone){
+                        nextLine();
+                        errorList.add(tokens.get(index-1).getCount());
+                        paragraph.addChild(new Node("Error", "Line: " + tokens.get(index - 1).getCount() +"  重复定义调"));
+                        break;
+                    }
                     Node tone = parseTone();
                     paragraph.addChild(tone);
                     hadTone = true;
                     break;
                 case 20:
                     //instrument
+                    if(hadInstrument){
+                        nextLine();
+                        errorList.add(tokens.get(index-1).getCount());
+                        paragraph.addChild(new Node("Error", "Line: " + tokens.get(index - 1).getCount() +"  重复定义乐器"));
+                        break;
+                    }
                     Node instrument = parseInstrument();
                     paragraph.addChild(instrument);
                     hadInstrument = true;
                     break;
                 case 21:
                     //volume
+                    if(hadTone){
+                        nextLine();
+                        errorList.add(tokens.get(index-1).getCount());
+                        paragraph.addChild(new Node("Error", "Line: " + tokens.get(index - 1).getCount() +"  重复定义强度"));
+                        break;
+                    }
                     Node volume = parseVolume();
                     paragraph.addChild(volume);
                     hadVolume = true;

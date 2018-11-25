@@ -636,7 +636,8 @@ public class MiniGUI extends JFrame {
             fileStr += ".mid";
         midiFile = new File(fileStr);
 
-        semanticAnalysisMidi.getMidiFile().writeToFile(midiFile);
+        if(!semanticAnalysisMidi.getMidiFile().writeToFile(midiFile))
+            JOptionPane.showMessageDialog(this, "目标文件被占用，无法导出", "Warning", JOptionPane.INFORMATION_MESSAGE);
 
     }
 

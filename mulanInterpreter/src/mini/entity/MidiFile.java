@@ -27,16 +27,15 @@ public class MidiFile {
         }
     }
 
-    public void writeToFile(File midiFile) {
-        if (midiFile.exists())
-            midiFile.delete();
+    public boolean writeToFile(File midiFile) {
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(midiFile);
             fileOutputStream.write(MidiFileData);
             fileOutputStream.flush();
             fileOutputStream.close();
+            return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            return false;
         }
     }
 

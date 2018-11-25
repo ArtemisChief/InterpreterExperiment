@@ -16,7 +16,7 @@ public class SemanticAnalysisMidi {
     private int toneOffset;
     private int haftToneOffset;
 
-    private List<Paragraph> paragraphs;
+    private Map<String, Paragraph> paragraphMap;
 
     private MidiFile midiFile;
     private List<MidiTrack> midiTracks;
@@ -30,10 +30,11 @@ public class SemanticAnalysisMidi {
 
         toneOffset = 0;
         haftToneOffset = 0;
-        channel=0;
+        channel = 0;
 
-        paragraphs = new ArrayList<>();
-        midiTracks=new ArrayList<>();
+        paragraphMap = new HashMap<>();
+
+        midiTracks = new ArrayList<>();
 
         DFS_Midi(AbstractSyntaxTree, null);
 
@@ -62,15 +63,13 @@ public class SemanticAnalysisMidi {
                     break;
 
                 case "statement":
-                    for (Paragraph p : paragraphs) {
-                        if (p.getParagraphName() == child.getChild(0).getContent()) {
-                            errorInfo.append("Line: " + child.getChild(0).getCount() + "\t重复声明的段落名" + child.getChild(0).getContent() + "\n");
-                            errorLines.add(child.getChild(0).getCount());
-                        }
+                    if (paragraphMap.containsKey(child.getChild(0).getContent())) {
+                        errorInfo.append("Line: " + child.getChild(0).getCount() + "\t重复声明的段落名" + child.getChild(0).getContent() + "\n");
+                        errorLines.add(child.getChild(0).getCount());
                     }
                     paragraph = new Paragraph();
                     paragraph.setParagraphName(child.getChild(0).getContent());
-                    paragraphs.add(paragraph);
+                    paragraphMap.put(child.getChild(0).getContent(), paragraph);
                     break;
 
                 case "speed":
@@ -78,7 +77,7 @@ public class SemanticAnalysisMidi {
                     break;
 
                 case "tonality":
-                    toneOffset=0;
+                    toneOffset = 0;
                     for (Node tonality : child.getChildren()) {
                         switch (tonality.getContent()) {
                             case "#":
@@ -226,96 +225,89 @@ public class SemanticAnalysisMidi {
 
                 case "playlist":
                     String paraName = "";
-                    boolean andOp = false;
-                    boolean hasStatment = false;
                     int totalDuration = 0;
-                    for (int j = 0; j < child.getChildren().size(); j++) {
-                        switch (child.getChild(j).getContent()) {
+                    boolean andOp = false;
+
+                    for (Node playList : child.getChildren()) {
+                        switch (playList.getContent()) {
                             case "&":
                                 andOp = true;
                                 break;
 
                             case ",":
-                                Paragraph tempPara = null;
-                                int tempDuration = 0;
-                                for (Paragraph p : paragraphs) {
-                                    if (p.getParagraphName().equals(child.getChild(j - 1).getContent())) {
-                                        hasStatment = true;
-                                        tempPara = p;
-                                    }
-                                }
-                                for (int duration : tempPara.getDurationList()) {
-                                    tempDuration += duration;
-                                }
-
-                                totalDuration += tempDuration;
+                                if (!paragraphMap.containsKey(paraName))
+                                    break;
 
                                 if (!andOp) {
-                                    Paragraph lowParagraph = new Paragraph();
-                                    lowParagraph.setSpeed(tempPara.getSpeed());
-                                    lowParagraph.setNoteList(tempPara.getNoteList());
-                                    lowParagraph.setDurationList(tempPara.getDurationList());
+                                    Paragraph originPara = paragraphMap.get(paraName);
+                                    Paragraph tempPara = new Paragraph();
 
-                                    for (int i = 0; i < lowParagraph.getNoteList().size(); i++) {
-                                        lowParagraph.getNoteList().set(i, lowParagraph.getNoteList().get(i) - 12);
+                                    tempPara.setDurationList(originPara.getDurationList());
+                                    tempPara.setSpeed(originPara.getSpeed());
+
+                                    List<Integer> tempNotes = originPara.getNoteList();
+                                    for (int i = 0; i < tempNotes.size(); i++) {
+                                        tempNotes.set(i, tempNotes.get(i) - 12);
                                     }
-
-                                    constuctMidiTrack(lowParagraph, totalDuration - tempDuration);
+                                    tempPara.setNoteList(tempNotes);
+                                    constuctMidiTrack(tempPara, totalDuration,!andOp);
                                 }
+
+                                List<Integer> duration = paragraphMap.get(paraName).getDurationList();
+
+                                for (int dura : duration)
+                                    totalDuration += dura;
 
                                 andOp = false;
                                 break;
 
                             default:
-                                paraName = child.getChild(j).getContent();
-                                Paragraph paraToConstruct = null;
+                                paraName = playList.getContent();
 
-                                for (Paragraph p : paragraphs) {
-                                    if (p.getParagraphName().equals(paraName)) {
-                                        hasStatment = true;
-                                        paraToConstruct = p;
-                                    }
+                                if (!paragraphMap.containsKey(paraName)) {
+                                    errorInfo.append("Line: " + playList.getCount() + "\t未声明的段落名" + paraName + "\n");
+                                    errorLines.add(playList.getCount());
+                                    break;
                                 }
 
-                                if (!hasStatment) {
-                                    errorInfo.append("Line: " + child.getChild(j).getCount() + "\t未声明的段落名" + paraName + "\n");
-                                    errorLines.add(child.getChild(j).getCount());
-                                }
-
-                                if (paraToConstruct != null)
-                                    constuctMidiTrack(paraToConstruct, totalDuration);
-
+                                constuctMidiTrack(paragraphMap.get(paraName), totalDuration,!andOp);
                                 break;
                         }
                     }
+
                     if (!andOp) {
-                        Paragraph tempPara = paragraphs.get(paragraphs.size() - 1);
-                        int tempDuration = 0;
+                        if (!paragraphMap.containsKey(paraName))
+                            break;
 
-                        if (paragraphs.size() - 1 > 0)
-                            for (int du : paragraphs.get(paragraphs.size() - 1).getDurationList())
-                                tempDuration += du;
+                        Paragraph originPara = paragraphMap.get(paraName);
+                        Paragraph tempPara = new Paragraph();
 
+                        tempPara.setDurationList(originPara.getDurationList());
+                        tempPara.setSpeed(originPara.getSpeed());
 
-                        Paragraph lowParagraph = new Paragraph();
-                        lowParagraph.setSpeed(tempPara.getSpeed());
-                        lowParagraph.setNoteList(tempPara.getNoteList());
-                        lowParagraph.setDurationList(tempPara.getDurationList());
-
-                        for (int i = 0; i < lowParagraph.getNoteList().size(); i++) {
-                            lowParagraph.getNoteList().set(i, lowParagraph.getNoteList().get(i) - 12);
+                        List<Integer> tempNotes = originPara.getNoteList();
+                        for (int i = 0; i < tempNotes.size(); i++) {
+                            tempNotes.set(i, tempNotes.get(i) - 12);
                         }
-
-                        constuctMidiTrack(lowParagraph, totalDuration - tempDuration);
+                        tempPara.setNoteList(tempNotes);
+                        constuctMidiTrack(tempPara, totalDuration,!andOp);
                     }
+
                     break;
             }
         }
     }
 
-    private void constuctMidiTrack(Paragraph paragraph, int duration) {
+    private void constuctMidiTrack(Paragraph paragraph, int duration, boolean isPrimary) {
         MidiTrack midiTrack = new MidiTrack();
         midiTrack.setBpm(paragraph.getSpeed());
+
+        midiTrack.setInstrument(channel,0);
+
+        if (isPrimary)
+            midiTrack.addController(channel, 7, 120);
+        else
+            midiTrack.addController(channel, 7, 100);
 
         if (duration != 0)
             midiTrack.setDuration(duration);
@@ -333,6 +325,9 @@ public class SemanticAnalysisMidi {
 
         channel++;
 
+        if (channel == 9)
+            channel++;
+
         if (channel > 15)
             channel = 0;
     }
@@ -349,7 +344,8 @@ public class SemanticAnalysisMidi {
         return errorInfo.toString();
     }
 
-    public MidiFile getMidiFile(){
+    public MidiFile getMidiFile() {
         return midiFile;
     }
+
 }

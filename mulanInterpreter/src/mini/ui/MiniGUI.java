@@ -411,6 +411,8 @@ public class MiniGUI extends JFrame {
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Music Interpreter File", "mui");
         fileChooser.setFileFilter(filter);
         fileChooser.showOpenDialog(this);
+        if(fileChooser.getSelectedFile()==null)
+            return;
         file = fileChooser.getSelectedFile();
         if (file == null)
             return;

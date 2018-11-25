@@ -29,6 +29,8 @@ public class MidiFile {
 
     public boolean writeToFile(File midiFile) {
         try {
+            if (!midiFile.exists())
+                midiFile.createNewFile();
             FileOutputStream fileOutputStream = new FileOutputStream(midiFile);
             fileOutputStream.write(MidiFileData);
             fileOutputStream.flush();

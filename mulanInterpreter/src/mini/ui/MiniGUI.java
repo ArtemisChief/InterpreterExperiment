@@ -403,7 +403,7 @@ public class MiniGUI extends JFrame {
 
     //打开文件
     private void openMenuItemActionPerformed(ActionEvent e) {
-        if (!showSaveComfirm("Exist unsaved content, save before open fire?"))
+        if (!showSaveComfirm("Exist unsaved content, save before open file?"))
             return;
 
         JFileChooser fileChooser = new JFileChooser();

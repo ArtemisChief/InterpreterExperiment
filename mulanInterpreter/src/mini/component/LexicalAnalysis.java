@@ -43,22 +43,8 @@ public class LexicalAnalysis {
                 return 1;
             case "paragraph":
                 return 2;
-            case "speed=":
-                return 3;
-            case "1=":
-                return 4;
             case "end":
                 return 5;
-            case "play":
-                return 6;
-            case "C":
-            case "D":
-            case "E":
-            case "F":
-            case "G":
-            case "A":
-            case "B":
-                return 95;
             default:
                 return -1;
         }
@@ -171,13 +157,7 @@ public class LexicalAnalysis {
         //标识符 保留字 速度
         if (isLetter(inputWord.charAt(0))) {
 
-            //如果输入为字符串单个调性字母，添加到tokens中
-            if (inputWord.length() == 1 && isTonality(inputWord.charAt(0))) {
-                tokens.add(new Token(95, inputWord, count));
-                return;
-            }
-
-            //如果输入字符串以b开头，且此时不可能为表示符，则当作降号处理
+            //如果输入字符串以b开头，且此时不是标识符位置的话，则当作降号处理
             //tokens中添加降号并将降号b以后的字符串分析
             if (!isIdentifier && inputWord.charAt(0) == 'b') {
                 tokens.add(new Token(19, "b", count));
@@ -579,7 +559,8 @@ public class LexicalAnalysis {
                     i++;
                     start = i;
                 }
-                continue;
+                if(i==input.length())
+                    continue;
             }
             //出现空格时，将start到空格处的字符串分析
             if (input.charAt(i) == ' ') {

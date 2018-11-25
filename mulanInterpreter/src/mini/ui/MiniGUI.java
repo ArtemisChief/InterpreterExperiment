@@ -956,7 +956,7 @@ public class MiniGUI extends JFrame {
         String str = "-----------------------------------------------------------\n" +
                 "Music Language Interpreter\nMade By Chief, yzdxm and AsrielMao\nVersion: 1.1.7\n\n" +
                 "A light weight interpreter for converting digit score       \n" +
-                "to Arduino code\n" +
+                "to Arduino code or Midi file\n" +
                 "-----------------------------------------------------------";
         JOptionPane.showMessageDialog(this, str, "About", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -1058,7 +1058,7 @@ public class MiniGUI extends JFrame {
                 "音色号\t乐器名\t                |\t音色号\t乐器名\n" +
                 "-----------------------------------------------------------------------\n" +
                 "钢琴类\t\t                |\t簧乐器\n" +
-                "0\t大钢琴\t                |\t64\t高音萨克斯\n" +
+                "0（推荐）\t大钢琴\t                |\t64\t高音萨克斯\n" +
                 "1\t亮音钢琴\t                |\t65\t中音萨克斯\n" +
                 "2\t电子大钢琴\t                |\t66\t次中音萨克斯\n" +
                 "3\t酒吧钢琴\t                |\t67\t上低音萨克斯\n" +
@@ -1070,8 +1070,8 @@ public class MiniGUI extends JFrame {
                 "固定音高敲击乐器\t                |\t吹管乐器\n" +
                 "8\t钢片琴\t                |\t72\t短笛\n" +
                 "9\t钟琴\t                |\t73\t长笛\n" +
-                "10\t音乐盒\t                |\t74\t竖笛\n" +
-                "11\t颤音琴\t                |\t75\t牧笛\n" +
+                "10（推荐）音乐盒\t                |\t74\t竖笛\n" +
+                "11\t颤音琴\t                |\t75（推荐）牧笛\n" +
                 "12\t马林巴琴\t                |\t76\t瓶笛\n" +
                 "13\t木琴\t                |\t77\t尺八\n" +
                 "14\t管钟\t                |\t78\t哨子\n" +
@@ -1083,12 +1083,12 @@ public class MiniGUI extends JFrame {
                 "18\t摇滚风琴\t                |\t82\t汽笛风琴\n" +
                 "19\t教堂管风琴\t                |\t83\t合成吹管\n" +
                 "20\t簧风琴\t                |\t84\t合成电吉他\n" +
-                "21\t手风琴\t                |\t85\t人声键\n" +
+                "21（推荐）手风琴\t                |\t85\t人声键\n" +
                 "22\t口琴\t                |\t86\t五度音\n" +
-                "23\t探戈手风琴\t\t87\t贝斯吉他合奏\n" +
+                "23（推荐）探戈手风琴\t                |\t87\t贝斯吉他合奏\n" +
                 "-----------------------------------------------------------------------\n" +
                 "吉他\t\t                |\t合成音和弦衬底\n" +
-                "24\t木吉他（尼龙弦）      |\t88\t新时代\n" +
+                "24（推荐）木吉他（尼龙弦）      |\t88\t新时代\n" +
                 "25\t木吉他（钢弦）          |\t89\t温暖的\n" +
                 "26\t电吉他（爵士）          |\t90\t多重和音\n" +
                 "27\t电吉他（清音）          |\t91\t唱诗班\n" +
@@ -1098,7 +1098,7 @@ public class MiniGUI extends JFrame {
                 "31\t吉他泛音\t                |\t95\t宽阔的\n" +
                 "-----------------------------------------------------------------------\n" +
                 "贝斯\t\t                |\t合成音效果\n" +
-                "32\t贝斯\t                |\t96\t雨声\n" +
+                "32（推荐）贝斯\t                |\t96\t雨声\n" +
                 "33\t电贝斯（指弹）          |\t97\t电影音效\n" +
                 "34\t电贝斯（拨片）          |\t98\t水晶\n" +
                 "35\t无品贝斯\t                |\t99\t气氛\n" +

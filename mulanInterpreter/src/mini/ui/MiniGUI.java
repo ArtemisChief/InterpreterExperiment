@@ -16,7 +16,13 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import javax.swing.undo.UndoManager;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -190,6 +196,44 @@ public class MiniGUI extends JFrame {
         scrollPane1.getVerticalScrollBar().addAdjustmentListener(e -> scrollPane3.getVerticalScrollBar().setValue(scrollPane1.getVerticalScrollBar().getValue()));
 
         TipsMenuItemActionPerformed(null);
+
+        //文件拖拽直接打开
+        new DropTarget(inputTextPane, DnDConstants.ACTION_COPY_OR_MOVE, new DropTargetAdapter() {
+            @Override
+            public void drop(DropTargetDropEvent dtde) {
+                try{
+                    if(dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                        if (!showSaveComfirm("Exist unsaved content, save before open file?"))
+                            return;
+
+                        dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+                        java.util.List<File> fileList=(java.util.List<File>) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+
+                        if(fileList.get(0).getName().indexOf(".mui")==-1) {
+                            JOptionPane.showMessageDialog(null, "不支持的文件格式", "Warning", JOptionPane.INFORMATION_MESSAGE);
+                            return;
+                        }
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(fileList.get(0)), "UTF-8"));
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String content;
+                        while ((content = bufferedReader.readLine()) != null) {
+                            stringBuilder.append(content);
+                            stringBuilder.append(System.getProperty("line.separator"));
+                        }
+                        bufferedReader.close();
+                        inputTextPane.setText(stringBuilder.toString());
+                        inputTextPane.setCaretPosition(0);
+                        outputTextPane.setText("");
+                        refreshColor();
+                        hasSaved = true;
+                        hasChanged = false;
+                        setTitle("Music Interpreter - " + fileList.get(0).getName());
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     //内容变动调用的函数
@@ -1352,13 +1396,13 @@ public class MiniGUI extends JFrame {
         //======== panel1 ========
         {
             panel1.setLayout(new MigLayout(
-                    "insets 0,hidemode 3",
-                    // columns
-                    "[fill]0" +
-                            "[fill]0" +
-                            "[fill]",
-                    // rows
-                    "[fill]"));
+                "insets 0,hidemode 3",
+                // columns
+                "[fill]0" +
+                "[fill]0" +
+                "[fill]",
+                // rows
+                "[fill]"));
 
             //======== scrollPane3 ========
             {
@@ -1392,6 +1436,9 @@ public class MiniGUI extends JFrame {
                 outputTextPane.setFont(new Font("Microsoft YaHei", Font.PLAIN, 14));
                 outputTextPane.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
                 outputTextPane.setBorder(null);
+                outputTextPane.setSelectionColor(Color.white);
+                outputTextPane.setSelectedTextColor(new Color(60, 60, 60));
+                outputTextPane.setEditable(false);
                 scrollPane2.setViewportView(outputTextPane);
             }
             panel1.add(scrollPane2, "cell 2 0,width 460:460:460,height 640:640:640");

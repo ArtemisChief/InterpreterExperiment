@@ -46,6 +46,9 @@ new FormModel {
 						"font": new java.awt.Font( "Microsoft YaHei", 0, 14 )
 						"cursor": #Cursor0
 						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"selectionColor": sfield java.awt.Color white
+						"selectedTextColor": new java.awt.Color( 60, 60, 60, 255 )
+						"editable": false
 					} )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 2 0,width 460:460:460,height 640:640:640"

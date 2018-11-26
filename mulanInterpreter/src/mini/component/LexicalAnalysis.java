@@ -120,8 +120,11 @@ public class LexicalAnalysis {
             if (temp.charAt(i) == '=') {
                 output += String.valueOf(temp.charAt(i));
                 i++;
-                while (i + 1 < temp.length() && temp.charAt(i) == ' ')
+                while (i + 1 < temp.length() && (temp.charAt(i) == ' '||temp.charAt(i) == '#'||temp.charAt(i) == 'b')){
+                    if(temp.charAt(i) == '#'||temp.charAt(i) == 'b')
+                        output += String.valueOf(temp.charAt(i));
                     i++;
+                }
             }
             //处理<>间的空格
             if (i + 1 < temp.length() && temp.charAt(i) == '<') {

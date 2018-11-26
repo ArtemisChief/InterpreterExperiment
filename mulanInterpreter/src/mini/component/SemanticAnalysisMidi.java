@@ -52,8 +52,8 @@ public class SemanticAnalysisMidi {
         Paragraph paragraph = para;
         List<Integer> noteList = null;
         List<Integer> durationList = null;
-        int lineNoteCount=0;
-        int lineRhythmCount=0;
+        int lineNoteCount = 0;
+        int lineRhythmCount = 0;
 
         for (Node child : curNode.getChildren()) {
             switch (child.getType()) {
@@ -328,7 +328,7 @@ public class SemanticAnalysisMidi {
 
     private void constuctMidiTrack(Paragraph paragraph, int duration) {
 
-        if(getIsError())
+        if (getIsError())
             return;
 
         MidiTrack midiTrack = new MidiTrack();

@@ -13,8 +13,8 @@ public class Paragraph {
 
     public Paragraph() {
         Speed = 0.0F;
-        instrument=0;
-        volume=0;
+        instrument = 0;
+        volume = 0;
         NoteList = new ArrayList<>();
         DurationList = new ArrayList<>();
     }
@@ -58,4 +58,5 @@ public class Paragraph {
     public void setDurationList(List<Integer> durationList) {
         DurationList = durationList;
     }
+
 }

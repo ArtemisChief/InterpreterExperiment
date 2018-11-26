@@ -4,26 +4,26 @@ import java.io.*;
 
 public class ArduinoCmd {
 
-    private static final String ArduinoPath="F:\\Arduino\\arduino_debug.exe";
+    private static final String ArduinoPath = "F:\\Arduino\\arduino_debug.exe";
 
     public static InputStream error;
     public static InputStream output;
 
-    public void compile(String filePath){
-        runCommand(ArduinoPath+" --verify "+filePath);
+    public void compile(String filePath) {
+        runCommand(ArduinoPath + " --verify " + filePath);
     }
 
-    public void upload(String filePath){
-        runCommand(ArduinoPath+" --upload "+filePath);
+    public void upload(String filePath) {
+        runCommand(ArduinoPath + " --upload " + filePath);
     }
 
-    private void runCommand(String cmd){
-        try{
-            Process process=Runtime.getRuntime().exec(cmd);
-            error=process.getErrorStream();
-            output=process.getInputStream();
+    private void runCommand(String cmd) {
+        try {
+            Process process = Runtime.getRuntime().exec(cmd);
+            error = process.getErrorStream();
+            output = process.getInputStream();
 
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

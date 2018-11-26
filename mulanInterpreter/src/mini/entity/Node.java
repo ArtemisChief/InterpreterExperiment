@@ -33,7 +33,7 @@ public class Node {
         this.count = count;
     }
 
-    public String getType(){
+    public String getType() {
         return type;
     }
 
@@ -41,7 +41,9 @@ public class Node {
         return content;
     }
 
-    public int getCount(){ return count;}
+    public int getCount() {
+        return count;
+    }
 
     public void addChild(Node node) {
         childNodes.add(node);
@@ -57,10 +59,6 @@ public class Node {
         return null;
     }
 
-    public boolean isTerminal(){
-        return content!=null;
-    }
-
     public String toString() {
         return String.format("%s\n", type);
     }
@@ -72,25 +70,15 @@ public class Node {
     }
 
     public String print(int height) {
-        String str="";
+        String str = "";
         for (int i = 0; i < height; i++) {
-            str+="           ";
+            str += "           ";
         }
-        str+=this.toString(content!=null)+"\n";
+        str += this.toString(content != null) + "\n";
         for (Node child : childNodes) {
-            str+=child.print(height + 1);
+            str += child.print(height + 1);
         }
         return str;
     }
 
-    public String findError(){
-        String errorStr="";
-        for(Node child:childNodes) {
-            if (child.getType() == "Error") {
-                errorStr += child.getContent();
-            }
-            errorStr += child.findError();
-        }
-        return errorStr;
-    }
 }

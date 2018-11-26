@@ -4,7 +4,6 @@
 
 package mini.ui;
 
-import javafx.geometry.VerticalDirection;
 import mini.component.*;
 import mini.entity.Node;
 import mini.entity.Token;
@@ -21,7 +20,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1354,13 +1352,13 @@ public class MiniGUI extends JFrame {
         //======== panel1 ========
         {
             panel1.setLayout(new MigLayout(
-                "insets 0,hidemode 3",
-                // columns
-                "[fill]0" +
-                "[fill]0" +
-                "[fill]",
-                // rows
-                "[fill]"));
+                    "insets 0,hidemode 3",
+                    // columns
+                    "[fill]0" +
+                            "[fill]0" +
+                            "[fill]",
+                    // rows
+                    "[fill]"));
 
             //======== scrollPane3 ========
             {
@@ -1439,4 +1437,5 @@ public class MiniGUI extends JFrame {
     private JScrollPane scrollPane2;
     private JTextPane outputTextPane;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
+
 }

@@ -1,7 +1,5 @@
 package mini.component;
 
-import mini.entity.MidiFile;
-import mini.entity.MidiTrack;
 import mini.entity.Node;
 import mini.entity.Note;
 

@@ -50,7 +50,7 @@ public class MidiTrack {
         }
     }
 
-    public void addController(Integer channel, Integer type,Integer level) {
+    public void addController(Integer channel, Integer type, Integer level) {
         byte[] controller = new byte[]{0x00, ((Integer) (176 + channel)).byteValue(), type.byteValue(), level.byteValue()};
 
         MidiTrackContentData = MidiUtil.mergeByte(MidiTrackContentData, controller);
@@ -58,7 +58,7 @@ public class MidiTrack {
         ByteCount += 4;
     }
 
-    public void setInstrument(Integer channel,Integer type) {
+    public void setInstrument(Integer channel, Integer type) {
         byte[] instrument = new byte[]{0x00, ((Integer) (192 + channel)).byteValue(), type.byteValue(),
                 0x00, ((Integer) (176 + channel)).byteValue(), 0x0A, 0x40};
 
@@ -82,7 +82,7 @@ public class MidiTrack {
 
             ByteCount += noteOff.length;
 
-            noteOff = new byte[]{((Integer) (128 + channel)).byteValue(),pitch.byteValue(), 0x00};
+            noteOff = new byte[]{((Integer) (128 + channel)).byteValue(), pitch.byteValue(), 0x00};
 
             MidiTrackContentData = MidiUtil.mergeByte(MidiTrackContentData, noteOff);
 
@@ -98,7 +98,7 @@ public class MidiTrack {
 
             ByteCount += noteOff.length;
 
-            noteOff = new byte[]{((Integer) (128 + channel)).byteValue(),0X00, 0x00};
+            noteOff = new byte[]{((Integer) (128 + channel)).byteValue(), 0X00, 0x00};
 
             MidiTrackContentData = MidiUtil.mergeByte(MidiTrackContentData, noteOff);
 

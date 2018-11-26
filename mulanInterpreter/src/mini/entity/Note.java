@@ -25,13 +25,13 @@ public class Note {
 //        public static final String B = "494";
     }
 
-    public class Tonality{
-        public static final String C="1";
-        public static final String D="1.1225";
-        public static final String E="1.2599";
-        public static final String F="1.3348";
-        public static final String G="1.4983";
-        public static final String A="1.6818";
-        public static final String B="1.8877";
+    public class Tonality {
+        public static final String C = "1";
+        public static final String D = "1.1225";
+        public static final String E = "1.2599";
+        public static final String F = "1.3348";
+        public static final String G = "1.4983";
+        public static final String A = "1.6818";
+        public static final String B = "1.8877";
     }
 }

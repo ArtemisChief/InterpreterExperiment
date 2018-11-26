@@ -34,8 +34,8 @@ public class LexicalAnalysis {
     private ArrayList<Token> tokens;
     private int count;
     private int skipLine;
-    private  ArrayList<Integer> errorLine;
-    private  int lastLine;
+    private ArrayList<Integer> errorLine;
+    private int lastLine;
 
     private int searchReserve(String s) {
         switch (s) {
@@ -86,7 +86,7 @@ public class LexicalAnalysis {
                 }
                 if (i + 1 < input.length() && input.charAt(i) == '/' && input.charAt(i + 1) == '*') {//若为多行注释“/* 。。。*/”则去除该内容
                     i += 2;
-                    if(i+1<input.length()) {
+                    if (i + 1 < input.length()) {
                         while (input.charAt(i) != '*' || input.charAt(i + 1) != '/') {
                             if (input.charAt(i) == '\n')
                                 temp += String.valueOf(input.charAt(i));
@@ -96,8 +96,7 @@ public class LexicalAnalysis {
                                 return null;
                             }
                         }
-                    }
-                    else{
+                    } else {
                         count = -1;
                         return null;
                     }
@@ -107,8 +106,7 @@ public class LexicalAnalysis {
             }
             if (i < input.length() && input.charAt(i) == '\t') {//若出现\t则替换成空格
                 temp += " ";
-            }
-            else if (i < input.length() && input.charAt(i) != '\r'){//若出现无用字符，则过滤；否则加载
+            } else if (i < input.length() && input.charAt(i) != '\r') {//若出现无用字符，则过滤；否则加载
                 temp += String.valueOf(input.charAt(i));
             }
         }
@@ -120,8 +118,8 @@ public class LexicalAnalysis {
             if (temp.charAt(i) == '=') {
                 output += String.valueOf(temp.charAt(i));
                 i++;
-                while (i + 1 < temp.length() && (temp.charAt(i) == ' '||temp.charAt(i) == '#'||temp.charAt(i) == 'b')){
-                    if(temp.charAt(i) == '#'||temp.charAt(i) == 'b')
+                while (i + 1 < temp.length() && (temp.charAt(i) == ' ' || temp.charAt(i) == '#' || temp.charAt(i) == 'b')) {
+                    if (temp.charAt(i) == '#' || temp.charAt(i) == 'b')
                         output += String.valueOf(temp.charAt(i));
                     i++;
                 }
@@ -150,7 +148,7 @@ public class LexicalAnalysis {
 
     //分析单个词 isIdentifier表示传入字符串当前是否可能为标识符
     public void Scanner(String inputWord, boolean isIdentifier) {
-        if(count==skipLine)
+        if (count == skipLine)
             return;
         //如果字符串为空，直接返回
         if (inputWord.length() == 0)
@@ -174,7 +172,7 @@ public class LexicalAnalysis {
                 if (inputWord.substring(0, 5).equals("play(")) {
                     //如果以play(但不以)结尾
                     if (!inputWord.endsWith(")") || inputWord.length() == 5) {
-                        skipLine=count;
+                        skipLine = count;
                         errorLine.add(skipLine);
                         tokens.add(new Token(-1, "播放语句格式有误", count));
                         return;
@@ -224,7 +222,7 @@ public class LexicalAnalysis {
                 if (inputWord.substring(0, 11).equals("instrument=")) {
                     //若instrument=后未加常数，报错
                     if (inputWord.length() == 11) {
-                        skipLine=count;
+                        skipLine = count;
                         errorLine.add(skipLine);
                         tokens.add(new Token(-1, "\"instrument=\"后缺少对应乐器编号", count));
                         return;
@@ -232,7 +230,7 @@ public class LexicalAnalysis {
                     //扫描instrument=后的字符，出现非数字则报错
                     for (int i = 11; i < inputWord.length(); i++) {
                         if (!isNumber(inputWord.charAt(i))) {
-                            skipLine=count;
+                            skipLine = count;
                             errorLine.add(skipLine);
                             tokens.add(new Token(-1, "乐器编号中出现非法字符：" + inputWord.charAt(i), count));
                             return;
@@ -242,10 +240,10 @@ public class LexicalAnalysis {
                     //将乐器标识及乐器编号加入tokens中
                     tokens.add(new Token(syn, "instrument=", count));
                     //乐器编号不在0-127间则报错
-                    if(Integer.valueOf(inputWord.substring(11))>127||Integer.valueOf(inputWord.substring(11))<0){
-                        skipLine=count;
+                    if (Integer.valueOf(inputWord.substring(11)) > 127 || Integer.valueOf(inputWord.substring(11)) < 0) {
+                        skipLine = count;
                         errorLine.add(skipLine);
-                        tokens.add(new Token(-1, inputWord.substring(11)+"不是合法的乐器编号（0-127）" , count));
+                        tokens.add(new Token(-1, inputWord.substring(11) + "不是合法的乐器编号（0-127）", count));
                         return;
                     }
                     tokens.add(new Token(96, inputWord.substring(11), count));
@@ -259,7 +257,7 @@ public class LexicalAnalysis {
                 if (inputWord.substring(0, 7).equals("volume=")) {
                     //若volume=后未加常数，报错
                     if (inputWord.length() == 7) {
-                        skipLine=count;
+                        skipLine = count;
                         errorLine.add(skipLine);
                         tokens.add(new Token(-1, "\"volume=\"后缺少对应音量大小", count));
                         return;
@@ -267,7 +265,7 @@ public class LexicalAnalysis {
                     //扫描volume=后的字符，出现非数字则报错
                     for (int i = 7; i < inputWord.length(); i++) {
                         if (!isNumber(inputWord.charAt(i))) {
-                            skipLine=count;
+                            skipLine = count;
                             errorLine.add(skipLine);
                             tokens.add(new Token(-1, "音量中出现非法字符：" + inputWord.charAt(i), count));
                             return;
@@ -277,10 +275,10 @@ public class LexicalAnalysis {
                     //将音量标识及音量大小加入tokens中
                     tokens.add(new Token(syn, "volume=", count));
                     //音量大小不在0-127间则报错
-                    if(Integer.valueOf(inputWord.substring(7))>127||Integer.valueOf(inputWord.substring(7))<0){
-                        skipLine=count;
+                    if (Integer.valueOf(inputWord.substring(7)) > 127 || Integer.valueOf(inputWord.substring(7)) < 0) {
+                        skipLine = count;
                         errorLine.add(skipLine);
-                        tokens.add(new Token(-1, inputWord.substring(7)+"不是合法的音量大小（0-127）" , count));
+                        tokens.add(new Token(-1, inputWord.substring(7) + "不是合法的音量大小（0-127）", count));
                         return;
                     }
                     tokens.add(new Token(96, inputWord.substring(7), count));
@@ -295,7 +293,7 @@ public class LexicalAnalysis {
                 if (inputWord.substring(0, 6).equals("speed=")) {
                     //若speed后未加速度常数，报错
                     if (inputWord.length() == 6) {
-                        skipLine=count;
+                        skipLine = count;
                         errorLine.add(skipLine);
                         tokens.add(new Token(-1, "\"speed=\"后缺少对应速度", count));
                         return;
@@ -303,7 +301,7 @@ public class LexicalAnalysis {
                     //扫描speed=后的字符，出现非数字则报错
                     for (int i = 6; i < inputWord.length(); i++) {
                         if (!isNumber(inputWord.charAt(i))) {
-                            skipLine=count;
+                            skipLine = count;
                             errorLine.add(skipLine);
                             tokens.add(new Token(-1, "速度中出现非法字符：" + inputWord.charAt(i), count));
                             return;
@@ -321,7 +319,7 @@ public class LexicalAnalysis {
             //如果出现非法字符，报错
             for (int i = 1; i < inputWord.length(); i++) {
                 if (!isLetter(inputWord.charAt(i)) && !isNumber(inputWord.charAt(i))) {
-                    skipLine=count;
+                    skipLine = count;
                     errorLine.add(skipLine);
                     tokens.add(new Token(-1, "标识符中出现非法字符：" + inputWord.charAt(i), count));
                     return;
@@ -331,7 +329,7 @@ public class LexicalAnalysis {
             syn = searchReserve(inputWord);
             //若字符串为单独一个play，报错
             if (syn == 6) {
-                skipLine=count;
+                skipLine = count;
                 errorLine.add(skipLine);
                 tokens.add(new Token(-1, "play播放操作格式不正确", count));
                 return;
@@ -346,7 +344,7 @@ public class LexicalAnalysis {
         else if (isNumber(inputWord.charAt(0))) {
             //当该处应为标识符时，以数字开头则报错
             if (isIdentifier) {
-                skipLine=count;
+                skipLine = count;
                 errorLine.add(skipLine);
                 tokens.add(new Token(-1, "标识符不能以数字开头", count));
                 return;
@@ -358,7 +356,7 @@ public class LexicalAnalysis {
                 tokens.add(new Token(syn, "1=", count));
                 if (inputWord.length() == 3) {
                     if (!isTonality(inputWord.charAt(2))) {
-                        skipLine=count;
+                        skipLine = count;
                         errorLine.add(skipLine);
                         tokens.add(new Token(-1, "调性格式错误！", count));
                         return;
@@ -369,7 +367,7 @@ public class LexicalAnalysis {
                 }
                 if (inputWord.length() == 4) {
                     if (inputWord.charAt(2) != 'b' && inputWord.charAt(2) != '#') {
-                        skipLine=count;
+                        skipLine = count;
                         errorLine.add(skipLine);
                         tokens.add(new Token(-1, "调性格式错误！", count));
                         return;
@@ -377,7 +375,7 @@ public class LexicalAnalysis {
                         Scanner(String.valueOf(inputWord.charAt(2)), false);
 
                     if (!isTonality(inputWord.charAt(3))) {
-                        skipLine=count;
+                        skipLine = count;
                         errorLine.add(skipLine);
                         tokens.add(new Token(-1, "调性格式错误！", count));
                         return;
@@ -386,7 +384,7 @@ public class LexicalAnalysis {
                         return;
                     }
                 } else {
-                    skipLine=count;
+                    skipLine = count;
                     errorLine.add(skipLine);
                     tokens.add(new Token(-1, "调性格式错误！", count));
                     return;
@@ -409,7 +407,7 @@ public class LexicalAnalysis {
                         for (int j = 0; j < i; j++) {
                             Scanner(String.valueOf(inputWord.charAt(j)), false);
                         }
-                        skipLine=count;
+                        skipLine = count;
                         errorLine.add(skipLine);
                         tokens.add(new Token(-1, "旋律中出现非法字符：" + inputWord.charAt(i), count));
                         return;
@@ -417,14 +415,14 @@ public class LexicalAnalysis {
                 }
                 //如果输入不属于01234567，则报错
                 if (!isNote(inputWord.charAt(0))) {
-                    skipLine=count;
+                    skipLine = count;
                     errorLine.add(skipLine);
                     tokens.add(new Token(-1, "旋律中出现非法字符：" + inputWord.charAt(0), count));
                     return;
                 }
                 //将最前面的单个旋律音符加入tokens中，然后去掉最前面的音符继续分析（已将旋律句子分为单个音符token）
-                if(inputWord.charAt(0)=='0')
-                    syn=94;
+                if (inputWord.charAt(0) == '0')
+                    syn = 94;
                 else
                     syn = 98;
                 tokens.add(new Token(syn, String.valueOf(inputWord.charAt(0)), count));
@@ -471,14 +469,14 @@ public class LexicalAnalysis {
             if (inputWord.charAt(0) == '<' && inputWord.charAt(inputWord.length() - 1) == '>') {
                 //若输入仅为<>，报错
                 if (inputWord.length() == 2) {
-                    skipLine=count;
+                    skipLine = count;
                     errorLine.add(skipLine);
                     tokens.add(new Token(-1, "<>间缺少时长", count));
                     return;
                 }
                 //若<后以附点开头，报错
                 if (inputWord.charAt(1) == '*') {
-                    skipLine=count;
+                    skipLine = count;
                     errorLine.add(skipLine);
                     tokens.add(new Token(-1, "附点*必须跟在其他音符时长之后", count));
                     return;
@@ -498,19 +496,19 @@ public class LexicalAnalysis {
                     if (!isTime(inputWord.charAt(i))) {
                         if (inputWord.charAt(i) == ' ')
                             continue;
-                        skipLine=count;
+                        skipLine = count;
                         errorLine.add(skipLine);
                         tokens.add(new Token(-1, "时长中出现非法字符：" + inputWord.charAt(i), count));
                         return;
                     }
-                    if(inputWord.charAt(i)=='*')
+                    if (inputWord.charAt(i) == '*')
                         tokens.add(new Token(15, String.valueOf(inputWord.charAt(i)), count));
                     else
                         tokens.add(new Token(99, String.valueOf(inputWord.charAt(i)), count));
                 }
                 tokens.add(new Token(14, ">", count));
             } else {
-                skipLine=count;
+                skipLine = count;
                 errorLine.add(skipLine);
                 tokens.add(new Token(-1, "时长句子格式错误", count));
                 return;
@@ -529,7 +527,7 @@ public class LexicalAnalysis {
             return;
             //其他非法字符开头则报错
         else {
-            skipLine=count;
+            skipLine = count;
             errorLine.add(skipLine);
             tokens.add(new Token(-1, "出现非法字符：" + inputWord.charAt(0), count));
         }
@@ -537,10 +535,10 @@ public class LexicalAnalysis {
 
 
     public ArrayList<Token> Lex(String input) {
-        skipLine=-1;
-        count=1;
+        skipLine = -1;
+        count = 1;
         tokens = new ArrayList();
-        errorLine=new ArrayList<>();
+        errorLine = new ArrayList<>();
         //初始化行号
         count = 1;
         //预处理注释、空格
@@ -557,12 +555,12 @@ public class LexicalAnalysis {
         int start = 0;
         for (int i = 0; i < input.length(); i++) {
             //start==i且当前字符为空格时继续以略过连续空格
-            if (i<input.length()&&input.charAt(i) == ' ' && start == i) {
-                while (i<input.length()&&input.charAt(i) == ' ' && start == i){
+            if (i < input.length() && input.charAt(i) == ' ' && start == i) {
+                while (i < input.length() && input.charAt(i) == ' ' && start == i) {
                     i++;
                     start = i;
                 }
-                if(i==input.length())
+                if (i == input.length())
                     continue;
             }
             //出现空格时，将start到空格处的字符串分析
@@ -592,18 +590,18 @@ public class LexicalAnalysis {
                 String temp = input.substring(start, i + 1);
                 Scanner(temp, isIdentifier);
                 start = i;
-                lastLine=count;
+                lastLine = count;
             }
         }
 
         return tokens;
     }
 
-    public String getErrorInfo(ArrayList<Token> tokens){
-        String errorInfo="";
-        for(Token temp: tokens){
-            if(temp.getSyn()==-1)
-                errorInfo+="Line"+temp.getCount()+"\tError:  "+temp.getContent()+"\n";
+    public String getErrorInfo(ArrayList<Token> tokens) {
+        String errorInfo = "";
+        for (Token temp : tokens) {
+            if (temp.getSyn() == -1)
+                errorInfo += "Line" + temp.getCount() + "\tError:  " + temp.getContent() + "\n";
         }
         return errorInfo;
     }
@@ -623,4 +621,5 @@ public class LexicalAnalysis {
     public int getLastLine() {
         return lastLine;
     }
+
 }

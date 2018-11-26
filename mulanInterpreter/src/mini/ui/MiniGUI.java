@@ -190,6 +190,8 @@ public class MiniGUI extends JFrame {
             lineStr += i + "\n";
         lineTextArea.setText(lineStr);
         scrollPane1.getVerticalScrollBar().addAdjustmentListener(e -> scrollPane3.getVerticalScrollBar().setValue(scrollPane1.getVerticalScrollBar().getValue()));
+
+        TipsMenuItemActionPerformed(null);
     }
 
     //内容变动调用的函数
@@ -341,7 +343,19 @@ public class MiniGUI extends JFrame {
         }
     }
 
-    //新建文件
+    //新建空文件
+    private void newEmptyMenuItemActionPerformed(ActionEvent e) {
+        if (showSaveComfirm("Exist unsaved content, save before new file?")) {
+            hasSaved = false;
+
+            inputTextPane.setText("");
+            outputTextPane.setText("");
+            hasChanged = false;
+            this.setTitle("Music Interpreter - New Empty File");
+        }
+    }
+
+    //新建模板文件
     private void newMenuItemActionPerformed(ActionEvent e) {
         if (showSaveComfirm("Exist unsaved content, save before new file?")) {
             hasSaved = false;
@@ -394,7 +408,7 @@ public class MiniGUI extends JFrame {
 
             outputTextPane.setText("");
             hasChanged = false;
-            this.setTitle("Music Interpreter - New File");
+            this.setTitle("Music Interpreter - New Template File");
         }
     }
 
@@ -1035,6 +1049,7 @@ public class MiniGUI extends JFrame {
         String str = "============================================\n" +
                 "                                                  Tips\n" +
                 "-------------------------------------------------------------------------\n" +
+                "* 你可以在“Help-Tips”中随时打开Tips\n" +
                 "\n" +
                 "1. 构成乐谱的成分：\n" +
                 "\t1）paragraph Name  声部声明\n" +
@@ -1049,7 +1064,7 @@ public class MiniGUI extends JFrame {
                 "\n" +
                 "2. 乐谱成分的解释：\n" +
                 "\t1）声部声明：标识符须以字母开头，后跟字母或数字\n" +
-                "\t2）乐器音色：见 帮助-乐器 中具体说明\n" +
+                "\t2）乐器音色：见“Help-Instrument”中具体说明\n" +
                 "\t3）声部音量：最小值0（禁音）最大值127（最大音量）\n" +
                 "\t4）声部速度：每分钟四分音符个数，即BPM\n" +
                 "\t5）声部调性：CDEFGAB加上b（降号）与#（升号）\n" +
@@ -1061,7 +1076,8 @@ public class MiniGUI extends JFrame {
                 "3. 播放乐谱的方法：\n" +
                 "\t1）通过“play( )”进行播放，( )”内为声部的标识符\n" +
                 "\t2）“&”左右的声部将同时播放，\n" +
-                "\t3）“ , ”左右的声部将先后播放";
+                "\t3）“ , ”左右的声部将先后播放\n" +
+                "============================================";
         outputTextPane.setText(str);
         outputTextPane.setCaretPosition(0);
     }
@@ -1161,6 +1177,7 @@ public class MiniGUI extends JFrame {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         menuBar1 = new JMenuBar();
         fileMenu = new JMenu();
+        newEmptyMenuItem = new JMenuItem();
         newMenuItem = new JMenuItem();
         openMenuItem = new JMenuItem();
         saveMenuItem = new JMenuItem();
@@ -1206,8 +1223,13 @@ public class MiniGUI extends JFrame {
             {
                 fileMenu.setText("File");
 
+                //---- newEmptyMenuItem ----
+                newEmptyMenuItem.setText("New - Empty");
+                newEmptyMenuItem.addActionListener(e -> newEmptyMenuItemActionPerformed(e));
+                fileMenu.add(newEmptyMenuItem);
+
                 //---- newMenuItem ----
-                newMenuItem.setText("New");
+                newMenuItem.setText("New - Template");
                 newMenuItem.addActionListener(e -> newMenuItemActionPerformed(e));
                 fileMenu.add(newMenuItem);
 
@@ -1334,13 +1356,13 @@ public class MiniGUI extends JFrame {
         //======== panel1 ========
         {
             panel1.setLayout(new MigLayout(
-                    "insets 0,hidemode 3",
-                    // columns
-                    "[fill]0" +
-                            "[fill]0" +
-                            "[fill]",
-                    // rows
-                    "[fill]"));
+                "insets 0,hidemode 3",
+                // columns
+                "[fill]0" +
+                "[fill]0" +
+                "[fill]",
+                // rows
+                "[fill]"));
 
             //======== scrollPane3 ========
             {
@@ -1365,7 +1387,7 @@ public class MiniGUI extends JFrame {
                 inputTextPane.setBorder(null);
                 scrollPane1.setViewportView(inputTextPane);
             }
-            panel1.add(scrollPane1, "cell 1 0,width 400:400:400,height 600:600:600");
+            panel1.add(scrollPane1, "cell 1 0,width 400:400:400,height 640:640:640");
 
             //======== scrollPane2 ========
             {
@@ -1376,7 +1398,7 @@ public class MiniGUI extends JFrame {
                 outputTextPane.setBorder(null);
                 scrollPane2.setViewportView(outputTextPane);
             }
-            panel1.add(scrollPane2, "cell 2 0,width 460:460:460,height 600:600:600");
+            panel1.add(scrollPane2, "cell 2 0,width 460:460:460,height 640:640:640");
         }
         contentPane.add(panel1);
         pack();
@@ -1387,6 +1409,7 @@ public class MiniGUI extends JFrame {
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
     private JMenuBar menuBar1;
     private JMenu fileMenu;
+    private JMenuItem newEmptyMenuItem;
     private JMenuItem newMenuItem;
     private JMenuItem openMenuItem;
     private JMenuItem saveMenuItem;

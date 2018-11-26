@@ -257,7 +257,7 @@ public class SyntacticAnalysis {
         }
         Node tone = new Node("tonality");
         Node terminalNode;
-        String tonality = "";
+        //String tonality = "";
         //'1='
 //        terminalNode = new Node("tone mark","1=",tokens.get(index).getCount());
 //        tone.addChild(terminalNode);
@@ -265,9 +265,9 @@ public class SyntacticAnalysis {
 
         //#|b
         if (tokens.get(index).getSyn() == 18 | tokens.get(index).getSyn() == 19) {
-            tonality += tokens.get(index).getContent();
-//            terminalNode = new Node("lift mark",tokens.get(index).getContent(),tokens.get(index).getCount());
-//            tone.addChild(terminalNode);
+            //tonality += tokens.get(index).getContent();
+            terminalNode = new Node("lift mark",tokens.get(index).getContent(),tokens.get(index).getCount());
+            tone.addChild(terminalNode);
             index++;
         }
 
@@ -278,11 +278,11 @@ public class SyntacticAnalysis {
             errorList.add(tokens.get(index - 1).getCount());
             return new Node("Error", "Line: " + tokens.get(index - 1).getCount() +"  调号不正确");
         }
-        tonality += tokens.get(index).getContent();
-        terminalNode = new Node("tone value", tonality,tokens.get(index).getCount());
+        //tonality += tokens.get(index).getContent();
+        //terminalNode = new Node("tone value", tonality,tokens.get(index).getCount());
+        //tone.addChild(terminalNode);
+        terminalNode = new Node("tone value",tokens.get(index).getContent());
         tone.addChild(terminalNode);
-//        terminalNode = new Node("tone value",tokens.get(index).getContent());
-//        tone.addChild(terminalNode);
         index++;
 
         return tone;

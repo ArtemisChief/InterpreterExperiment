@@ -106,7 +106,7 @@ public class SyntacticAnalysis {
                     break;
                 case 21:
                     //volume
-                    if(hadTone){
+                    if(hadVolume){
                         nextLine();
                         errorList.add(tokens.get(index-1).getCount());
                         paragraph.addChild(new Node("Error", "Line: " + tokens.get(index - 1).getCount() +"  重复定义强度"));

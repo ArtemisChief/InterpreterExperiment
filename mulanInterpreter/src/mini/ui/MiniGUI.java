@@ -421,12 +421,10 @@ public class MiniGUI extends JFrame {
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Music Interpreter File", "mui");
         fileChooser.setFileFilter(filter);
-        fileChooser.showOpenDialog(this);
-        if (fileChooser.getSelectedFile() == null)
+        int value = fileChooser.showSaveDialog(this);
+        if (value == JFileChooser.CANCEL_OPTION)
             return;
         file = fileChooser.getSelectedFile();
-        if (file == null)
-            return;
         try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
             StringBuilder stringBuilder = new StringBuilder();
@@ -475,8 +473,8 @@ public class MiniGUI extends JFrame {
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Music Interpreter File", "mui");
         fileChooser.setFileFilter(filter);
-        fileChooser.showSaveDialog(this);
-        if (fileChooser.getSelectedFile() == null)
+        int value = fileChooser.showSaveDialog(this);
+        if (value == JFileChooser.CANCEL_OPTION)
             return;
         String fileStr = fileChooser.getSelectedFile().getAbsoluteFile().toString();
         if (fileStr.lastIndexOf(".mui") == -1)
@@ -717,8 +715,8 @@ public class MiniGUI extends JFrame {
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Midi File", "mid");
         fileChooser.setFileFilter(filter);
-        fileChooser.showSaveDialog(this);
-        if (fileChooser.getSelectedFile() == null)
+        int value = fileChooser.showSaveDialog(this);
+        if (value == JFileChooser.CANCEL_OPTION)
             return;
         String fileStr = fileChooser.getSelectedFile().getAbsoluteFile().toString();
         if (fileStr.lastIndexOf(".mid") == -1)
@@ -763,8 +761,8 @@ public class MiniGUI extends JFrame {
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Arduino File", "ino");
         fileChooser.setFileFilter(filter);
-        fileChooser.showSaveDialog(this);
-        if (fileChooser.getSelectedFile() == null)
+        int value = fileChooser.showSaveDialog(this);
+        if (value == JFileChooser.CANCEL_OPTION)
             return;
         String fileStr = fileChooser.getSelectedFile().getAbsoluteFile().toString();
         if (fileStr.lastIndexOf(".ino") == -1)
@@ -960,8 +958,8 @@ public class MiniGUI extends JFrame {
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             FileNameExtensionFilter filter = new FileNameExtensionFilter("Midi File", "mid");
             fileChooser.setFileFilter(filter);
-            fileChooser.showSaveDialog(this);
-            if (fileChooser.getSelectedFile() == null)
+            int value = fileChooser.showSaveDialog(this);
+            if (value == JFileChooser.CANCEL_OPTION)
                 return;
             String fileStr = fileChooser.getSelectedFile().getAbsoluteFile().toString();
             if (fileStr.lastIndexOf(".mid") == -1)

@@ -311,6 +311,8 @@ public class SyntacticAnalysis {
         Node melody = new Node("melody");
 
         int group = 0;
+        int updown = 0;
+
         while (tokens.get(index).getSyn() != 13) {
             //'(',低八度左括号
             if (tokens.get(index).getSyn() == 7) {
@@ -395,6 +397,15 @@ public class SyntacticAnalysis {
             return new Node("Error", "Line: " + (tokens.get(index - 1).getCount()) + " 八度转换错误");
         }
 
+
+        if(tokens.get(index-1).getSyn()==18|tokens.get(index-1).getSyn()==19){
+            sentenceError = true;
+            //isError = true;
+            errorList.add(tokens.get(index - 1).getCount());
+            nextLine();
+            return new Node("Error", "Line: " + (tokens.get(index - 1).getCount()) + " 升降号后面没有音符");
+        }
+
         return melody;
     }
 
@@ -461,8 +472,28 @@ public class SyntacticAnalysis {
             return notes;
         }
 
-        //#|b
-        if (tokens.get(index).getSyn() == 18 | tokens.get(index).getSyn() == 19) {
+        //#
+        if (tokens.get(index).getSyn() == 18) {
+            if(tokens.get(index-1).getSyn() == 19){
+                nextLine();
+                sentenceError = true;
+                errorList.add(tokens.get(index - 1).getCount());
+                return new Node("Error", "Line: " + tokens.get(index - 1).getCount() + "  降号后面紧跟升号");
+            }
+            notes = new Node("lift mark", tokens.get(index).getContent(), tokens.get(index).getCount());
+            index++;
+
+            return notes;
+        }
+
+        //b
+        if (tokens.get(index).getSyn() == 19) {
+            if(tokens.get(index-1).getSyn() == 18){
+                nextLine();
+                sentenceError = true;
+                errorList.add(tokens.get(index - 1).getCount());
+                return new Node("Error", "Line: " + tokens.get(index - 1).getCount() + "  升号后面紧跟降号");
+            }
             notes = new Node("lift mark", tokens.get(index).getContent(), tokens.get(index).getCount());
             index++;
 

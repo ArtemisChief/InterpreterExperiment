@@ -21,9 +21,17 @@ public class SyntacticAnalysis {
         AbstractSyntaxTree = new Node("root");
 
         boolean hadPlay = false;
-        for(Token tk:tokens){
-            if(tk.getSyn()==6){
+        for(index = 0;index<tokens.size();index++){
+            if(tokens.get(index).getSyn()==6){
                 hadPlay = true;
+                //break;
+            }
+            if(hadPlay&&tokens.get(index).getSyn()==8){
+                if(index+1<tokens.size()){
+                    errorList.add(tokens.get(index+1).getCount());
+                    AbstractSyntaxTree.addChild(new Node("Error","Line:" + tokens.get(index+1).getCount() + "  乐谱请写再play语句之前！"));
+                    return  AbstractSyntaxTree;
+                }
                 break;
             }
         }
@@ -32,6 +40,8 @@ public class SyntacticAnalysis {
             AbstractSyntaxTree.addChild(new  Node("Error","缺少play函数！"));
             return  AbstractSyntaxTree;
         }
+
+        index = 0;
 
         while (index<tokens.size() && tokens.get(index).getSyn() != 6) {
             Node paragraph = parseParagraph();
@@ -44,10 +54,10 @@ public class SyntacticAnalysis {
             AbstractSyntaxTree.addChild(execution);
         }
 
-        if (index<tokens.size()) {
-            errorList.add(tokens.get(index).getCount());
-            AbstractSyntaxTree.addChild(new Node("Error","Line:" + tokens.get(index).getCount() + "  乐谱请写再play语句之前！"));
-        }
+//        if (index<tokens.size()) {
+//            errorList.add(tokens.get(index).getCount());
+//            AbstractSyntaxTree.addChild(new Node("Error","Line:" + tokens.get(index).getCount() + "  乐谱请写再play语句之前！"));
+//        }
 
         return AbstractSyntaxTree;
     }

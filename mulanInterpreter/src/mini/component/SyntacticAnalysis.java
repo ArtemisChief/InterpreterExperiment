@@ -20,7 +20,7 @@ public class SyntacticAnalysis {
         this.tokens = tokens;
         AbstractSyntaxTree = new Node("root");
 
-        while (tokens.get(index) != null && tokens.get(index).getSyn() == 2) {
+        while (tokens.get(index) != null && tokens.get(index).getSyn() != 6) {
             Node paragraph = parseParagraph();
             AbstractSyntaxTree.addChild(paragraph);
         }
@@ -31,6 +31,11 @@ public class SyntacticAnalysis {
             AbstractSyntaxTree.addChild(execution);
         }
 
+        if (tokens.get(index) != null) {
+            errorList.add(tokens.get(index).getCount());
+            AbstractSyntaxTree.addChild(new Node("Error","Line:" + tokens.get(index).getCount() + "  乐谱请写再play语句之前！"));
+        }
+
         return AbstractSyntaxTree;
     }
 
@@ -39,8 +44,15 @@ public class SyntacticAnalysis {
         Node paragraph = new Node("score");
         Node terminalNode;
 
-        //'paragraph',因为遇到'paragraph'才进入此函数，所以第一个不需要判断
+        //statement
         Node statement = new Node("statement");
+
+        //paragraph
+        if(tokens.get(index).getSyn()!=2){
+            nextLine();
+            errorList.add(tokens.get(index - 1).getCount());
+            return new Node("Error", "Line: " + tokens.get(index - 1).getCount() + "  未知符号，请检查是否缺少paragraph声明");
+        }
         index++;
 
 
@@ -58,9 +70,10 @@ public class SyntacticAnalysis {
         }
         paragraph.addChild(statement);
 
+
         int tempSyn = tokens.get(index).getSyn();
         boolean hadSpeed = false, hadTone = false, hadInstrument = false, hadVolume = false;
-        while (tempSyn == 3 | tempSyn == 4 | tempSyn == 20 | tempSyn == 21) {
+        while (tempSyn != 18 && tempSyn != 19 && tempSyn != 7 && tempSyn != 9 && tempSyn != 98) {
             switch (tempSyn) {
                 case 3:
                     //speed
@@ -111,6 +124,9 @@ public class SyntacticAnalysis {
                     hadVolume = true;
                     break;
                 default:
+                    nextLine();
+                    errorList.add(tokens.get(index-1).getCount());
+                    paragraph.addChild(new Node("Error","Line: " + tokens.get(index - 1).getCount() + "  未知标识符"));
                     break;
             }
 

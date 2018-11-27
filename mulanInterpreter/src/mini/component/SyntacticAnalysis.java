@@ -20,18 +20,20 @@ public class SyntacticAnalysis {
         this.tokens = tokens;
         AbstractSyntaxTree = new Node("root");
 
-        while (tokens.get(index) != null && tokens.get(index).getSyn() != 6) {
+
+
+        while (index<tokens.size() && tokens.get(index).getSyn() != 6) {
             Node paragraph = parseParagraph();
             AbstractSyntaxTree.addChild(paragraph);
         }
 
 
-        if (tokens.get(index) != null) {
+        if (index<tokens.size()) {
             Node execution = parseExecution();
             AbstractSyntaxTree.addChild(execution);
         }
 
-        if (tokens.get(index) != null) {
+        if (index<tokens.size()) {
             errorList.add(tokens.get(index).getCount());
             AbstractSyntaxTree.addChild(new Node("Error","Line:" + tokens.get(index).getCount() + "  乐谱请写再play语句之前！"));
         }

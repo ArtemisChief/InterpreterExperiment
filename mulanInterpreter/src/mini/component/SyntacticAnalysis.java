@@ -448,6 +448,12 @@ public class SyntacticAnalysis {
     public Node parseNotes() {
         Node notes;
 
+        if (tokens.get(index).getSyn() == 2|tokens.get(index).getSyn() == 5|tokens.get(index).getSyn() == 6) {
+            sentenceError = true;
+            errorList.add(tokens.get(index - 1).getCount());
+            return new Node("Error", "Line: " + tokens.get(index - 1).getCount() + "  缺少节奏");
+        }
+
         //'0',休止符
         if (tokens.get(index).getSyn() == 94) {
             notes = new Node("Notes", "0", tokens.get(index).getCount());

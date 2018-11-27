@@ -23,9 +23,6 @@ public class Token {
             case -1:
                 type = "错误";
                 break;
-            case 1:
-                type = "乐谱";
-                break;
             case 2:
                 type = "段落符号";
                 break;

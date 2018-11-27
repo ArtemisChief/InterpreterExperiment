@@ -20,7 +20,18 @@ public class SyntacticAnalysis {
         this.tokens = tokens;
         AbstractSyntaxTree = new Node("root");
 
-
+        boolean hadPlay = false;
+        for(Token tk:tokens){
+            if(tk.getSyn()==6){
+                hadPlay = true;
+                break;
+            }
+        }
+        if(!hadPlay){
+            errorList.add(0);
+            AbstractSyntaxTree.addChild(new  Node("Error","缺少play函数！"));
+            return  AbstractSyntaxTree;
+        }
 
         while (index<tokens.size() && tokens.get(index).getSyn() != 6) {
             Node paragraph = parseParagraph();
@@ -656,6 +667,11 @@ public class SyntacticAnalysis {
     //换到下一行
     public void nextLine() {
         while (index < tokens.size() - 1 && tokens.get(index).getCount() == tokens.get(++index).getCount()) {
+        }
+        if(index ==  tokens.size() -1){
+            while (tokens.get(index).getCount() == tokens.get(--index).getCount()) {
+            }
+            index++;
         }
     }
 

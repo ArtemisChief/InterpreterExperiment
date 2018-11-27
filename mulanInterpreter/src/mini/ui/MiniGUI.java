@@ -993,8 +993,6 @@ public class MiniGUI extends JFrame {
         if (code == null)
             return;
 
-        outputTextPane.setText(code);
-        outputTextPane.setCaretPosition(0);
         if (tempMidiFile == null) {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -1024,7 +1022,7 @@ public class MiniGUI extends JFrame {
     //关于
     private void aboutMenuItemActionPerformed(ActionEvent e) {
         String str = "-----------------------------------------------------------\n" +
-                "Music Language Interpreter\nMade By Chief, yzdxm and AsrielMao\nVersion: 1.1.7\n\n" +
+                "Music Language Interpreter\nMade By Chief, yzdxm and AsrielMao\nVersion: 1.2.5\n\n" +
                 "A light weight interpreter for converting digit score       \n" +
                 "to Arduino code or Midi file\n" +
                 "-----------------------------------------------------------";

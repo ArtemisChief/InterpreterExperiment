@@ -82,7 +82,7 @@ public class SyntacticAnalysis {
         //identifier(段落名)
         if (tokens.get(index).getSyn() != 100) {
             int syn = tokens.get(index).getSyn();
-            if (syn != 3 && syn != 4 && syn != 7 && syn != 9 && syn != 18&& syn != 19&& syn != 20&& syn != 21&& syn != 98)
+            if (syn != 3 && syn != 4 && syn != 7 && syn != 9 && syn != 18&& syn != 19&& syn != 20&& syn != 21&& syn != 94&& syn != 98)
                 nextLine();
             statement.addChild(new Node("Error", "Line: " + tokens.get(index - 1).getCount() + "  缺少标识符"));
             errorList.add(tokens.get(index - 1).getCount());
@@ -96,7 +96,7 @@ public class SyntacticAnalysis {
 
         int tempSyn = tokens.get(index).getSyn();
         boolean hadSpeed = false, hadTone = false, hadInstrument = false, hadVolume = false;
-        while (tempSyn != 18 && tempSyn != 19 && tempSyn != 7 && tempSyn != 9 && tempSyn != 98) {
+        while (tempSyn != 18 && tempSyn != 19 && tempSyn != 7 && tempSyn != 9 && tempSyn != 94 && tempSyn != 98) {
             switch (tempSyn) {
                 case 3:
                     //speed

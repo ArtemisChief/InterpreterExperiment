@@ -241,6 +241,14 @@ public class SemanticAnalysisMidi {
                                 lineRhythmCount++;
                                 durationList.add(45);
                                 break;
+                            case "w":
+                                lineRhythmCount++;
+                                durationList.add(15);
+                                break;
+                            case "w*":
+                                errorInfo.append("Line: " + line + "\t不支持32分附点音符，即w*\n");
+                                errorLines.add(line);
+                                break;
                         }
                     }
 

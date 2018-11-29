@@ -88,7 +88,7 @@ public class MiniGUI extends JFrame {
         inputStyledDocument = inputTextPane.getStyledDocument();
         statementPattern = Pattern.compile("\\bparagraph\\b|\\bend\\b|\\bplay");
         keywordPattern = Pattern.compile("\\bspeed=|\\binstrument=|\\bvolume=|\\b1=");
-        parenPattern = Pattern.compile("<(\\s*\\{?\\s*(1|2|4|8|g|\\*)+\\s*\\}?\\s*)+>");
+        parenPattern = Pattern.compile("<(\\s*\\{?\\s*(1|2|4|8|g|w|\\*)+\\s*\\}?\\s*)+>");
 
         //关闭窗口提示
         addWindowListener(new WindowAdapter() {

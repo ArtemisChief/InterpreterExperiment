@@ -67,7 +67,7 @@ public class LexicalAnalysis {
     }
 
     private boolean isTime(char ch) {
-        return ch == '1' || ch == '2' || ch == '4' || ch == '8' || ch == 'g' || ch == '*';
+        return ch == '1' || ch == '2' || ch == '4' || ch == '8' || ch == 'g' || ch == '*' || ch=='w';
     }
 
 

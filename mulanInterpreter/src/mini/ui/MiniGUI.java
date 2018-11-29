@@ -463,7 +463,7 @@ public class MiniGUI extends JFrame {
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Music Interpreter File", "mui");
         fileChooser.setFileFilter(filter);
-        int value = fileChooser.showSaveDialog(this);
+        int value = fileChooser.showOpenDialog(this);
         if (value == JFileChooser.CANCEL_OPTION)
             return;
         file = fileChooser.getSelectedFile();

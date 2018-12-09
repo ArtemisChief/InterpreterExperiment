@@ -1022,7 +1022,7 @@ public class MiniGUI extends JFrame {
     //关于
     private void aboutMenuItemActionPerformed(ActionEvent e) {
         String str = "-----------------------------------------------------------\n" +
-                "Music Language Interpreter\nMade By Chief, yzdxm and AsrielMao\nVersion: 1.2.5\n\n" +
+                "Music Language Interpreter\nMade By Chief, yyzih and AsrielMao\nVersion: 1.2.5\n\n" +
                 "A light weight interpreter for converting digit score       \n" +
                 "to Arduino code or Midi file\n" +
                 "-----------------------------------------------------------";

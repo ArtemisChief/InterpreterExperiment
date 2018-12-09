@@ -494,8 +494,9 @@ public class CalculatorGUI extends JFrame {
             }
             inputString.append(result);
             resultTxtField.setText(inputString.toString());
-            expressionString = new StringBuilder();
+
             expressionTxtField.setText(expressionString.toString());
+            expressionString = new StringBuilder();
         }
     }
 

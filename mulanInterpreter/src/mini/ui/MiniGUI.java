@@ -68,7 +68,6 @@ public class MiniGUI extends JFrame {
 
     public MiniGUI() {
         initComponents();
-        setResizable(false);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         //样式
@@ -1239,6 +1238,7 @@ public class MiniGUI extends JFrame {
         aboutMenuItem = new JMenuItem();
         hSpacer1 = new JPanel(null);
         progressBar = new JProgressBar();
+        hSpacer2 = new JPanel(null);
         panel1 = new JPanel();
         scrollPane3 = new JScrollPane();
         lineTextArea = new JTextArea();
@@ -1250,7 +1250,7 @@ public class MiniGUI extends JFrame {
         //======== this ========
         setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 12));
         setTitle("Music Interpreter - New File");
-        setResizable(false);
+        setMinimumSize(new Dimension(916, 709));
         Container contentPane = getContentPane();
         contentPane.setLayout(new GridLayout());
 
@@ -1378,7 +1378,9 @@ public class MiniGUI extends JFrame {
             menuBar1.add(helpMenu);
 
             //---- hSpacer1 ----
-            hSpacer1.setMaximumSize(new Dimension(430, 32767));
+            hSpacer1.setMaximumSize(new Dimension(1920, 32767));
+            hSpacer1.setMinimumSize(new Dimension(430, 12));
+            hSpacer1.setPreferredSize(new Dimension(430, 20));
             menuBar1.add(hSpacer1);
 
             //---- progressBar ----
@@ -1388,6 +1390,12 @@ public class MiniGUI extends JFrame {
             progressBar.setFocusable(false);
             progressBar.setRequestFocusEnabled(false);
             menuBar1.add(progressBar);
+
+            //---- hSpacer2 ----
+            hSpacer2.setMaximumSize(new Dimension(20, 32767));
+            hSpacer2.setMinimumSize(new Dimension(20, 12));
+            hSpacer2.setPreferredSize(new Dimension(20, 10));
+            menuBar1.add(hSpacer2);
         }
         setJMenuBar(menuBar1);
 
@@ -1397,8 +1405,8 @@ public class MiniGUI extends JFrame {
                 "insets 0,hidemode 3",
                 // columns
                 "[fill]0" +
-                "[fill]0" +
-                "[fill]",
+                "[400:400:875,grow,fill]0" +
+                "[460:460:1005,grow,fill]",
                 // rows
                 "[fill]"));
 
@@ -1425,7 +1433,7 @@ public class MiniGUI extends JFrame {
                 inputTextPane.setBorder(null);
                 scrollPane1.setViewportView(inputTextPane);
             }
-            panel1.add(scrollPane1, "cell 1 0,width 400:400:400,height 640:640:640");
+            panel1.add(scrollPane1, "cell 1 0,width 400:400:875,height 640:640:1080");
 
             //======== scrollPane2 ========
             {
@@ -1439,7 +1447,7 @@ public class MiniGUI extends JFrame {
                 outputTextPane.setEditable(false);
                 scrollPane2.setViewportView(outputTextPane);
             }
-            panel1.add(scrollPane2, "cell 2 0,width 460:460:460,height 640:640:640");
+            panel1.add(scrollPane2, "cell 2 0,width 460:460:1005,height 640:640:1080");
         }
         contentPane.add(panel1);
         pack();
@@ -1474,6 +1482,7 @@ public class MiniGUI extends JFrame {
     private JMenuItem aboutMenuItem;
     private JPanel hSpacer1;
     private JProgressBar progressBar;
+    private JPanel hSpacer2;
     private JPanel panel1;
     private JScrollPane scrollPane3;
     private JTextArea lineTextArea;

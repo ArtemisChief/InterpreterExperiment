@@ -7,10 +7,10 @@ new FormModel {
 			name: "this"
 			"font": new java.awt.Font( "Microsoft YaHei UI", 0, 12 )
 			"title": "Music Interpreter - New File"
-			"resizable": false
+			"minimumSize": new java.awt.Dimension( 916, 709 )
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 				"$layoutConstraints": "insets 0,hidemode 3"
-				"$columnConstraints": "[fill]0[fill]0[fill]"
+				"$columnConstraints": "[fill]0[400:400:875,grow,fill]0[460:460:1005,grow,fill]"
 				"$rowConstraints": "[fill]"
 			} ) {
 				name: "panel1"
@@ -37,7 +37,7 @@ new FormModel {
 						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
 					} )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 1 0,width 400:400:400,height 640:640:640"
+					"value": "cell 1 0,width 400:400:875,height 640:640:1080"
 				} )
 				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 					name: "scrollPane2"
@@ -51,7 +51,7 @@ new FormModel {
 						"editable": false
 					} )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 2 0,width 460:460:460,height 640:640:640"
+					"value": "cell 2 0,width 460:460:1005,height 640:640:1080"
 				} )
 			} )
 			menuBar: new FormContainer( "javax.swing.JMenuBar", new FormLayoutManager( class javax.swing.JMenuBar ) ) {
@@ -168,7 +168,9 @@ new FormModel {
 				} )
 				add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
 					name: "hSpacer1"
-					"maximumSize": new java.awt.Dimension( 430, 32767 )
+					"maximumSize": new java.awt.Dimension( 1920, 32767 )
+					"minimumSize": new java.awt.Dimension( 430, 12 )
+					"preferredSize": new java.awt.Dimension( 430, 20 )
 				} )
 				add( new FormComponent( "javax.swing.JProgressBar" ) {
 					name: "progressBar"
@@ -177,6 +179,12 @@ new FormModel {
 					"preferredSize": new java.awt.Dimension( 150, 20 )
 					"focusable": false
 					"requestFocusEnabled": false
+				} )
+				add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+					name: "hSpacer2"
+					"maximumSize": new java.awt.Dimension( 20, 32767 )
+					"minimumSize": new java.awt.Dimension( 20, 12 )
+					"preferredSize": new java.awt.Dimension( 20, 10 )
 				} )
 			}
 		}, new FormLayoutConstraints( null ) {

@@ -96,7 +96,13 @@ public class SyntacticAnalysis {
 
         int tempSyn = tokens.get(index).getSyn();
         boolean hadSpeed = false, hadTone = false, hadInstrument = false, hadVolume = false;
-        while (tempSyn != 18 && tempSyn != 19 && tempSyn != 7 && tempSyn != 9 && tempSyn != 94 && tempSyn != 98) {
+        while (index<tokens.size()&&(tempSyn != 18 && tempSyn != 19 && tempSyn != 7 && tempSyn != 9 && tempSyn != 94 && tempSyn != 98 && tempSyn != 5)) {
+            //提前遇到paragraph或play
+            if(tempSyn == 2 | tempSyn == 6){
+                errorList.add(tokens.get(index).getCount());
+                paragraph.addChild(new Node("Error", "Line: " + tokens.get(index).getCount() + "  缺少end标识"));
+                return paragraph;
+            }
             switch (tempSyn) {
                 case 3:
                     //speed
@@ -174,7 +180,7 @@ public class SyntacticAnalysis {
 
 
         //{ sentence }
-        while (tokens.get(index).getSyn() != 5) {
+        while (index<tokens.size()&&(tokens.get(index).getSyn() != 5)) {
             //没遇到end就遇到play或paragraph
             if (tokens.get(index).getSyn() == 6 | tokens.get(index).getSyn() == 2) {
                 paragraph.addChild(new Node("Error", "Line: " + tokens.get(index - 1).getCount() + "  缺少end标识"));
@@ -313,7 +319,7 @@ public class SyntacticAnalysis {
         int group = 0;
         int updown = 0;
 
-        while (tokens.get(index).getSyn() != 13) {
+        while (index<tokens.size()&&(tokens.get(index).getSyn() != 13)) {
             //'(',低八度左括号
             if (tokens.get(index).getSyn() == 7) {
                 if (group > 0) {
@@ -531,7 +537,7 @@ public class SyntacticAnalysis {
 
         //length
         boolean inCurlyBraces = false;
-        while (tokens.get(index).getSyn() != 14) {
+        while (index<tokens.size()&&(tokens.get(index).getSyn() != 14)) {
 
             //'{'，连音左括号
             if (tokens.get(index).getSyn() == 11) {
@@ -682,7 +688,7 @@ public class SyntacticAnalysis {
         playlist.addChild(terminalNode);
         index++;
 
-        while (tokens.get(index).getSyn() != 8) {
+        while (index<tokens.size()&&(tokens.get(index).getSyn() != 8)) {
             // "&" or ","
             switch (tokens.get(index).getSyn()) {
                 case 16:

@@ -590,10 +590,10 @@ public class CalculatorGUI extends JFrame {
                 "[]"));
 
             //---- expressionTxtField ----
-            expressionTxtField.setEditable(false);
             expressionTxtField.setFocusable(false);
             expressionTxtField.setFont(new Font("Consolas", Font.PLAIN, 10));
             expressionTxtField.setHorizontalAlignment(SwingConstants.RIGHT);
+            expressionTxtField.setEditable(false);
             panel1.add(expressionTxtField, "cell 0 0 4 1");
 
             //---- resultTxtField ----

@@ -1021,7 +1021,7 @@ public class MiniGUI extends JFrame {
     //关于
     private void aboutMenuItemActionPerformed(ActionEvent e) {
         String str = "-----------------------------------------------------------\n" +
-                "Music Language Interpreter\nMade By Chief, yyzih and AsrielMao\nVersion: 1.2.5\n\n" +
+                "Music Language Interpreter\nMade By Chief, yyzih and AsrielMao\nVersion: 2.0.0\n\n" +
                 "A light weight interpreter for converting digit score       \n" +
                 "to Arduino code or Midi file\n" +
                 "-----------------------------------------------------------";
@@ -1095,7 +1095,7 @@ public class MiniGUI extends JFrame {
                 "\t4）speed= 90\t该声部演奏速度（非必要 默认90）\n" +
                 "\t5）1= C\t\t该声部调性（非必要 默认C调）\n" +
                 "\t6）((1))(2)3[4][[5]]\t音符的音名，即音高\n" +
-                "\t7）<1248g*>\t音符的时值，即持续时间\n" +
+                "\t7）<1248gw*>\t音符的时值，即持续时间\n" +
                 "\t8）end\t\t声部声明结束\n" +
                 "\t（其中2~3，即乐器与音量只对Midi有效）\n" +
                 "\n" +
@@ -1106,7 +1106,7 @@ public class MiniGUI extends JFrame {
                 "\t4）声部速度：每分钟四分音符个数，即BPM\n" +
                 "\t5）声部调性：CDEFGAB加上b（降号）与#（升号）\n" +
                 "\t6）“( )”内为低八度，可叠加“[ ]”内为高八度，同上\n" +
-                "\t7）“< >”内为全、二、四、八、十六分音符与附点\n" +
+                "\t7）“< >”内为全、2、4、6、8、16、32分音符与附点\n" +
                 "\t（Arduino可以使用{ }表示连音，Midi暂不支持）\n" +
                 "\t8）声明结束：须用end结束声明，对应paragraph\n" +
                 "\n" +

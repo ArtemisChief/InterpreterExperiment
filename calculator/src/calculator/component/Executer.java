@@ -14,11 +14,8 @@ import java.util.Map;
  */
 public class Executer {
 
-    private ArrayList<Quadruple> Quadruples;
-
     //执行四元式产生结果
     public String execute(ArrayList<Quadruple> quadruples) {
-        Quadruples = quadruples;
 
         //用于存储变量和值表
         Map<String, BigDecimal> variables = new HashMap<>();

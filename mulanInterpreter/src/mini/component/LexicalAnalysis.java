@@ -239,13 +239,6 @@ public class LexicalAnalysis {
                     syn = 20;
                     //将乐器标识及乐器编号加入tokens中
                     tokens.add(new Token(syn, "instrument=", count));
-                    //乐器编号不在0-127间则报错
-                    if (Integer.valueOf(inputWord.substring(11)) > 127 || Integer.valueOf(inputWord.substring(11)) < 0) {
-                        skipLine = count;
-                        errorLine.add(skipLine);
-                        tokens.add(new Token(-1, inputWord.substring(11) + "不是合法的乐器编号（0-127）", count));
-                        return;
-                    }
                     tokens.add(new Token(96, inputWord.substring(11), count));
                     return;
                 }
@@ -274,13 +267,6 @@ public class LexicalAnalysis {
                     syn = 21;
                     //将音量标识及音量大小加入tokens中
                     tokens.add(new Token(syn, "volume=", count));
-                    //音量大小不在0-127间则报错
-                    if (Integer.valueOf(inputWord.substring(7)) > 127 || Integer.valueOf(inputWord.substring(7)) < 0) {
-                        skipLine = count;
-                        errorLine.add(skipLine);
-                        tokens.add(new Token(-1, inputWord.substring(7) + "不是合法的音量大小（0-127）", count));
-                        return;
-                    }
                     tokens.add(new Token(96, inputWord.substring(7), count));
                     return;
                 }

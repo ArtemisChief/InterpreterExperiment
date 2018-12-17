@@ -281,7 +281,17 @@ public class SemanticAnalysisArduino {
                                 break;
                             case "g*":
                                 rhythmCount++;
-                                errorInfo.append("Line: " + line + "\t不支持32分音符，即g*\n");
+                                errorInfo.append("Line: " + line + "\t不支持16分附点音符，即g*\n");
+                                errorLines.add(line);
+                                break;
+                            case "w":
+                                rhythmCount++;
+                                errorInfo.append("Line: " + line + "\t不支持32分音符，即w\n");
+                                errorLines.add(line);
+                                break;
+                            case "w*":
+                                rhythmCount++;
+                                errorInfo.append("Line: " + line + "\t不支持32分附点音符，即w*\n");
                                 errorLines.add(line);
                                 break;
                         }

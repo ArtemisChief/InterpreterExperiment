@@ -75,15 +75,30 @@ public class SemanticAnalysisMidi {
                     break;
 
                 case "instrument":
-                    paragraph.setInstrument(Integer.parseInt(child.getChild(0).getContent()));
+                    if (child.getChild(0).getContent().length() < 4 && Integer.parseInt(child.getChild(0).getContent()) >= 0 && Integer.parseInt(child.getChild(0).getContent()) < 128) {
+                        paragraph.setInstrument(Integer.parseInt(child.getChild(0).getContent()));
+                    } else {
+                        errorInfo.append("Line: " + child.getChild(0).getCount() + "\t乐器声明超出范围（0-127）\n");
+                        errorLines.add(child.getChild(0).getCount());
+                    }
                     break;
 
                 case "volume":
-                    paragraph.setVolume(Integer.parseInt(child.getChild(0).getContent()));
+                    if (child.getChild(0).getContent().length() < 4 && Integer.parseInt(child.getChild(0).getContent()) >= 0 && Integer.parseInt(child.getChild(0).getContent()) < 128) {
+                        paragraph.setVolume(Integer.parseInt(child.getChild(0).getContent()));
+                    } else {
+                        errorInfo.append("Line: " + child.getChild(0).getCount() + "\t音量声明超出范围（0-127）\n");
+                        errorLines.add(child.getChild(0).getCount());
+                    }
                     break;
 
                 case "speed":
-                    paragraph.setSpeed(Float.parseFloat(child.getChild(0).getContent()));
+                    if (child.getChild(0).getContent().length() < 4) {
+                        paragraph.setSpeed(Float.parseFloat(child.getChild(0).getContent()));
+                    } else {
+                        errorInfo.append("Line: " + child.getChild(0).getCount() + "\t速度声明超出范围（0-999）\n");
+                        errorLines.add(child.getChild(0).getCount());
+                    }
                     break;
 
                 case "tonality":

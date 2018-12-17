@@ -241,6 +241,7 @@ public class MiniGUI extends JFrame {
     //内容变动调用的函数
     private void contentChanged() {
         stopDirectMenuItemActionPerformed(null);
+        isLoadedMidiFile = false;
 
         if (hasChanged)
             return;
@@ -1501,13 +1502,13 @@ public class MiniGUI extends JFrame {
         //======== panel1 ========
         {
             panel1.setLayout(new MigLayout(
-                "insets 0,hidemode 3",
-                // columns
-                "[fill]0" +
-                "[400:400:875,grow,fill]0" +
-                "[460:460:1005,grow,fill]",
-                // rows
-                "[fill]"));
+                    "insets 0,hidemode 3",
+                    // columns
+                    "[fill]0" +
+                            "[400:400:875,grow,fill]0" +
+                            "[460:460:1005,grow,fill]",
+                    // rows
+                    "[fill]"));
 
             //======== scrollPane3 ========
             {

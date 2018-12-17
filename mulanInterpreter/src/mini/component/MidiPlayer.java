@@ -24,6 +24,7 @@ public class MidiPlayer {
 
     public void loadSoundBank(File soundFontFile) {
         try {
+            synthesizer.unloadAllInstruments(synthesizer.getDefaultSoundbank());
             soundbank = MidiSystem.getSoundbank(soundFontFile);
             synthesizer.loadAllInstruments(soundbank);
         } catch (Exception e) {

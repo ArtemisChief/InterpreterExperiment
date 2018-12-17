@@ -16,7 +16,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
@@ -44,6 +43,8 @@ public class MiniGUI extends JFrame {
     private boolean hasChanged = false;
     private boolean ctrlPressed = false;
     private boolean sPressed = false;
+    private boolean isLoadedMidiFile = false;
+    private boolean isPaused = false;
 
     private SimpleAttributeSet attributeSet;
     private SimpleAttributeSet statementAttributeSet;
@@ -63,6 +64,7 @@ public class MiniGUI extends JFrame {
     private SemanticAnalysisArduino semanticAnalysisArduino;
     private SemanticAnalysisMidi semanticAnalysisMidi;
     private ArduinoCmd arduinoCmd;
+    private MidiPlayer midiPlayer;
 
     private String cmdOutput;
 
@@ -182,6 +184,7 @@ public class MiniGUI extends JFrame {
         semanticAnalysisArduino = new SemanticAnalysisArduino();
         semanticAnalysisMidi = new SemanticAnalysisMidi();
         arduinoCmd = new ArduinoCmd();
+        midiPlayer = new MidiPlayer();
 
         cmdOutput = "";
 
@@ -200,15 +203,15 @@ public class MiniGUI extends JFrame {
         new DropTarget(inputTextPane, DnDConstants.ACTION_COPY_OR_MOVE, new DropTargetAdapter() {
             @Override
             public void drop(DropTargetDropEvent dtde) {
-                try{
-                    if(dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                try {
+                    if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                         if (!showSaveComfirm("Exist unsaved content, save before open file?"))
                             return;
 
                         dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-                        java.util.List<File> fileList=(java.util.List<File>) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                        java.util.List<File> fileList = (java.util.List<File>) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
 
-                        if(fileList.get(0).getName().indexOf(".mui")==-1) {
+                        if (fileList.get(0).getName().indexOf(".mui") == -1) {
                             JOptionPane.showMessageDialog(null, "不支持的文件格式", "Warning", JOptionPane.INFORMATION_MESSAGE);
                             return;
                         }
@@ -228,7 +231,7 @@ public class MiniGUI extends JFrame {
                         hasChanged = false;
                         setTitle("Music Interpreter - " + fileList.get(0).getName());
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -237,6 +240,8 @@ public class MiniGUI extends JFrame {
 
     //内容变动调用的函数
     private void contentChanged() {
+        stopDirectMenuItemActionPerformed(null);
+
         if (hasChanged)
             return;
 
@@ -392,6 +397,7 @@ public class MiniGUI extends JFrame {
             inputTextPane.setText("");
             outputTextPane.setText("");
             hasChanged = false;
+            isLoadedMidiFile = false;
             this.setTitle("Music Interpreter - New Empty File");
         }
     }
@@ -449,6 +455,7 @@ public class MiniGUI extends JFrame {
 
             outputTextPane.setText("");
             hasChanged = false;
+            isLoadedMidiFile = false;
             this.setTitle("Music Interpreter - New Template File");
         }
     }
@@ -481,6 +488,7 @@ public class MiniGUI extends JFrame {
             refreshColor();
             hasSaved = true;
             hasChanged = false;
+            isLoadedMidiFile = false;
             this.setTitle("Music Interpreter - " + file.getName());
         } catch (FileNotFoundException e1) {
 //            e1.printStackTrace();
@@ -501,6 +509,7 @@ public class MiniGUI extends JFrame {
                 bufferedWriter.write(inputTextPane.getText());
                 bufferedWriter.close();
                 hasChanged = false;
+                isLoadedMidiFile = false;
                 this.setTitle("Music Interpreter - " + file.getName());
             } catch (IOException e1) {
 //                e1.printStackTrace();
@@ -529,6 +538,7 @@ public class MiniGUI extends JFrame {
             bufferedWriter.close();
             hasSaved = true;
             hasChanged = false;
+            isLoadedMidiFile = false;
             this.setTitle("Music Interpreter - " + file.getName());
         } catch (FileNotFoundException e1) {
 //            e1.printStackTrace();
@@ -966,50 +976,48 @@ public class MiniGUI extends JFrame {
         }
     }
 
-    //直接播放Midi文件
-    private void playMenuItemActionPerformed(ActionEvent e) {
+    //生成临时Midi文件
+    private boolean generateTempMidiFile() {
         StringBuilder stringBuilder = new StringBuilder();
 
         if (inputTextPane.getText().isEmpty())
-            return;
+            return false;
 
         ArrayList<Token> tokens = runLex(inputTextPane.getText(), stringBuilder);
 
         if (tokens == null)
-            return;
+            return false;
 
         stringBuilder.append("\n=======词法分析结束======开始语法分析=======\n\n");
 
         Node AbstractSyntaxTree = runSyn(tokens, stringBuilder);
 
         if (AbstractSyntaxTree == null)
-            return;
+            return false;
 
         stringBuilder.append("\n=======语法分析结束======开始语义分析=======\n\n");
 
         String code = runMidiSem(AbstractSyntaxTree, stringBuilder);
 
         if (code == null)
-            return;
+            return false;
 
         if (tempMidiFile == null) {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            FileNameExtensionFilter filter = new FileNameExtensionFilter("Midi File", "mid");
-            fileChooser.setFileFilter(filter);
-            int value = fileChooser.showSaveDialog(this);
-            if (value == JFileChooser.CANCEL_OPTION)
-                return;
-            String fileStr = fileChooser.getSelectedFile().getAbsoluteFile().toString();
-            if (fileStr.lastIndexOf(".mid") == -1)
-                fileStr += ".mid";
-            tempMidiFile = new File(fileStr);
+            tempMidiFile = new File("/tempMidi.mid");
         }
 
         if (!semanticAnalysisMidi.getMidiFile().writeToFile(tempMidiFile)) {
             JOptionPane.showMessageDialog(this, "目标文件被占用，无法导出", "Warning", JOptionPane.INFORMATION_MESSAGE);
-            return;
+            return false;
         }
+
+        return true;
+    }
+
+    //直接播放Midi文件
+    private void playMenuItemActionPerformed(ActionEvent e) {
+        if (!generateTempMidiFile())
+            return;
 
         try {
             Runtime.getRuntime().exec("rundll32 url.dll FileProtocolHandler file://" + tempMidiFile.getAbsolutePath().replace("\\", "\\\\"));
@@ -1018,14 +1026,84 @@ public class MiniGUI extends JFrame {
         }
     }
 
+    //读取SoundFont
+    private void loadSoundFontMenuItemActionPerformed(ActionEvent e) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("SoundFont File", "sf2", "sf3");
+        fileChooser.setFileFilter(filter);
+        int value = fileChooser.showOpenDialog(this);
+        if (value == JFileChooser.CANCEL_OPTION)
+            return;
+        File soundFontFile = fileChooser.getSelectedFile();
+        midiPlayer.loadSoundBank(soundFontFile);
+    }
+
+    //直接播放Midi按钮
+    private void playDirectMenuItemActionPerformed(ActionEvent e) {
+        if (!isLoadedMidiFile) {
+            if (!generateTempMidiFile())
+                return;
+
+            midiPlayer.loadMidiFile(tempMidiFile);
+            isLoadedMidiFile = true;
+            isPaused = true;
+        }
+
+        if (isPaused) {
+            midiPlayer.play();
+            isPaused = false;
+            playDirectMenuItem.setText("Pause");
+        } else {
+            midiPlayer.pause();
+            isPaused = true;
+            playDirectMenuItem.setText("Replay");
+        }
+    }
+
+    //停止直接播放Midi按钮
+    private void stopDirectMenuItemActionPerformed(ActionEvent e) {
+        playDirectMenuItem.setText("Play Midi with SoundFont");
+        isPaused = true;
+        midiPlayer.stop();
+    }
+
     //关于
     private void aboutMenuItemActionPerformed(ActionEvent e) {
-        String str = "-----------------------------------------------------------\n" +
-                "Music Language Interpreter\nMade By Chief, yyzih and AsrielMao\nVersion: 2.2.2\n\n" +
-                "A light weight interpreter for converting digit score       \n" +
-                "to Arduino code or Midi file\n" +
-                "-----------------------------------------------------------";
-        JOptionPane.showMessageDialog(this, str, "About", JOptionPane.INFORMATION_MESSAGE);
+        String str = "============================================\n" +
+                "\t               Music Language Interpreter\n" +
+                "\n" +
+                "\t       Designed: Chief, yyzih and AsrielMao\n" +
+                "\n" +
+                "\t\t  Current Version: 3.0.1\n" +
+                "\n" +
+                "\n" +
+                "    The Music Language Interpreter is a light weight interpreter,\n" +
+                "\n" +
+                "which contains complete lexical analysis, syntactic analysis and\n" +
+                "\n" +
+                "semantic analysis, for converting digit score to Arduino code or\n" +
+                "\n" +
+                "Midi file. \n" +
+                "\n" +
+                "    The Music Language Interpreter also contains a simple Midi\n" +
+                "\n" +
+                "player for playing midi file with SoundFont2 or SoundFont3.\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "\t\t\t\t   All Rights Reserved. \n" +
+                "\n" +
+                "    \t    Copyright © 2018-2020 Chief, yyzih and AsrielMao.\n" +
+                "============================================";
+        outputTextPane.setText(str);
+        outputTextPane.setCaretPosition(0);
     }
 
     //展示Demo
@@ -1075,10 +1153,10 @@ public class MiniGUI extends JFrame {
                 "play(soprano&alto)";
         inputTextPane.setText(str);
         inputTextPane.setCaretPosition(0);
-        outputTextPane.setText("");
         refreshColor();
         hasChanged = false;
         this.setTitle("Music Interpreter - Demo");
+        TipsMenuItemActionPerformed(null);
     }
 
     //显示提示
@@ -1231,6 +1309,9 @@ public class MiniGUI extends JFrame {
         buildMidiMenu = new JMenu();
         generateMidiMenuItem = new JMenuItem();
         playMenuItem = new JMenuItem();
+        loadSoundFontMenuItem = new JMenuItem();
+        playDirectMenuItem = new JMenuItem();
+        stopDirectMenuItem = new JMenuItem();
         helpMenu = new JMenu();
         InstruMenuItem = new JMenuItem();
         TipsMenuItem = new JMenuItem();
@@ -1296,6 +1377,7 @@ public class MiniGUI extends JFrame {
                 LexMenuItem.setText("Lexical Analysis");
                 LexMenuItem.addActionListener(e -> LexMenuItemActionPerformed(e));
                 runMenu.add(LexMenuItem);
+                runMenu.addSeparator();
 
                 //---- synMenuItem ----
                 synMenuItem.setText("Syntactic Analysis");
@@ -1306,6 +1388,7 @@ public class MiniGUI extends JFrame {
                 semMenuItem.setText("Semantic Analysis - Arduino");
                 semMenuItem.addActionListener(e -> semMenuItemActionPerformed(e));
                 runMenu.add(semMenuItem);
+                runMenu.addSeparator();
 
                 //---- sem2MenuItem ----
                 sem2MenuItem.setText("Semantic Analysis - Midi");
@@ -1316,7 +1399,7 @@ public class MiniGUI extends JFrame {
 
             //======== buildMenu ========
             {
-                buildMenu.setText("Build - Arduino");
+                buildMenu.setText("Arduino");
 
                 //---- buildMenuItem ----
                 buildMenuItem.setText("Generate .ino file");
@@ -1337,7 +1420,7 @@ public class MiniGUI extends JFrame {
 
             //======== buildMidiMenu ========
             {
-                buildMidiMenu.setText("Build - Midi");
+                buildMidiMenu.setText("Midi");
 
                 //---- generateMidiMenuItem ----
                 generateMidiMenuItem.setText("Generate Midi File");
@@ -1348,6 +1431,22 @@ public class MiniGUI extends JFrame {
                 playMenuItem.setText("Play Midi File");
                 playMenuItem.addActionListener(e -> playMenuItemActionPerformed(e));
                 buildMidiMenu.add(playMenuItem);
+                buildMidiMenu.addSeparator();
+
+                //---- loadSoundFontMenuItem ----
+                loadSoundFontMenuItem.setText("Load SoundFont");
+                loadSoundFontMenuItem.addActionListener(e -> loadSoundFontMenuItemActionPerformed(e));
+                buildMidiMenu.add(loadSoundFontMenuItem);
+
+                //---- playDirectMenuItem ----
+                playDirectMenuItem.setText("Play Midi with SoundFont");
+                playDirectMenuItem.addActionListener(e -> playDirectMenuItemActionPerformed(e));
+                buildMidiMenu.add(playDirectMenuItem);
+
+                //---- stopDirectMenuItem ----
+                stopDirectMenuItem.setText("Stop");
+                stopDirectMenuItem.addActionListener(e -> stopDirectMenuItemActionPerformed(e));
+                buildMidiMenu.add(stopDirectMenuItem);
             }
             menuBar1.add(buildMidiMenu);
 
@@ -1379,8 +1478,8 @@ public class MiniGUI extends JFrame {
 
             //---- hSpacer1 ----
             hSpacer1.setMaximumSize(new Dimension(1920, 32767));
-            hSpacer1.setMinimumSize(new Dimension(430, 12));
-            hSpacer1.setPreferredSize(new Dimension(430, 20));
+            hSpacer1.setPreferredSize(new Dimension(150, 20));
+            hSpacer1.setMinimumSize(new Dimension(150, 12));
             menuBar1.add(hSpacer1);
 
             //---- progressBar ----
@@ -1475,6 +1574,9 @@ public class MiniGUI extends JFrame {
     private JMenu buildMidiMenu;
     private JMenuItem generateMidiMenuItem;
     private JMenuItem playMenuItem;
+    private JMenuItem loadSoundFontMenuItem;
+    private JMenuItem playDirectMenuItem;
+    private JMenuItem stopDirectMenuItem;
     private JMenu helpMenu;
     private JMenuItem InstruMenuItem;
     private JMenuItem TipsMenuItem;

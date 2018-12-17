@@ -93,6 +93,9 @@ new FormModel {
 						"text": "Lexical Analysis"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "LexMenuItemActionPerformed", true ) )
 					} )
+					add( new FormComponent( "javax.swing.JPopupMenu$Separator" ) {
+						name: "separator2"
+					} )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "synMenuItem"
 						"text": "Syntactic Analysis"
@@ -103,6 +106,9 @@ new FormModel {
 						"text": "Semantic Analysis - Arduino"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "semMenuItemActionPerformed", true ) )
 					} )
+					add( new FormComponent( "javax.swing.JPopupMenu$Separator" ) {
+						name: "separator3"
+					} )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "sem2MenuItem"
 						"text": "Semantic Analysis - Midi"
@@ -111,7 +117,7 @@ new FormModel {
 				} )
 				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
 					name: "buildMenu"
-					"text": "Build - Arduino"
+					"text": "Arduino"
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "buildMenuItem"
 						"text": "Generate .ino file"
@@ -130,7 +136,7 @@ new FormModel {
 				} )
 				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
 					name: "buildMidiMenu"
-					"text": "Build - Midi"
+					"text": "Midi"
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "generateMidiMenuItem"
 						"text": "Generate Midi File"
@@ -140,6 +146,24 @@ new FormModel {
 						name: "playMenuItem"
 						"text": "Play Midi File"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "playMenuItemActionPerformed", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JPopupMenu$Separator" ) {
+						name: "separator1"
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "loadSoundFontMenuItem"
+						"text": "Load SoundFont"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "loadSoundFontMenuItemActionPerformed", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "playDirectMenuItem"
+						"text": "Play Midi with SoundFont"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "playDirectMenuItemActionPerformed", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "stopDirectMenuItem"
+						"text": "Stop"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "stopDirectMenuItemActionPerformed", true ) )
 					} )
 				} )
 				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
@@ -169,8 +193,8 @@ new FormModel {
 				add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
 					name: "hSpacer1"
 					"maximumSize": new java.awt.Dimension( 1920, 32767 )
-					"minimumSize": new java.awt.Dimension( 430, 12 )
-					"preferredSize": new java.awt.Dimension( 430, 20 )
+					"preferredSize": new java.awt.Dimension( 150, 20 )
+					"minimumSize": new java.awt.Dimension( 150, 12 )
 				} )
 				add( new FormComponent( "javax.swing.JProgressBar" ) {
 					name: "progressBar"

@@ -240,9 +240,6 @@ public class MiniGUI extends JFrame {
 
     //内容变动调用的函数
     private void contentChanged() {
-        stopDirectMenuItemActionPerformed(null);
-        isLoadedMidiFile = false;
-
         if (hasChanged)
             return;
 
@@ -489,6 +486,7 @@ public class MiniGUI extends JFrame {
             refreshColor();
             hasSaved = true;
             hasChanged = false;
+            stopDirectMenuItemActionPerformed(null);
             isLoadedMidiFile = false;
             this.setTitle("Music Interpreter - " + file.getName());
         } catch (FileNotFoundException e1) {
@@ -512,6 +510,8 @@ public class MiniGUI extends JFrame {
                 hasChanged = false;
                 isLoadedMidiFile = false;
                 this.setTitle("Music Interpreter - " + file.getName());
+                stopDirectMenuItemActionPerformed(null);
+                isLoadedMidiFile = false;
             } catch (IOException e1) {
 //                e1.printStackTrace();
             }
@@ -541,6 +541,8 @@ public class MiniGUI extends JFrame {
             hasChanged = false;
             isLoadedMidiFile = false;
             this.setTitle("Music Interpreter - " + file.getName());
+            stopDirectMenuItemActionPerformed(null);
+            isLoadedMidiFile = false;
         } catch (FileNotFoundException e1) {
 //            e1.printStackTrace();
         } catch (IOException e1) {

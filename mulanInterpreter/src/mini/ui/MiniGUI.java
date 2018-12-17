@@ -1005,6 +1005,8 @@ public class MiniGUI extends JFrame {
         if (code == null)
             return false;
 
+        outputTextPane.setText(code+"\n\n===========================================\nMidi Successfully Generated");
+
         if (tempMidiFile == null) {
             tempMidiFile = new File("tempMidi.mid");
         }

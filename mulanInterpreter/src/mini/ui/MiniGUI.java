@@ -1004,7 +1004,7 @@ public class MiniGUI extends JFrame {
             return false;
 
         if (tempMidiFile == null) {
-            tempMidiFile = new File("/tempMidi.mid");
+            tempMidiFile = new File("tempMidi.mid");
         }
 
         if (!semanticAnalysisMidi.getMidiFile().writeToFile(tempMidiFile)) {

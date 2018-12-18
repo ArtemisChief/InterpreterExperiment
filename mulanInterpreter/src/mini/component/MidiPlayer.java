@@ -6,8 +6,6 @@ import java.io.File;
 public class MidiPlayer {
     public Synthesizer synthesizer;
     public Sequencer sequencer;
-    private Sequence sequence;
-    private Soundbank soundbank;
     private long microsecondPosition;
 
     public MidiPlayer() {
@@ -25,8 +23,8 @@ public class MidiPlayer {
     public void loadSoundBank(File soundFontFile) {
         try {
             synthesizer.unloadAllInstruments(synthesizer.getDefaultSoundbank());
-            soundbank = MidiSystem.getSoundbank(soundFontFile);
-            synthesizer.loadAllInstruments(soundbank);
+//            synthesizer.loadAllInstruments(MidiSystem.getSoundbank(soundFontFile));
+            synthesizer.loadInstrument(MidiSystem.getSoundbank(soundFontFile).getInstruments()[0]);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -34,8 +32,7 @@ public class MidiPlayer {
 
     public void loadMidiFile(File midiFile) {
         try {
-            sequence = MidiSystem.getSequence(midiFile);
-            sequencer.setSequence(sequence);
+            sequencer.setSequence(MidiSystem.getSequence(midiFile));
             microsecondPosition = 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,11 +54,11 @@ public class MidiPlayer {
         sequencer.stop();
     }
 
-    public Sequencer getSequencer(){
+    public Sequencer getSequencer() {
         return sequencer;
     }
 
-    public boolean getIsRunning(){
+    public boolean getIsRunning() {
         return sequencer.isRunning();
     }
 }

@@ -9,6 +9,8 @@ import mini.entity.Node;
 import mini.entity.Token;
 import net.miginfocom.swing.MigLayout;
 
+import javax.sound.midi.MetaEventListener;
+import javax.sound.midi.MetaMessage;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -234,6 +236,13 @@ public class MiniGUI extends JFrame {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+        });
+
+        //播放完成事件
+        midiPlayer.getSequencer().addMetaEventListener(meta -> {
+            if(meta.getType()==47){
+                stopDirectMenuItemActionPerformed(null);
             }
         });
     }

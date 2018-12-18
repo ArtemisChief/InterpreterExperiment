@@ -56,4 +56,8 @@ public class MidiPlayer {
         microsecondPosition = 0;
         sequencer.stop();
     }
+
+    public Sequencer getSequencer(){
+        return sequencer;
+    }
 }

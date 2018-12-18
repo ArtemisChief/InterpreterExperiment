@@ -8,9 +8,6 @@ import mini.component.*;
 import mini.entity.Node;
 import mini.entity.Token;
 import net.miginfocom.swing.MigLayout;
-
-import javax.sound.midi.MetaEventListener;
-import javax.sound.midi.MetaMessage;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -46,7 +43,6 @@ public class MiniGUI extends JFrame {
     private boolean ctrlPressed = false;
     private boolean sPressed = false;
     private boolean isLoadedMidiFile = false;
-    private boolean isPaused = false;
 
     private SimpleAttributeSet attributeSet;
     private SimpleAttributeSet statementAttributeSet;
@@ -241,7 +237,7 @@ public class MiniGUI extends JFrame {
 
         //播放完成事件
         midiPlayer.getSequencer().addMetaEventListener(meta -> {
-            if(meta.getType()==47){
+            if (meta.getType() == 47) {
                 stopDirectMenuItemActionPerformed(null);
             }
         });
@@ -771,7 +767,7 @@ public class MiniGUI extends JFrame {
         if (code == null)
             return;
 
-        outputTextPane.setText(code+"\n\n===========================================\nMidi Successfully Generated");
+        outputTextPane.setText(code + "\n\n===========================================\nMidi Successfully Generated");
 
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -1013,7 +1009,7 @@ public class MiniGUI extends JFrame {
         if (code == null)
             return false;
 
-        outputTextPane.setText(code+"\n\n===========================================\nMidi Successfully Generated");
+        outputTextPane.setText(code + "\n\n===========================================\nMidi Successfully Generated");
 
         if (tempMidiFile == null) {
             tempMidiFile = new File("tempMidi.mid");
@@ -1060,24 +1056,20 @@ public class MiniGUI extends JFrame {
 
             midiPlayer.loadMidiFile(tempMidiFile);
             isLoadedMidiFile = true;
-            isPaused = true;
         }
 
-        if (isPaused) {
-            midiPlayer.play();
-            isPaused = false;
-            playDirectMenuItem.setText("Pause");
-        } else {
+        if (midiPlayer.getIsRunning()) {
             midiPlayer.pause();
-            isPaused = true;
             playDirectMenuItem.setText("Replay");
+        } else {
+            midiPlayer.play();
+            playDirectMenuItem.setText("Pause");
         }
     }
 
     //停止直接播放Midi按钮
     private void stopDirectMenuItemActionPerformed(ActionEvent e) {
         playDirectMenuItem.setText("Play Midi with SoundFont");
-        isPaused = true;
         midiPlayer.stop();
     }
 

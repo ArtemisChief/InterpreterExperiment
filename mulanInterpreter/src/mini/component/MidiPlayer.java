@@ -60,4 +60,8 @@ public class MidiPlayer {
     public Sequencer getSequencer(){
         return sequencer;
     }
+
+    public boolean getIsRunning(){
+        return sequencer.isRunning();
+    }
 }

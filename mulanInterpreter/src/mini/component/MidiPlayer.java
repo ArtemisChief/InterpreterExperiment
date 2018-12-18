@@ -15,6 +15,8 @@ public class MidiPlayer {
 
             sequencer = MidiSystem.getSequencer();
             sequencer.open();
+
+            sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -23,8 +25,7 @@ public class MidiPlayer {
     public void loadSoundBank(File soundFontFile) {
         try {
             synthesizer.unloadAllInstruments(synthesizer.getDefaultSoundbank());
-//            synthesizer.loadAllInstruments(MidiSystem.getSoundbank(soundFontFile));
-            synthesizer.loadInstrument(MidiSystem.getSoundbank(soundFontFile).getInstruments()[0]);
+            synthesizer.loadAllInstruments(MidiSystem.getSoundbank(soundFontFile));
         } catch (Exception e) {
             e.printStackTrace();
         }

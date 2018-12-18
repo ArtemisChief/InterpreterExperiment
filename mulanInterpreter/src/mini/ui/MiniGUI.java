@@ -771,8 +771,7 @@ public class MiniGUI extends JFrame {
         if (code == null)
             return;
 
-        outputTextPane.setText(code);
-        outputTextPane.setCaretPosition(0);
+        outputTextPane.setText(code+"\n\n===========================================\nMidi Successfully Generated");
 
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);

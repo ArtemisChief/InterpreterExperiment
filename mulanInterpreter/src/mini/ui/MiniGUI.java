@@ -1039,7 +1039,7 @@ public class MiniGUI extends JFrame {
     private void loadSoundFontMenuItemActionPerformed(ActionEvent e) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("SoundFont File", "sf2", "sf3");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("SoundFont File", "sf2");
         fileChooser.setFileFilter(filter);
         int value = fileChooser.showOpenDialog(this);
         if (value == JFileChooser.CANCEL_OPTION)
@@ -1506,13 +1506,13 @@ public class MiniGUI extends JFrame {
         //======== panel1 ========
         {
             panel1.setLayout(new MigLayout(
-                    "insets 0,hidemode 3",
-                    // columns
-                    "[fill]0" +
-                            "[400:400:875,grow,fill]0" +
-                            "[460:460:1005,grow,fill]",
-                    // rows
-                    "[fill]"));
+                "insets 0,hidemode 3",
+                // columns
+                "[fill]0" +
+                "[400:400:875,grow,fill]0" +
+                "[460:460:1005,grow,fill]",
+                // rows
+                "[fill]"));
 
             //======== scrollPane3 ========
             {

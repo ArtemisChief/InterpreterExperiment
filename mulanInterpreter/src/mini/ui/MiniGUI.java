@@ -1020,6 +1020,12 @@ public class MiniGUI extends JFrame {
             return false;
         }
 
+        try {
+            Runtime.getRuntime().exec("attrib +H \"" + tempMidiFile.getAbsolutePath() + "\"");
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
         return true;
     }
 

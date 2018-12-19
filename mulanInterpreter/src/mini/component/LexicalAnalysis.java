@@ -612,6 +612,8 @@ public class LexicalAnalysis {
         return lastLine;
     }
 
+    public ArrayList<Token> getTokens(){return tokens;}
+
     public ArrayList<Token> getTokens() {
         return tokens;
     }

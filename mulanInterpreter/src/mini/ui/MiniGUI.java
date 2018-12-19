@@ -1388,12 +1388,12 @@ public class MiniGUI extends JFrame {
                 synMenuItem.setText("Syntactic Analysis");
                 synMenuItem.addActionListener(e -> synMenuItemActionPerformed(e));
                 runMenu.add(synMenuItem);
+                runMenu.addSeparator();
 
                 //---- semMenuItem ----
                 semMenuItem.setText("Semantic Analysis - Arduino");
                 semMenuItem.addActionListener(e -> semMenuItemActionPerformed(e));
                 runMenu.add(semMenuItem);
-                runMenu.addSeparator();
 
                 //---- sem2MenuItem ----
                 sem2MenuItem.setText("Semantic Analysis - Midi");
@@ -1506,13 +1506,13 @@ public class MiniGUI extends JFrame {
         //======== panel1 ========
         {
             panel1.setLayout(new MigLayout(
-                    "insets 0,hidemode 3",
-                    // columns
-                    "[fill]0" +
-                            "[400:400:875,grow,fill]0" +
-                            "[460:460:1005,grow,fill]",
-                    // rows
-                    "[fill]"));
+                "insets 0,hidemode 3",
+                // columns
+                "[fill]0" +
+                "[400:400:875,grow,fill]0" +
+                "[460:460:1005,grow,fill]",
+                // rows
+                "[fill]"));
 
             //======== scrollPane3 ========
             {

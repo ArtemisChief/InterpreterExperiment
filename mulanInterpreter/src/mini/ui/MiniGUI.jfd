@@ -101,13 +101,13 @@ new FormModel {
 						"text": "Syntactic Analysis"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "synMenuItemActionPerformed", true ) )
 					} )
+					add( new FormComponent( "javax.swing.JPopupMenu$Separator" ) {
+						name: "separator3"
+					} )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "semMenuItem"
 						"text": "Semantic Analysis - Arduino"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "semMenuItemActionPerformed", true ) )
-					} )
-					add( new FormComponent( "javax.swing.JPopupMenu$Separator" ) {
-						name: "separator3"
 					} )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "sem2MenuItem"

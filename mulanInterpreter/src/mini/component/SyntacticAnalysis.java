@@ -216,7 +216,7 @@ public class SyntacticAnalysis {
 
         index++;
         //乐器编号
-        terminalNode = new Node("instrumentValue", tokens.get(index).getContent());
+        terminalNode = new Node("instrumentValue", tokens.get(index).getContent(),tokens.get(index).getCount());
         instrument.addChild(terminalNode);
         index++;
 
@@ -236,7 +236,7 @@ public class SyntacticAnalysis {
 
         index++;
         //乐器编号
-        terminalNode = new Node("volumeValue", tokens.get(index).getContent());
+        terminalNode = new Node("volumeValue", tokens.get(index).getContent(),tokens.get(index).getCount());
         volume.addChild(terminalNode);
         index++;
 
@@ -258,7 +258,7 @@ public class SyntacticAnalysis {
 
         index++;
         //乐器编号
-        terminalNode = new Node("speedValue", tokens.get(index).getContent());
+        terminalNode = new Node("speedValue", tokens.get(index).getContent(),tokens.get(index).getCount());
         speed.addChild(terminalNode);
         index++;
 

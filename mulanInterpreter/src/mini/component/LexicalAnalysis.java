@@ -613,8 +613,4 @@ public class LexicalAnalysis {
     }
 
     public ArrayList<Token> getTokens(){return tokens;}
-
-    public ArrayList<Token> getTokens() {
-        return tokens;
-    }
 }

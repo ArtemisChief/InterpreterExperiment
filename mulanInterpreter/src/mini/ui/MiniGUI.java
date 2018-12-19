@@ -568,7 +568,8 @@ public class MiniGUI extends JFrame {
 
     //词法分析
     private ArrayList<Token> runLex(String input, StringBuilder output) {
-        ArrayList<Token> tokens = lexicalAnalysis.Lex(input);
+        lexicalAnalysis.Lex(input);
+        ArrayList<Token> tokens = lexicalAnalysis.getTokens();
 
         if (lexicalAnalysis.getError()) {
             output.append(lexicalAnalysis.getErrorInfo(tokens));

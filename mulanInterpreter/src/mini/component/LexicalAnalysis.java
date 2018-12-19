@@ -93,6 +93,7 @@ public class LexicalAnalysis {
                             i++;//继续扫描
                             if (i == input.length()) {
                                 count = -1;
+                                tokens.add(new Token(-1,"多行注释未出现*/",-1));
                                 return null;
                             }
                         }
@@ -587,7 +588,10 @@ public class LexicalAnalysis {
         String errorInfo = "";
         for (Token temp : tokens) {
             if (temp.getSyn() == -1)
-                errorInfo += "Line" + temp.getCount() + "\tError:  " + temp.getContent() + "\n";
+                if(temp.getCount()==-1)
+                    errorInfo += "Error:  " + temp.getContent() + "\n";
+                else
+                    errorInfo += "Line" + temp.getCount() + "\tError:  " + temp.getContent() + "\n";
         }
         return errorInfo;
     }
@@ -608,4 +612,7 @@ public class LexicalAnalysis {
         return lastLine;
     }
 
+    public ArrayList<Token> getTokens() {
+        return tokens;
+    }
 }

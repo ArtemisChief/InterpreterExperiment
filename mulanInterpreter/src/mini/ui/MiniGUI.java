@@ -133,6 +133,11 @@ public class MiniGUI extends JFrame {
                     return;
                 }
 
+                if(e.getKeyCode() == KeyEvent.VK_F5){
+                    playMenuItemActionPerformed(null);
+                    return;
+                }
+
                 autoComplete();
                 refreshColor();
             }

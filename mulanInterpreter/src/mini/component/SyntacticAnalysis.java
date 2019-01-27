@@ -318,6 +318,7 @@ public class SyntacticAnalysis {
 
         int group = 0;
         int updown = 0;
+        boolean doubleMeantime = true;
 
         while (index<tokens.size()&&(tokens.get(index).getSyn() != 13)) {
             //'(',低八度左括号
@@ -385,6 +386,20 @@ public class SyntacticAnalysis {
                 continue;
             }
 
+            //同时音符号
+            if(tokens.get(index).getSyn() == 22){
+                doubleMeantime = !doubleMeantime;
+                if(doubleMeantime && tokens.get(index-2).getSyn() == 22){
+                    nextLine();
+                    sentenceError = true;
+                    errorList.add(tokens.get(index - 1).getCount());
+                    return new Node("Error", "Line: " + tokens.get(index - 1).getCount() + "  无意义同时音符号");
+                }
+                melody.addChild(new Node("meantime symbol", "|", tokens.get(index).getCount()));
+                index++;
+                continue;
+            }
+
             //音符
             Node note = parseNotes();
             if (sentenceError) {
@@ -401,6 +416,13 @@ public class SyntacticAnalysis {
             errorList.add(tokens.get(index - 1).getCount());
             nextLine();
             return new Node("Error", "Line: " + (tokens.get(index - 1).getCount()) + " 八度转换错误");
+        }
+        if(!doubleMeantime){
+            sentenceError = true;
+            //isError = true;
+            errorList.add(tokens.get(index - 1).getCount());
+            nextLine();
+            return new Node("Error", "Line: " + (tokens.get(index - 1).getCount()) + " 同时音符号数量不正确");
         }
 
 

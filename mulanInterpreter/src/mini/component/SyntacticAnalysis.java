@@ -389,7 +389,7 @@ public class SyntacticAnalysis {
             //同时音符号
             if(tokens.get(index).getSyn() == 22){
                 doubleMeantime = !doubleMeantime;
-                if(tokens.get(index-1).getSyn() == 22 || (doubleMeantime && tokens.get(index-2).getSyn() == 22)){
+                if(doubleMeantime && (tokens.get(index-1).getSyn() == 22 || tokens.get(index-2).getSyn() == 22)){
                     nextLine();
                     sentenceError = true;
                     errorList.add(tokens.get(index - 1).getCount());

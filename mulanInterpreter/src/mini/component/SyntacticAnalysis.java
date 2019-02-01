@@ -586,11 +586,11 @@ public class SyntacticAnalysis {
                     errorList.add(tokens.get(index - 1).getCount());
                     return new Node("Error", "Line: " + tokens.get(index - 1).getCount() + "  缺少连音左括号");
                 }
-                if (tokens.get(index - 1).getSyn() == 11) {
+                if (tokens.get(index - 1).getSyn() == 11 | tokens.get(index - 2).getSyn() == 11) {
                     nextLine();
                     sentenceError = true;
                     errorList.add(tokens.get(index - 1).getCount());
-                    return new Node("Error", "Line: " + tokens.get(index - 1).getCount() + "  连音括号内不能为空");
+                    return new Node("Error", "Line: " + tokens.get(index - 1).getCount() + "  无意义连音括号");
                 }
                 inCurlyBraces = false;
                 terminalNode = new Node("rightCurlyBrace", "}", tokens.get(index).getCount());

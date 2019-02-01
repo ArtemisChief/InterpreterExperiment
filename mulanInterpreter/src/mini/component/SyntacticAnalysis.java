@@ -81,8 +81,7 @@ public class SyntacticAnalysis {
 
         //identifier(段落名)
         if (tokens.get(index).getSyn() != 100) {
-            int syn = tokens.get(index).getSyn();
-            if (syn != 3 && syn != 4 && syn != 7 && syn != 9 && syn != 18&& syn != 19&& syn != 20&& syn != 21&& syn != 94&& syn != 98)
+            if (!isAttributeIdentifier() && !isMelodyElement())
                 nextLine();
             statement.addChild(new Node("Error", "Line: " + tokens.get(index - 1).getCount() + "  缺少标识符"));
             errorList.add(tokens.get(index - 1).getCount());
@@ -96,7 +95,7 @@ public class SyntacticAnalysis {
 
         int tempSyn = tokens.get(index).getSyn();
         boolean hadSpeed = false, hadTone = false, hadInstrument = false, hadVolume = false;
-        while (index<tokens.size()&&(tempSyn != 18 && tempSyn != 19 && tempSyn != 7 && tempSyn != 9 && tempSyn != 94 && tempSyn != 98 && tempSyn != 5)) {
+        while (!hadReadToEnd() && !paragraphHadEnd() && !isMelodyElement()) {
             //提前遇到paragraph或play
             if(tempSyn == 2 | tempSyn == 6){
                 errorList.add(tokens.get(index).getCount());
@@ -180,7 +179,7 @@ public class SyntacticAnalysis {
 
 
         //{ sentence }
-        while (index<tokens.size()&&(tokens.get(index).getSyn() != 5)) {
+        while (!hadReadToEnd() && (tokens.get(index).getSyn() != 5)) {
             //没遇到end就遇到play或paragraph
             if (tokens.get(index).getSyn() == 6 | tokens.get(index).getSyn() == 2) {
                 paragraph.addChild(new Node("Error", "Line: " + tokens.get(index - 1).getCount() + "  缺少end标识"));
@@ -248,17 +247,17 @@ public class SyntacticAnalysis {
     public Node parseSpeed() {
         Node speed = new Node("speed");
         Node terminalNode;
+
+        //若当前token不为速度标识，设置默认速度
         if (tokens.get(index).getSyn() != 3) {
-            //乐器编号
-            terminalNode = new Node("speedValue", "90");
+            terminalNode = new Node("speedValue", "90", tokens.get(index).getCount());
             speed.addChild(terminalNode);
 
             return speed;
         }
 
-        index++;
-        //乐器编号
-        terminalNode = new Node("speedValue", tokens.get(index).getContent(),tokens.get(index).getCount());
+        //否则，获取速度数值
+        terminalNode = new Node("speedValue", tokens.get(++index).getContent(),tokens.get(index).getCount());
         speed.addChild(terminalNode);
         index++;
 
@@ -267,9 +266,12 @@ public class SyntacticAnalysis {
 
     //tone -> ([#|b] toneValue)|toneValue
     public Node parseTone() {
+        //若当前token不为调性标识，设置默认调性
         if (tokens.get(index).getSyn() != 4) {
             return getTone();
         }
+
+        //否则，获取调性
         Node tone = new Node("tonality");
         Node terminalNode;
         index++;
@@ -559,7 +561,7 @@ public class SyntacticAnalysis {
 
         //length
         boolean inCurlyBraces = false;
-        while (index<tokens.size()&&(tokens.get(index).getSyn() != 14)) {
+        while (!hadReadToEnd()&&(tokens.get(index).getSyn() != 14)) {
 
             //'{'，连音左括号
             if (tokens.get(index).getSyn() == 11) {
@@ -710,7 +712,7 @@ public class SyntacticAnalysis {
         playlist.addChild(terminalNode);
         index++;
 
-        while (index<tokens.size()&&(tokens.get(index).getSyn() != 8)) {
+        while (!hadReadToEnd() && (tokens.get(index).getSyn() != 8)) {
             // "&" or ","
             switch (tokens.get(index).getSyn()) {
                 case 16:
@@ -739,11 +741,40 @@ public class SyntacticAnalysis {
         return playlist;
     }
 
+
+    //判断当前token是否为段落属性的标识
+    public boolean isAttributeIdentifier(){
+        int syn = tokens.get(index).getSyn();
+        return syn == 3 | syn == 4 | syn == 20 | syn == 21;
+    }
+
+    //判断当前token是否为旋律部分的元素
+    public boolean isMelodyElement(){
+        int syn = tokens.get(index).getSyn();
+        return (syn >= 7 && syn <= 10 ) | syn == 18 | syn == 19 | syn == 22 | syn == 94 | syn == 98;
+    }
+
+    //判断当前token是否为节奏部分的元素
+    public boolean isRhythmElement(){
+        int syn = tokens.get(index).getSyn();
+        return (syn >= 11 && syn <= 15 ) | syn == 99;
+    }
+
+    //判断段落是否已结束
+    public boolean paragraphHadEnd(){
+        return tokens.get(index).getSyn() == 5;
+    }
+
+    //判断是否已经读到末尾token
+    public boolean hadReadToEnd(){
+        return !(index < tokens.size());
+    }
+
     //换到下一行
     public void nextLine() {
         while (index < tokens.size() - 1 && tokens.get(index).getCount() == tokens.get(++index).getCount()) {
         }
-        if(index ==  tokens.size() -1){
+        if(index ==  tokens.size() - 1){
             while (tokens.get(index).getCount() == tokens.get(--index).getCount()) {
             }
             index++;
